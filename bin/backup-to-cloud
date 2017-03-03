@@ -1,0 +1,85 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const fs = require('fs');
+
+const DB = require('../lib/DB');
+const Scanner = require('../lib/Scanner');
+const Transfer = require('../lib/Transfer');
+const utils = require('../lib/utils');
+
+const LOCK_FILE = path.join(__dirname, '.backup-to-cloud.lock');
+
+let db;
+
+function usage() {
+	console.log(`
+Usage: ${__filename} OPTIONS
+
+Options:
+	--only-scan
+	--skip-scan
+	--reset-synced
+	--ignore-lock
+	--verbose
+	--dry
+	--help
+`);
+}
+
+function main() {
+	if (fs.existsSync(LOCK_FILE) && !utils.hasFlag('ignore-lock')) {
+		utils.log('Another instance of the backup is already running or has not ' +
+			'properly terminated. Remove lock file to continue.');
+		return;
+	}
+	fs.writeFileSync(LOCK_FILE, '');
+
+	utils.log('Starting...');
+	if (utils.DRY_RUN) {
+		utils.log('This is a DRY run! No changes/uploads will be made.');
+	}
+
+	db = new DB();
+
+	if (utils.hasFlag('reset-synced')) {
+		utils.log('Resetting synced...');
+		db.set('synced', {});
+		return finish();
+	}
+
+	if (!utils.hasFlag('skip-scan')) {
+		const scanner = new Scanner(db);
+		scanner.scan();
+	}
+
+	if (!utils.hasFlag('only-scan')) {
+		const transfer = new Transfer(db);
+		transfer.start()
+			.then(
+				(result) => {
+					utils.log('Transfer result', result);
+				},
+				(err) => {
+					utils.log('Transfer error', err);
+				}
+			)
+			.then(finish);
+	}
+	else {
+		finish();
+	}
+}
+
+function finish() {
+	db.save();
+	utils.log('Finished!');
+	fs.unlinkSync(LOCK_FILE);
+}
+
+if (utils.hasFlag('help')) {
+	usage();
+}
+else {
+	main();
+}

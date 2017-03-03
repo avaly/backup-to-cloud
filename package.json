@@ -1,0 +1,23 @@
+{
+  "name": "backup-to-cloud",
+  "version": "1.0.0",
+  "description": "A simple backup tool which uploads encrypted files to S3",
+  "scripts": {
+    "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
+    "start": "bin/backup-to-cloud",
+    "test": "npm run lint"
+  },
+  "author": "Valentin Agachi",
+  "license": "MIT",
+  "engines": {
+    "node": ">=6"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^3.16.1"
+  }
+}

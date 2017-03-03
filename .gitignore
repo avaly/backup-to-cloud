@@ -1,0 +1,7 @@
+node_modules
+/bin/*.lock
+/data/
+/tmp/
+/config.default.js
+/config.test.js
+/*.log
