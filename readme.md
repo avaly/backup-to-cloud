@@ -15,7 +15,7 @@ Ideally, it should be setup to run in a crontab entry.
 
 - OS: Linux, MacOS (untested)
 - node.js 6+
-- `awscli`
+- `awscli` 1.8.6+ (for support of `STANDARD_IA` storage class)
 - `find`
 - `gpg`
 
