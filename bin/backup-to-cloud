@@ -3,6 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 
+const ConfigChecker = require('../lib/ConfigChecker');
 const DB = require('../lib/DB');
 const Scanner = require('../lib/Scanner');
 const Transfer = require('../lib/Transfer');
@@ -17,6 +18,7 @@ function usage() {
 Usage: ${__filename} OPTIONS
 
 Options:
+	--check-config
 	--only-scan
 	--skip-scan
 	--reset-synced
@@ -34,6 +36,21 @@ function main() {
 		return;
 	}
 	fs.writeFileSync(LOCK_FILE, '');
+
+	if (utils.hasFlag('check-config')) {
+		const configChecker = new ConfigChecker();
+		return configChecker.check()
+			.then(
+				() => {
+					utils.log('Config seems in order!');
+				},
+				(err) => {
+					utils.log('Config check failed:');
+					utils.log(err.message || err);
+				}
+			)
+			.then(finish);
+	}
 
 	utils.log('Starting...');
 	if (utils.DRY_RUN) {
@@ -72,8 +89,10 @@ function main() {
 }
 
 function finish() {
-	db.save();
-	utils.log('Finished!');
+	if (db) {
+		db.save();
+		utils.log('Finished!');
+	}
 	fs.unlinkSync(LOCK_FILE);
 }
 

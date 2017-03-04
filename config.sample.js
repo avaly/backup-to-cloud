@@ -1,8 +1,12 @@
 module.exports = {
+	// The path to the `aws` binary to use for backup
+	aws: '/usr/bin/aws',
 	// File scan data and info about uploaded files is stored here
 	db: 'data/db.json',
 	// The files are encrypted locally using this passphrase using `gpg`
 	encryptionPassphrase: 'REPLACE-ME-OR-ELSE',
+	// The path to the `gpg` binary to use for encryption
+	gpg: '/usr/bin/gpg',
 	// Files matching these ignore patterns are not backed up
 	ignorePatterns: [
 		'/Thumbs.db',
