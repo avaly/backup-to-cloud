@@ -23,6 +23,7 @@ Ideally, it should be setup to run in a crontab entry.
 
 - `cp config.sample.js config.default.js`
 - Modify your new config file
+- Double check your config file: `bin/backup-to-cloud --check-config`
 - Try it out first with: `bin/backup-to-cloud --dry`
 - Set up a crontab entry for it, for example:
   - run every hour with verbose logging:
