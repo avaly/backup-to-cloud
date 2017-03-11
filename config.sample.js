@@ -17,6 +17,8 @@ module.exports = {
 		'/.svn/',
 		'/node_modules/'
 	],
+	// Whether to use timestamps for logs
+	logTimestamp: true,
 	// After this threshold (in bytes), an upload session is stopped
 	maxSessionSize: 50 * 1024 * 1024,
 	// These prefixes will be removed from the remote object path
