@@ -1,5 +1,7 @@
 # backup-to-cloud
 
+[![Travis branch](https://img.shields.io/travis/avaly/backup-to-cloud/master.svg?style=flat-square)](https://travis-ci.org/avaly/backup-to-cloud)
+
 A simple backup tool which uploads encrypted files to S3, in batches.
 
 Ideally, it should be setup to run in a crontab entry.
@@ -7,7 +9,7 @@ Ideally, it should be setup to run in a crontab entry.
 ## Features
 
 - Encrypts files locally with `gpg`
-- Uploads files to S3 in batches of customizable sizes
+- Uploads files to S3 in batches of customizable size
 - Rescans sources at specific intervals to find new or updated files
 - Removes files from S3 if they are removed locally
 

@@ -1,0 +1,6 @@
+--reporter list
+--ui bdd
+--timeout 10s
+--slow 2000
+--bail
+--inline-diffs
