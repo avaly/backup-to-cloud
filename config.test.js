@@ -8,7 +8,10 @@ module.exports = Object.assign({}, config, {
 	encryptionPassphrase: 'password',
 	logTimestamp: false,
 	maxSessionSize: 1 * 1024,
-	scanInterval: 1 * 1000,
+	prefixRemove: [
+		'foo/'
+	],
+	scanInterval: 1000,
 	sources: [
 		path.resolve(__dirname, 'test', '_fixtures_', 'foo'),
 		path.resolve(__dirname, 'test', '_fixtures_', 'bar'),

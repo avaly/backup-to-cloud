@@ -93,6 +93,7 @@ describe('scan', () => {
 		all[`${FIXTURES_DIR}foo/old.txt`] = DELETED;
 		all[`${FIXTURES_DIR}ham/from-old-source.txt`] = DELETED;
 		const synced = {};
+		synced[`${FIXTURES_DIR}bar/1-small.txt`] = ['abc', 123, 456];
 		synced[`${FIXTURES_DIR}foo/old.txt`] = ['abc', 123, 456];
 		synced[`${FIXTURES_DIR}ham/from-old-source.txt`] = ['abc', 123, 456];
 		utils.setDataContent({
@@ -107,6 +108,23 @@ describe('scan', () => {
 				assert.equal(Object.keys(db.all).length, 8);
 				assert.equal(db.all[`${FIXTURES_DIR}foo/old.txt`], DELETED);
 				assert.equal(db.all[`${FIXTURES_DIR}ham/from-old-source.txt`], DELETED);
+				assert.isArray(db.all[`${FIXTURES_DIR}bar/1-small.txt`]);
+
+				return utils.execPromise('mv', [
+					`${FIXTURES_DIR}bar/1-small.txt`,
+					`${FIXTURES_DIR}../`
+				]);
+			})
+			.then(() => utils.delay(1001))
+			.then(scan)
+			.then(utils.getDataContent)
+			.then((db) => {
+				assert.equal(db.all[`${FIXTURES_DIR}bar/1-small.txt`], DELETED);
+
+				return utils.execPromise('mv', [
+					`${FIXTURES_DIR}../1-small.txt`,
+					`${FIXTURES_DIR}bar/1-small.txt`
+				]);
 			});
 	});
 

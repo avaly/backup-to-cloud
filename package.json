@@ -4,6 +4,7 @@
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "scripts": {
+    "coverage": "COVERAGE=1 npm test && istanbul report lcov && codecov",
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
     "start": "bin/backup-to-cloud",
     "test": "BACKUP_ENV=test mocha test/*-test.js"
@@ -19,7 +20,9 @@
   "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",
+    "codecov": "^1.0.1",
     "eslint": "^3.17.1",
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0"
   }
 }

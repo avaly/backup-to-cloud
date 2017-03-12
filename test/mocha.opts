@@ -1,4 +1,4 @@
---reporter list
+--reporter spec
 --ui bdd
 --timeout 10s
 --slow 2000

@@ -45,7 +45,20 @@ module.exports = {
 	},
 
 	run: (args) => {
-		return utils.execPromise(BIN_FILE, args);
+		const cmd = process.env.COVERAGE
+			? './node_modules/.bin/istanbul'
+			: BIN_FILE;
+		const execArgs = process.env.COVERAGE
+			? [
+				'cover',
+				'--report', 'none',
+				'--print', 'none',
+				'--include-pid',
+				BIN_FILE,
+				'--'
+			].concat(args)
+			: args;
+		return utils.execPromise(cmd, execArgs);
 	},
 
 	delay: (timeout) => {

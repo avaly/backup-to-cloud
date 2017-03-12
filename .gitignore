@@ -1,6 +1,7 @@
-/node_modules
 /bin/*.lock
+/coverage/
 /data/
+/node_modules
 /tmp/
 /config.default.js
 /config.dev.js

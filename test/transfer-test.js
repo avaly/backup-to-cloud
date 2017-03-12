@@ -17,12 +17,18 @@ describe('transfer', () => {
 		return utils.run(['--only-scan']);
 	});
 
-	it('transfers nothing on dry more', () => {
-		return transfer(true).then((output) => {
-			assert.include(output, 'This is a DRY run!');
-			assert.include(output, 'Transfer.start: all=6 / synced=0');
-			assert.include(output, 'Transfer.add:');
-		});
+	it('transfers nothing on dry mode', () => {
+		return transfer(true)
+			.then((output) => {
+				assert.include(output, 'This is a DRY run!');
+				assert.include(output, 'Transfer.start: all=6 / synced=0');
+				assert.include(output, 'Transfer.add:');
+			})
+			.then(utils.getAWSLog)
+			.then((awsLog) => {
+				assert.isArray(awsLog);
+				assert.equal(awsLog.length, 0);
+			});
 	});
 
 	it('encrypts and transfers files', () => {
@@ -36,13 +42,13 @@ describe('transfer', () => {
 
 				assert.match(
 					awsLog[0][3],
-					/s3:\/\/test-bucket\/.*\/bar\/1-small\.txt/
+					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/1-small\.txt/
 				);
 				assert.include(awsLog[0], 'STANDARD');
 
 				assert.match(
 					awsLog[1][3],
-					/s3:\/\/test-bucket\/.*\/bar\/2-medium\.txt/
+					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/2-medium\.txt/
 				);
 				assert.include(awsLog[1], 'STANDARD');
 
@@ -95,7 +101,7 @@ describe('transfer', () => {
 
 				assert.match(
 					awsLog[2][3],
-					/s3:\/\/test-bucket\/.*\/bar\/3-large\.txt/
+					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/3-large\.txt/
 				);
 				assert.include(awsLog[2], 'STANDARD_IA');
 			})
@@ -116,13 +122,13 @@ describe('transfer', () => {
 
 				assert.match(
 					awsLog[3][3],
-					/s3:\/\/test-bucket\/.*\/foo\/1-small\.dat/
+					/s3:\/\/test-bucket\/.*\/_fixtures_\/1-small\.dat/
 				);
 				assert.include(awsLog[3], 'STANDARD');
 
 				assert.match(
 					awsLog[4][3],
-					/s3:\/\/test-bucket\/.*\/foo\/2-medium\.dat/
+					/s3:\/\/test-bucket\/.*\/_fixtures_\/2-medium\.dat/
 				);
 				assert.include(awsLog[4], 'STANDARD');
 			})
@@ -145,19 +151,19 @@ describe('transfer', () => {
 
 		const now = Date.now();
 		const all = {};
-		all[`${FIXTURES_DIR}foo/1-small-recent.txt`] = DELETED;
-		all[`${FIXTURES_DIR}foo/2-small-long-ago.txt`] = DELETED;
-		all[`${FIXTURES_DIR}foo/3-large-recent.txt`] = DELETED;
-		all[`${FIXTURES_DIR}foo/4-large-long-ago.txt`] = DELETED;
+		all[`${FIXTURES_DIR}bar/1-small-recent.txt`] = DELETED;
+		all[`${FIXTURES_DIR}bar/2-small-long-ago.txt`] = DELETED;
+		all[`${FIXTURES_DIR}bar/3-large-recent.txt`] = DELETED;
+		all[`${FIXTURES_DIR}bar/4-large-long-ago.txt`] = DELETED;
 		const synced = {};
-		synced[`${FIXTURES_DIR}foo/1-small-recent.txt`] =
+		synced[`${FIXTURES_DIR}bar/1-small-recent.txt`] =
 			['abc', 1024, now - 10 * 1000];
-		synced[`${FIXTURES_DIR}foo/2-small-long-ago.txt`] =
+		synced[`${FIXTURES_DIR}bar/2-small-long-ago.txt`] =
 			['abc', 1024, now - 31 * 24 * 3600 * 1000];
 		// This will not be deleted due to recency and size (STANDARD_IA)
-		synced[`${FIXTURES_DIR}foo/3-large-recent.txt`] =
+		synced[`${FIXTURES_DIR}bar/3-large-recent.txt`] =
 			['abc', 135000, now - 10 * 1000];
-		synced[`${FIXTURES_DIR}foo/4-large-long-ago.txt`] =
+		synced[`${FIXTURES_DIR}bar/4-large-long-ago.txt`] =
 			['abc', 135000, now - 31 * 24 * 3600 * 1000];
 		utils.setDataContent({
 			all: all,
@@ -173,19 +179,19 @@ describe('transfer', () => {
 				assert.equal(awsLog[0][1], 'rm');
 				assert.match(
 					awsLog[0][2],
-					/s3:\/\/test-bucket\/.*\/foo\/1-small-recent\.txt/
+					/s3:\/\/test-bucket\/.*\/bar\/1-small-recent\.txt/
 				);
 
 				assert.equal(awsLog[1][1], 'rm');
 				assert.match(
 					awsLog[1][2],
-					/s3:\/\/test-bucket\/.*\/foo\/2-small-long-ago\.txt/
+					/s3:\/\/test-bucket\/.*\/bar\/2-small-long-ago\.txt/
 				);
 
 				assert.equal(awsLog[2][1], 'rm');
 				assert.match(
 					awsLog[2][2],
-					/s3:\/\/test-bucket\/.*\/foo\/4-large-long-ago\.txt/
+					/s3:\/\/test-bucket\/.*\/bar\/4-large-long-ago\.txt/
 				);
 			})
 			.then(utils.getDataContent)
@@ -193,7 +199,7 @@ describe('transfer', () => {
 				assert.equal(Object.keys(db.all).length, 1);
 				assert.equal(Object.keys(db.synced).length, 1);
 
-				const file = `${FIXTURES_DIR}foo/3-large-recent.txt`;
+				const file = `${FIXTURES_DIR}bar/3-large-recent.txt`;
 				assert.equal(db.all[file], DELETED);
 				assert.isArray(db.synced[file]);
 			});

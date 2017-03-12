@@ -1,6 +1,7 @@
 # backup-to-cloud
 
 [![Travis branch](https://img.shields.io/travis/avaly/backup-to-cloud/master.svg?style=flat-square)](https://travis-ci.org/avaly/backup-to-cloud)
+[![Codecov branch](https://img.shields.io/codecov/c/github/avaly/backup-to-cloud/master.svg?style=flat-square)](https://codecov.io/gh/avaly/backup-to-cloud)
 
 A simple backup tool which uploads encrypted files to S3, in batches.
 
