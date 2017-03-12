@@ -6,6 +6,7 @@ const config = require('../config.test');
 const DATA_DIR = utils.DATA_DIR;
 const DELETED = utils.DELETED;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
+const TEMP_DIR = utils.TEMP_DIR;
 
 describe('transfer', () => {
 	const transfer = (dry) => utils.run(
@@ -38,22 +39,38 @@ describe('transfer', () => {
 				assert.isArray(awsLog);
 				// Only the first 2 files fit into the session size
 				// Since 1-small.txt encrypted is less than the session size
-				assert.equal(awsLog.length, 2);
+				// The last file is the DB file
+				assert.equal(awsLog.length, 3);
 
+				assert.equal(awsLog[0][1], 'cp');
 				assert.match(
 					awsLog[0][3],
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/1-small\.txt/
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/bar\/1\-small\.txt/
 				);
 				assert.include(awsLog[0], 'STANDARD');
 
+				assert.equal(awsLog[1][1], 'cp');
 				assert.match(
 					awsLog[1][3],
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/2-medium\.txt/
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/bar\/2\-medium\.txt/
 				);
 				assert.include(awsLog[1], 'STANDARD');
 
+				assert.equal(awsLog[2][1], 'cp');
+				assert.match(
+					awsLog[2][3],
+					/s3:\/\/test\-bucket\/db\-test\.json/
+				);
+				assert.include(awsLog[2], 'STANDARD');
+
+				assert.equal(
+					fs.readFileSync(TEMP_DIR + 'db-test.json', 'utf-8'),
+					fs.readFileSync(DATA_DIR + 'db-test.json', 'utf-8')
+				);
+
+				// Verify encryption
 				assert.notEqual(
-					fs.readFileSync(DATA_DIR + '1-small.txt', 'utf-8'),
+					fs.readFileSync(TEMP_DIR + '1-small.txt', 'utf-8'),
 					fs.readFileSync(FIXTURES_DIR + 'bar/1-small.txt', 'utf-8')
 				);
 
@@ -64,7 +81,7 @@ describe('transfer', () => {
 						'-d',
 						'--passphrase',
 						config.encryptionPassphrase,
-						DATA_DIR + '1-small.txt'
+						TEMP_DIR + '1-small.txt'
 					]
 				);
 			})
@@ -96,14 +113,21 @@ describe('transfer', () => {
 			.then(utils.getAWSLog)
 			.then((awsLog) => {
 				assert.isArray(awsLog);
-				// Only one new file (+ the other 2) fit into the session size
-				assert.equal(awsLog.length, 3);
+				// Only one new file + the db (+ the other 3) fit into the session size
+				assert.equal(awsLog.length, 5);
 
+				assert.equal(awsLog[3][1], 'cp');
 				assert.match(
-					awsLog[2][3],
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/3-large\.txt/
+					awsLog[3][3],
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/bar\/3\-large\.txt/
 				);
-				assert.include(awsLog[2], 'STANDARD_IA');
+				assert.include(awsLog[3], 'STANDARD_IA');
+
+				assert.equal(awsLog[4][1], 'cp');
+				assert.match(
+					awsLog[4][3],
+					/s3:\/\/test\-bucket\/db\-test\.json/
+				);
 			})
 			.then(utils.getDataContent)
 			.then((db) => {
@@ -118,19 +142,27 @@ describe('transfer', () => {
 			.then((awsLog) => {
 				assert.isArray(awsLog);
 				// 1-small.dat should fail by aws-mock,
-				assert.equal(awsLog.length, 5);
+				assert.equal(awsLog.length, 8);
 
+				assert.equal(awsLog[5][1], 'cp');
 				assert.match(
-					awsLog[3][3],
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/1-small\.dat/
+					awsLog[5][3],
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/1\-small\.dat/
 				);
-				assert.include(awsLog[3], 'STANDARD');
+				assert.include(awsLog[5], 'STANDARD');
 
+				assert.equal(awsLog[6][1], 'cp');
 				assert.match(
-					awsLog[4][3],
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/2-medium\.dat/
+					awsLog[6][3],
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/2\-medium\.dat/
 				);
-				assert.include(awsLog[4], 'STANDARD');
+				assert.include(awsLog[6], 'STANDARD');
+
+				assert.equal(awsLog[7][1], 'cp');
+				assert.match(
+					awsLog[7][3],
+					/s3:\/\/test\-bucket\/db\-test\.json/
+				);
 			})
 			.then(utils.getDataContent)
 			.then((db) => {
@@ -143,6 +175,22 @@ describe('transfer', () => {
 				assert.isArray(
 					db.synced[`${FIXTURES_DIR}foo/2-medium.dat`]
 				);
+			});
+	});
+
+	it('does not sync the DB file when no file syncs have been made', () => {
+		const db = utils.getDataContent();
+		Object.keys(db.all).forEach((file) => {
+			db.synced[file] = [db.all[file][0], 123, 456];
+		});
+		utils.clean();
+		utils.setDataContent(db);
+
+		return transfer()
+			.then(utils.getAWSLog)
+			.then((awsLog) => {
+				assert.isArray(awsLog);
+				assert.equal(awsLog.length, 0);
 			});
 	});
 
@@ -174,24 +222,30 @@ describe('transfer', () => {
 			.then(utils.getAWSLog)
 			.then((awsLog) => {
 				assert.isArray(awsLog);
-				assert.equal(awsLog.length, 3);
+				assert.equal(awsLog.length, 4);
 
 				assert.equal(awsLog[0][1], 'rm');
 				assert.match(
 					awsLog[0][2],
-					/s3:\/\/test-bucket\/.*\/bar\/1-small-recent\.txt/
+					/s3:\/\/test\-bucket\/.*\/bar\/1\-small\-recent\.txt/
 				);
 
 				assert.equal(awsLog[1][1], 'rm');
 				assert.match(
 					awsLog[1][2],
-					/s3:\/\/test-bucket\/.*\/bar\/2-small-long-ago\.txt/
+					/s3:\/\/test\-bucket\/.*\/bar\/2\-small\-long\-ago\.txt/
 				);
 
 				assert.equal(awsLog[2][1], 'rm');
 				assert.match(
 					awsLog[2][2],
-					/s3:\/\/test-bucket\/.*\/bar\/4-large-long-ago\.txt/
+					/s3:\/\/test\-bucket\/.*\/bar\/4\-large\-long\-ago\.txt/
+				);
+
+				assert.equal(awsLog[3][1], 'cp');
+				assert.match(
+					awsLog[3][3],
+					/s3:\/\/test\-bucket\/db\-test\.json/
 				);
 			})
 			.then(utils.getDataContent)
