@@ -4,6 +4,7 @@ const utils = require('../lib/utils');
 
 const BIN_FILE = path.resolve(__dirname, '..', 'bin', 'backup-to-cloud');
 const DATA_DIR = path.resolve(__dirname, '..', 'data') + path.sep;
+const TEMP_DIR = path.resolve(__dirname, '..', 'tmp') + path.sep;
 const AWS_LOG = DATA_DIR + 'aws.json';
 const DATA_FILE = DATA_DIR + 'db-test.json';
 const FIXTURES_DIR = path.resolve(__dirname, '_fixtures_') + path.sep;
@@ -14,6 +15,7 @@ module.exports = {
 	DATA_FILE: DATA_FILE,
 	DELETED: 'DELETED',
 	FIXTURES_DIR: FIXTURES_DIR,
+	TEMP_DIR: TEMP_DIR,
 
 	execPromise: utils.execPromise,
 

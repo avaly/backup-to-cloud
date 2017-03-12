@@ -10,6 +10,7 @@ const fs = require('fs');
 const execFileSync = childProcess.execFileSync;
 
 const DATA_DIR = path.resolve(__dirname, '..', 'data') + path.sep;
+const TEMP_DIR = path.resolve(__dirname, '..', 'tmp') + path.sep;
 const LOG_FILE = DATA_DIR + 'aws.json';
 
 function main() {
@@ -24,8 +25,12 @@ function main() {
 
 	// Copy temp files for encryption verification
 	if (args[1] === 'cp') {
+		if (!fs.existsSync(TEMP_DIR)) {
+			execFileSync('mkdir', ['-p', TEMP_DIR]);
+		}
+
 		const fileName = args[3].split('/').pop();
-		const filePath = DATA_DIR + fileName;
+		const filePath = TEMP_DIR + fileName;
 		console.log('fileName', fileName);
 		if (fileName === '1-small.dat') {
 			console.log(

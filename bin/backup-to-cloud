@@ -81,6 +81,7 @@ function main() {
 					utils.log('Transfer error', err);
 				}
 			)
+			.then(() => transfer.finish())
 			.then(finish);
 	}
 	else {
