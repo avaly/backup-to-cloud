@@ -8,3 +8,7 @@ env:
 
 script:
   - npm run $ACTION
+
+notifications:
+  email:
+    on_success: never
