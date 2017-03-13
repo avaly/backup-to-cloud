@@ -7,6 +7,7 @@ module.exports = Object.assign({}, config, {
 	db: 'data/db-test.json',
 	encryptionPassphrase: 'password',
 	logTimestamp: false,
+	maxSessionFailures: 2,
 	maxSessionSize: 1 * 1024,
 	prefixRemove: [
 		'foo/'

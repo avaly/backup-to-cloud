@@ -14,8 +14,8 @@ describe('scan', () => {
 		return scan(true)
 			.then((output) => {
 				assert.include(output, 'This is a DRY run!');
-				assert.include(output, '/foo - Files found: 3');
 				assert.include(output, '/bar - Files found: 3');
+				assert.include(output, '/foo - Files found: 4');
 				assert.isFalse(
 					fs.existsSync(utils.DATA_FILE),
 					'data file was not created'
@@ -29,11 +29,11 @@ describe('scan', () => {
 			.then((db) => {
 				assert.isNumber(db.lastScanTimestamp);
 				assert.isObject(db.all);
-				assert.equal(Object.keys(db.all).length, 6);
+				assert.equal(Object.keys(db.all).length, 7);
 
 				// File sizes
 				assert.equal(
-					db.all[`${FIXTURES_DIR}foo/1-small.dat`][1],
+					db.all[`${FIXTURES_DIR}foo/1-fail.dat`][1],
 					1024
 				);
 				assert.equal(
@@ -41,7 +41,7 @@ describe('scan', () => {
 					102400
 				);
 				assert.equal(
-					db.all[`${FIXTURES_DIR}foo/3-large.dat`][1],
+					db.all[`${FIXTURES_DIR}foo/3-fail.dat`][1],
 					204800
 				);
 
@@ -105,7 +105,7 @@ describe('scan', () => {
 			.then(utils.getDataContent)
 			.then((db) => {
 				assert.isObject(db.all);
-				assert.equal(Object.keys(db.all).length, 8);
+				assert.equal(Object.keys(db.all).length, 9);
 				assert.equal(db.all[`${FIXTURES_DIR}foo/old.txt`], DELETED);
 				assert.equal(db.all[`${FIXTURES_DIR}ham/from-old-source.txt`], DELETED);
 				assert.isArray(db.all[`${FIXTURES_DIR}bar/1-small.txt`]);
@@ -139,7 +139,7 @@ describe('scan', () => {
 			.then(utils.getDataContent)
 			.then((db) => {
 				assert.isObject(db.all);
-				assert.equal(Object.keys(db.all).length, 6);
+				assert.equal(Object.keys(db.all).length, 7);
 				assert.isUndefined(db.all[`${FIXTURES_DIR}foo/old.txt`]);
 			});
 	});

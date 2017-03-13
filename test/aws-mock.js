@@ -32,7 +32,7 @@ function main() {
 		const fileName = args[3].split('/').pop();
 		const filePath = TEMP_DIR + fileName;
 		console.log('fileName', fileName);
-		if (fileName === '1-small.dat') {
+		if (fileName.indexOf('fail') > -1) {
 			console.log(
 				'aws-mock: This file is supposed to fail under test environment!'
 			);
