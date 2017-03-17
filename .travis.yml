@@ -9,6 +9,12 @@ env:
 script:
   - npm run $ACTION
 
+deploy:
+  - provider: script
+    script: tools/publish.sh
+    on:
+      tags: true
+
 notifications:
   email:
     on_success: never

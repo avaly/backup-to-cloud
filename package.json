@@ -17,6 +17,15 @@
     "darwin",
     "linux"
   ],
+  "bin": {
+    "backup-to-cloud": "./bin/backup-to-cloud"
+  },
+  "files": [
+    "LICENSE",
+    "config.sample.js",
+    "lib/",
+    "bin/"
+  ],
   "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",

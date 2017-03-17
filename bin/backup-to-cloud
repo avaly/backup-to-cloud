@@ -3,6 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 
+const package = require('../package.json');
 const ConfigChecker = require('../lib/ConfigChecker');
 const DB = require('../lib/DB');
 const Scanner = require('../lib/Scanner');
@@ -14,7 +15,8 @@ const LOCK_FILE = path.join(__dirname, '.backup-to-cloud.lock');
 let db;
 
 function usage() {
-	console.log(`
+	console.log(`${package.name} version ${package.version}
+
 Usage: ${__filename} OPTIONS
 
 Options:
@@ -36,6 +38,8 @@ function main() {
 		return;
 	}
 	fs.writeFileSync(LOCK_FILE, '');
+
+	utils.log(`${package.name} version ${package.version}`);
 
 	if (utils.hasFlag('check-config')) {
 		const configChecker = new ConfigChecker();
