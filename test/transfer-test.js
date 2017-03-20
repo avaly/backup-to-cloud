@@ -83,7 +83,7 @@ describe('transfer', () => {
 						'-q',
 						'-d',
 						'--passphrase',
-						config.encryptionPassphrase,
+						'password',
 						TEMP_DIR + '1-small.txt'
 					]
 				);
@@ -136,14 +136,14 @@ describe('transfer', () => {
 			.then(utils.getAWSLog)
 			.then((awsLog) => {
 				assert.isArray(awsLog);
-				// 1-small.dat should fail by aws-mock,
+				// 1-fail.dat should fail by aws-mock,
 				assert.equal(awsLog.length, 8);
 
 				assertAWS(awsLog, 5, 'cp',
 					/s3:\/\/test\-bucket\/.*\/_fixtures_\/1\-fail\.dat/,
 					'STANDARD');
 				assertAWS(awsLog, 6, 'cp',
-					/s3:\/\/test\-bucket\/.*\/_fixtures_\/2\-medium\.dat/,
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/2 medium\.dat/,
 					'STANDARD');
 				assertAWS(awsLog, 7, 'cp', /s3:\/\/test\-bucket\/db\-test\.json/);
 			})
@@ -153,10 +153,10 @@ describe('transfer', () => {
 				assert.equal(Object.keys(db.synced).length, 4);
 
 				assert.isUndefined(
-					db.synced[`${FIXTURES_DIR}foo/1-small.dat`]
+					db.synced[`${FIXTURES_DIR}foo/1-fail.dat`]
 				);
 				assert.isArray(
-					db.synced[`${FIXTURES_DIR}foo/2-medium.dat`]
+					db.synced[`${FIXTURES_DIR}foo/2 medium.dat`]
 				);
 			});
 	});

@@ -37,7 +37,7 @@ describe('scan', () => {
 					1024
 				);
 				assert.equal(
-					db.all[`${FIXTURES_DIR}foo/2-medium.dat`][1],
+					db.all[`${FIXTURES_DIR}foo/2 medium.dat`][1],
 					102400
 				);
 				assert.equal(
