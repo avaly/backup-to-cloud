@@ -1,13 +1,15 @@
 {
   "name": "backup-to-cloud",
-  "version": "1.4.1",
+  "version": "0.0.0-development",
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "scripts": {
+    "commitmsg": "validate-commit-msg",
     "coverage": "COVERAGE=1 npm test && istanbul report lcov && codecov",
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
     "start": "bin/backup-to-cloud",
-    "test": "BACKUP_ENV=test mocha test/*-test.js"
+    "test": "BACKUP_ENV=test mocha test/*-test.js",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "license": "MIT",
   "engines": {
@@ -31,7 +33,14 @@
     "chai": "^3.5.0",
     "codecov": "^1.0.1",
     "eslint": "^3.17.1",
+    "husky": "^0.13.3",
     "istanbul": "^0.4.5",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "semantic-release": "^6.3.2",
+    "validate-commit-msg": "^2.11.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/avaly/backup-to-cloud.git"
   }
 }
