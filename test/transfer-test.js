@@ -1,7 +1,10 @@
 const assert = require('chai').assert;
 const fs = require('fs');
+
+const Crypter = require('../lib/Crypter');
 const utils = require('./utils');
-const config = require('../config.test');
+
+const crypter = new Crypter();
 
 const DATA_DIR = utils.DATA_DIR;
 const DELETED = utils.DELETED;
@@ -77,16 +80,7 @@ describe('transfer', () => {
 					fs.readFileSync(FIXTURES_DIR + 'bar/1-small.txt', 'utf-8')
 				);
 
-				return utils.execPromise(
-					'gpg',
-					[
-						'-q',
-						'-d',
-						'--passphrase',
-						'password',
-						TEMP_DIR + '1-small.txt'
-					]
-				);
+				return crypter.decrypt(TEMP_DIR + '1-small.txt');
 			})
 			.then((decrypted) => {
 				assert.equal(

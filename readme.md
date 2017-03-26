@@ -39,3 +39,20 @@ Ideally, it should be setup to run in a crontab entry.
   ```
   0 */12 * * * cd /path/to/this && ./bin/backup-to-cloud >> cron.log 2>&1
   ```
+
+## Tools
+
+### backup-to-cloud
+
+```
+./bin/backup-to-cloud --help
+./bin/backup-to-cloud --check-config
+./bin/backup-to-cloud --dry
+```
+
+### backup-decrypt
+
+```
+./bin/backup-decrypt --help
+./bin/backup-decrypt --output OUTPUT_FILE INPUT_FILE
+```

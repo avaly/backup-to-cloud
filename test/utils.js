@@ -2,7 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('../lib/utils');
 
-const BIN_FILE = path.resolve(__dirname, '..', 'bin', 'backup-to-cloud');
+const BIN_FILES = {
+	decrypt: path.resolve(__dirname, '..', 'bin', 'backup-decrypt'),
+	main: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud')
+};
 const DATA_DIR = path.resolve(__dirname, '..', 'data') + path.sep;
 const TEMP_DIR = path.resolve(__dirname, '..', 'tmp') + path.sep;
 const AWS_LOG = DATA_DIR + 'aws.json';
@@ -46,17 +49,18 @@ module.exports = {
 		fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 	},
 
-	run: (args) => {
+	run: (args, binFile) => {
+		const bin = BIN_FILES[binFile || 'main'];
 		const cmd = process.env.COVERAGE
 			? './node_modules/.bin/istanbul'
-			: BIN_FILE;
+			: bin;
 		const execArgs = process.env.COVERAGE
 			? [
 				'cover',
 				'--report', 'none',
 				'--print', 'none',
 				'--include-pid',
-				BIN_FILE,
+				bin,
 				'--'
 			].concat(args)
 			: args;

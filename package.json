@@ -20,6 +20,7 @@
     "linux"
   ],
   "bin": {
+    "backup-decrypt": "./bin/backup-decrypt",
     "backup-to-cloud": "./bin/backup-to-cloud"
   },
   "files": [

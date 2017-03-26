@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const fs = require('fs');
+
+const Crypter = require('../lib/Crypter');
+const package = require('../package.json');
+const utils = require('../lib/utils');
+
+function usage() {
+	console.log(`${package.name} version ${package.version}
+
+Usage: ${__filename} OPTIONS INPUT_FILE
+
+Options:
+	--output OUTPUT_FILE
+	--help
+`);
+}
+
+function main() {
+	const fileInput = path.resolve(process.argv.pop());
+	const fileOutput = path.resolve(utils.getOption('output'));
+
+	if (!fs.existsSync(fileInput)) {
+		utils.log(`Input file does not exist: ${fileInput}`);
+		process.exit(1);
+	}
+
+	const crypter = new Crypter();
+
+	crypter.decrypt(fileInput, fileOutput)
+		.then(
+			() => {
+				utils.log(`decrypted: ${fileInput} > ${fileOutput}`);
+			},
+			(err) => {
+				utils.log('Decrypt error', err);
+			}
+		);
+}
+
+if (utils.hasFlag('help')) {
+	usage();
+}
+else {
+	main();
+}
