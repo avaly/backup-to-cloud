@@ -3,11 +3,11 @@
 const path = require('path');
 const fs = require('fs');
 
-const package = require('../package.json');
+const Backuper = require('../lib/Backuper');
 const ConfigChecker = require('../lib/ConfigChecker');
 const DB = require('../lib/DB');
 const Scanner = require('../lib/Scanner');
-const Transfer = require('../lib/Transfer');
+const package = require('../package.json');
 const utils = require('../lib/utils');
 
 const LOCK_FILE = path.join(__dirname, '.backup-to-cloud.lock');
@@ -75,8 +75,8 @@ function main() {
 	}
 
 	if (!utils.hasFlag('only-scan')) {
-		const transfer = new Transfer(db);
-		transfer.start()
+		const backuper = new Backuper(db);
+		backuper.start()
 			.then(
 				(result) => {
 					utils.log('Transfer result', result);
@@ -85,7 +85,7 @@ function main() {
 					utils.log('Transfer error', err);
 				}
 			)
-			.then(() => transfer.finish())
+			.then(() => backuper.finish())
 			.then(finish);
 	}
 	else {

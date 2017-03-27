@@ -4,8 +4,6 @@ const fs = require('fs');
 const Crypter = require('../lib/Crypter');
 const utils = require('./utils');
 
-const crypter = new Crypter();
-
 const DATA_DIR = utils.DATA_DIR;
 const DELETED = utils.DELETED;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
@@ -25,7 +23,7 @@ function assertAWS(log, index, operation, pattern, storageClass) {
 	}
 }
 
-describe('transfer', () => {
+describe('backuper', () => {
 	const transfer = (dry) => utils.run(
 		['--skip-scan', '--verbose', dry && '--dry']
 	);
@@ -39,8 +37,8 @@ describe('transfer', () => {
 		return transfer(true)
 			.then((output) => {
 				assert.include(output, 'This is a DRY run!');
-				assert.include(output, 'Transfer.start: all=7 / synced=0');
-				assert.include(output, 'Transfer.add:');
+				assert.include(output, 'Backuper.start: all=7 / synced=0');
+				assert.include(output, 'Backuper.add:');
 			})
 			.then(utils.getAWSLog)
 			.then((awsLog) => {
@@ -80,7 +78,7 @@ describe('transfer', () => {
 					fs.readFileSync(FIXTURES_DIR + 'bar/1-small.txt', 'utf-8')
 				);
 
-				return crypter.decrypt(TEMP_DIR + '1-small.txt');
+				return Crypter.decrypt(TEMP_DIR + '1-small.txt');
 			})
 			.then((decrypted) => {
 				assert.equal(

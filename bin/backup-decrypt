@@ -14,6 +14,7 @@ Usage: ${__filename} OPTIONS INPUT_FILE
 
 Options:
 	--output OUTPUT_FILE
+	--verbose
 	--help
 `);
 }
@@ -27,9 +28,7 @@ function main() {
 		process.exit(1);
 	}
 
-	const crypter = new Crypter();
-
-	crypter.decrypt(fileInput, fileOutput)
+	Crypter.decrypt(fileInput, fileOutput)
 		.then(
 			() => {
 				utils.log(`decrypted: ${fileInput} > ${fileOutput}`);

@@ -5,7 +5,6 @@ const fs = require('fs');
 const Crypter = require('../lib/Crypter');
 const utils = require('./utils');
 
-const crypter = new Crypter();
 const execFileSync = childProcess.execFileSync;
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
@@ -46,7 +45,7 @@ describe('decrypt', () => {
 
 		const contentSource = fs.readFileSync(fileSource, 'utf-8');
 
-		return crypter.encrypt(fileSource)
+		return Crypter.encrypt(fileSource)
 			.then((encryptedFile) => {
 				const args = [
 					'--output',
