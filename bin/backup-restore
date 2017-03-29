@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const fs = require('fs');
+
+const Restorer = require('../lib/Restorer');
+const package = require('../package.json');
+const utils = require('../lib/utils');
+
+const LOCK_FILE = path.join(__dirname, '.backup-restore.lock');
+
+function usage() {
+	console.log(`${package.name} version ${package.version}
+
+Usage: ${__filename} OPTIONS REMOTE_DIR_OR_FILE
+
+Options:
+	--output OUTPUT_DIR_OR_FILE [required]
+	--ignore-lock
+	--verbose
+	--dry
+	--help
+
+Examples:
+	${__filename} --output /foo/ /remote/dir/file1.txt
+		Will restore s3://BUCKET/remote/dir/file1.txt to /foo/remote/dir/file1.txt
+
+	${__filename} --output /foo/ /remote/
+		Will restore s3://BUCKET/remote/dir/file1.txt to /foo/remote/dir/file1.txt
+		Will restore s3://BUCKET/remote/other/file2.txt to /foo/remote/other/file2.txt
+`);
+}
+
+function main() {
+	if (fs.existsSync(LOCK_FILE) && !utils.hasFlag('ignore-lock')) {
+		utils.log('Another instance of the ${package.name} is already running or ' +
+			'has not properly terminated. Remove lock file to continue.');
+		return;
+	}
+	fs.writeFileSync(LOCK_FILE, '');
+
+	utils.log(`${package.name} version ${package.version}`);
+	if (utils.DRY_RUN) {
+		utils.log('This is a DRY run! No changes/uploads will be made.');
+	}
+
+	const input = process.argv.pop();
+	const output = path.resolve(utils.getOption('output'));
+
+	const restorer = new Restorer();
+	restorer.start(input, output)
+		.then(
+			(result) => {
+				utils.debug('Restorer result:', result);
+			},
+			(err) => {
+				utils.log('Restorer error:', err);
+			}
+		)
+		.then(() => restorer.finish())
+		.then(finish);
+}
+
+function finish() {
+	fs.unlinkSync(LOCK_FILE);
+}
+
+
+if (utils.hasFlag('help') || !utils.getOption('output')) {
+	usage();
+}
+else {
+	main();
+}

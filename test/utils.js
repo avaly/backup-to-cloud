@@ -1,10 +1,16 @@
+const assert = require('chai').assert;
+const childProcess = require('child_process');
 const fs = require('fs');
 const path = require('path');
+
 const utils = require('../lib/utils');
 
+const execSync = childProcess.execSync;
+
 const BIN_FILES = {
+	backup: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud'),
 	decrypt: path.resolve(__dirname, '..', 'bin', 'backup-decrypt'),
-	main: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud')
+	restore: path.resolve(__dirname, '..', 'bin', 'backup-restore'),
 };
 const DATA_DIR = path.resolve(__dirname, '..', 'data') + path.sep;
 const TEMP_DIR = path.resolve(__dirname, '..', 'tmp') + path.sep;
@@ -22,12 +28,17 @@ module.exports = {
 
 	execPromise: utils.execPromise,
 
-	clean: () => {
+	clean: (items) => {
 		if (fs.existsSync(AWS_LOG)) {
 			fs.unlinkSync(AWS_LOG);
 		}
 		if (fs.existsSync(DATA_FILE)) {
 			fs.unlinkSync(DATA_FILE);
+		}
+		if (items && Array.isArray(items)) {
+			items.forEach((item) => {
+				execSync('rm -rf ' + item);
+			});
 		}
 	},
 
@@ -50,7 +61,7 @@ module.exports = {
 	},
 
 	run: (args, binFile) => {
-		const bin = BIN_FILES[binFile || 'main'];
+		const bin = BIN_FILES[binFile || 'backup'];
 		const cmd = process.env.COVERAGE
 			? './node_modules/.bin/istanbul'
 			: bin;
@@ -71,5 +82,12 @@ module.exports = {
 		return new Promise((resolve) => {
 			setTimeout(resolve, timeout);
 		});
+	},
+
+	assertFilesEqual: (a, b) => {
+		assert.equal(
+			fs.readFileSync(a, 'utf-8'),
+			fs.readFileSync(b, 'utf-8')
+		);
 	}
 };

@@ -3,7 +3,9 @@ const fs = require('fs');
 const utils = require('./utils');
 
 describe('cli', () => {
-	beforeEach(utils.clean);
+	beforeEach(() => {
+		utils.clean();
+	});
 
 	it('shows help', () => {
 		return utils.run(['--help'])

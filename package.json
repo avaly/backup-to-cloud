@@ -5,7 +5,7 @@
   "author": "Valentin Agachi",
   "scripts": {
     "commitmsg": "validate-commit-msg",
-    "coverage": "COVERAGE=1 npm test && istanbul report lcov && codecov",
+    "coverage": "rm -rf coverage/ && COVERAGE=1 npm test && istanbul report lcov && codecov",
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
     "start": "bin/backup-to-cloud",
     "test": "BACKUP_ENV=test mocha test/*-test.js",
@@ -21,6 +21,7 @@
   ],
   "bin": {
     "backup-decrypt": "./bin/backup-decrypt",
+    "backup-restore": "./bin/backup-restore",
     "backup-to-cloud": "./bin/backup-to-cloud"
   },
   "files": [

@@ -8,7 +8,9 @@ const FIXTURES_DIR = utils.FIXTURES_DIR;
 describe('scan', () => {
 	const scan = (dry) => utils.run(['--only-scan', '--verbose', dry && '--dry']);
 
-	beforeEach(utils.clean);
+	beforeEach(() => {
+		utils.clean();
+	});
 
 	it('saves nothing for dry mode', () => {
 		return scan(true)

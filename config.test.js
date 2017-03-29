@@ -3,7 +3,7 @@ const path = require('path');
 const config = require('./config.sample');
 
 module.exports = Object.assign({}, config, {
-	aws: path.resolve(__dirname, 'test', 'aws-mock.js'),
+	aws: path.resolve(__dirname, 'test', '_mocks_', 'aws-mock.js'),
 	db: 'data/db-test.json',
 	encryptionPassphrase: 'password',
 	logTimestamp: false,

@@ -1,0 +1,31 @@
+{
+	"lastScanTimestamp": 1489345524651,
+	"all": {},
+	"synced": {
+		"/bar/1-small.txt": [
+			"c33cbea4ccb0379effc5792c4d5a1f459f81d8cb4ccdf0e2bf47afcf33c27c62",
+			1024,
+			1489345527104
+		],
+		"/bar/2-medium.txt": [
+			"c33cbea4ccb0379effc5792c4d5a1f459f81d8cb4ccdf0e2bf47afcf33c27c62",
+			102400,
+			1489345527104
+		],
+		"/bar/3-large.txt": [
+			"c33cbea4ccb0379effc5792c4d5a1f459f81d8cb4ccdf0e2bf47afcf33c27c62",
+			204800,
+			1489345527104
+		],
+		"/foo/1-fail.dat": [
+			"c33cbea4ccb0379effc5792c4d5a1f459f81d8cb4ccdf0e2bf47afcf33c27c62",
+			1024,
+			1489345527104
+		],
+		"/foo/2 medium.dat": [
+			"c33cbea4ccb0379effc5792c4d5a1f459f81d8cb4ccdf0e2bf47afcf33c27c62",
+			102400,
+			1489345527104
+		]
+	}
+}
