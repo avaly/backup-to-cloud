@@ -1,6 +1,6 @@
 {
   "name": "backup-to-cloud",
-  "version": "0.0.0-development",
+  "version": "1.5.0",
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "scripts": {
@@ -9,7 +9,7 @@
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
     "start": "bin/backup-to-cloud",
     "test": "BACKUP_ENV=test mocha test/*-test.js",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "version": "standard-version"
   },
   "license": "MIT",
   "engines": {
@@ -33,11 +33,12 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "codecov": "^1.0.1",
+    "conventional-recommended-bump": "^1.0.0",
     "eslint": "^3.17.1",
     "husky": "^0.13.3",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
-    "semantic-release": "^6.3.2",
+    "standard-version": "^4.0.0",
     "validate-commit-msg": "^2.11.2"
   },
   "repository": {
