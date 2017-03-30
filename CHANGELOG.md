@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/avaly/backup-to-cloud/compare/v1.5.0...v1.6.0) (2017-03-30)
+
+
+### Bug Fixes
+
+* Warning on missing config file ([a356c59](https://github.com/avaly/backup-to-cloud/commit/a356c59))
+
+
+### Features
+
+* Restore tool :tada: ([a9be687](https://github.com/avaly/backup-to-cloud/commit/a9be687))
+
+
+
 <a name="1.5.1"></a>
 ## [1.5.1](https://github.com/avaly/backup-to-cloud/compare/v1.5.0...v1.5.1) (2017-03-30)
 
