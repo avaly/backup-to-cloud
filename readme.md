@@ -50,6 +50,13 @@ Ideally, it should be setup to run in a crontab entry.
 ./bin/backup-to-cloud --dry
 ```
 
+### backup-restore
+
+```
+./bin/backup-restore --help
+./bin/backup-restore --output OUTPUT_DIR_OR_FILE REMOTE_DIR_OR_FILE
+```
+
 ### backup-decrypt
 
 ```
