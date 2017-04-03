@@ -39,11 +39,11 @@ describe('restorer', () => {
 			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 1);
-				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.json/);
+				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 			});
 	});
 
-	it('show help with no output flag', () => {
+	it('shows help with no output flag', () => {
 		return restore([])
 			.then((output) => {
 				assert.include(output, 'Usage:');
@@ -65,7 +65,7 @@ describe('restorer', () => {
 			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 4);
-				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.json/);
+				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 				assertAWS(awsLog, 1, /s3:\/\/test\-bucket\/bar\/1\-small\.txt/);
 				assertAWS(awsLog, 2, /s3:\/\/test\-bucket\/bar\/2\-medium\.txt/);
 				assertAWS(awsLog, 3, /s3:\/\/test\-bucket\/bar\/3\-large\.txt/);
@@ -97,7 +97,7 @@ describe('restorer', () => {
 			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 6);
-				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.json/);
+				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 				assertAWS(awsLog, 1, /s3:\/\/test\-bucket\/bar\/1\-small\.txt/);
 				assertAWS(awsLog, 2, /s3:\/\/test\-bucket\/bar\/2\-medium\.txt/);
 				assertAWS(awsLog, 3, /s3:\/\/test\-bucket\/bar\/3\-large\.txt/);

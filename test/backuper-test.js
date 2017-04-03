@@ -5,7 +5,6 @@ const Crypter = require('../lib/Crypter');
 const utils = require('./utils');
 
 const DATA_DIR = utils.DATA_DIR;
-const DELETED = utils.DELETED;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
 
@@ -37,7 +36,7 @@ describe('backuper', () => {
 		return transfer(true)
 			.then((output) => {
 				assert.include(output, 'This is a DRY run!');
-				assert.include(output, 'Backuper.start: all=7 / synced=0');
+				assert.include(output, 'Backuper.start: locals=7 / remotes=0');
 				assert.include(output, 'Backuper.add:');
 			})
 			.then(utils.getAWSLog)
@@ -64,12 +63,12 @@ describe('backuper', () => {
 					/s3:\/\/test\-bucket\/.*\/_fixtures_\/bar\/2\-medium\.txt/,
 					'STANDARD');
 				assertAWS(awsLog, 2, 'cp',
-					/s3:\/\/test\-bucket\/db\-test\.json/,
+					/s3:\/\/test\-bucket\/db\-test\.sqlite/,
 					'STANDARD');
 
-				assert.equal(
-					fs.readFileSync(TEMP_DIR + 'db-test.json', 'utf-8'),
-					fs.readFileSync(DATA_DIR + 'db-test.json', 'utf-8')
+				utils.assertFilesEqual(
+					TEMP_DIR + 'db-test.sqlite',
+					DATA_DIR + 'db-test.sqlite'
 				);
 
 				// Verify encryption
@@ -88,15 +87,20 @@ describe('backuper', () => {
 			})
 			.then(utils.getDataContent)
 			.then((db) => {
-				assert.isObject(db.synced);
-				assert.equal(Object.keys(db.synced).length, 2);
+				assert.equal(db.remotes.length, 2);
 
 				const firstFile = `${FIXTURES_DIR}bar/1-small.txt`;
-				assert.isArray(db.synced[firstFile]);
-				assert.equal(db.synced[firstFile][0], db.all[firstFile][0]);
-				assert.notEqual(db.synced[firstFile][1], db.all[firstFile][1]);
+				assert.isObject(db.remotesByPath[firstFile]);
+				assert.equal(
+					db.remotesByPath[firstFile].hash,
+					db.localsByPath[firstFile].hash
+				);
+				assert.notEqual(
+					db.remotesByPath[firstFile].size,
+					db.localsByPath[firstFile].size
+				);
 				assert.isAbove(
-					db.synced[firstFile][2],
+					db.remotesByPath[firstFile].timestamp,
 					Date.now() - 5 * 1000,
 					'timestamp of upload should be withing last 5 seconds'
 				);
@@ -114,12 +118,11 @@ describe('backuper', () => {
 				assertAWS(awsLog, 3, 'cp',
 					/s3:\/\/test\-bucket\/.*\/_fixtures_\/bar\/3\-large\.txt/,
 					'STANDARD_IA');
-				assertAWS(awsLog, 4, 'cp', /s3:\/\/test\-bucket\/db\-test\.json/);
+				assertAWS(awsLog, 4, 'cp', /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
 			.then((db) => {
-				assert.isObject(db.synced);
-				assert.equal(Object.keys(db.synced).length, 3);
+				assert.equal(db.remotes.length, 3);
 			});
 	});
 
@@ -137,29 +140,30 @@ describe('backuper', () => {
 				assertAWS(awsLog, 6, 'cp',
 					/s3:\/\/test\-bucket\/.*\/_fixtures_\/2 medium\.dat/,
 					'STANDARD');
-				assertAWS(awsLog, 7, 'cp', /s3:\/\/test\-bucket\/db\-test\.json/);
+				assertAWS(awsLog, 7, 'cp', /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
 			.then((db) => {
-				assert.isObject(db.synced);
-				assert.equal(Object.keys(db.synced).length, 4);
+				assert.equal(db.remotes.length, 4);
 
 				assert.isUndefined(
-					db.synced[`${FIXTURES_DIR}foo/1-fail.dat`]
+					db.remotesByPath[`${FIXTURES_DIR}foo/1-fail.dat`]
 				);
-				assert.isArray(
-					db.synced[`${FIXTURES_DIR}foo/2 medium.dat`]
+				assert.isObject(
+					db.remotesByPath[`${FIXTURES_DIR}foo/2 medium.dat`]
 				);
 			});
 	});
 
 	it('does not sync the DB file when no file syncs have been made', () => {
 		const db = utils.getDataContent();
-		Object.keys(db.all).forEach((file) => {
-			db.synced[file] = [db.all[file][0], 123, 456];
-		});
 		utils.clean();
-		utils.setDataContent(db);
+		utils.setDataContent({
+			locals: db.locals,
+			remotes: db.locals.map((local) => Object.assign({
+				timestamp: 456
+			}, local))
+		});
 
 		return transfer()
 			.then(utils.getAWSLog)
@@ -173,24 +177,23 @@ describe('backuper', () => {
 		utils.clean();
 
 		const now = Date.now();
-		const all = {};
-		all[`${FIXTURES_DIR}bar/1-small-recent.txt`] = DELETED;
-		all[`${FIXTURES_DIR}bar/2-small-long-ago.txt`] = DELETED;
-		all[`${FIXTURES_DIR}bar/3-large-recent.txt`] = DELETED;
-		all[`${FIXTURES_DIR}bar/4-large-long-ago.txt`] = DELETED;
-		const synced = {};
-		synced[`${FIXTURES_DIR}bar/1-small-recent.txt`] =
-			['abc', 1024, now - 10 * 1000];
-		synced[`${FIXTURES_DIR}bar/2-small-long-ago.txt`] =
-			['abc', 1024, now - 31 * 24 * 3600 * 1000];
-		// This will not be deleted due to recency and size (STANDARD_IA)
-		synced[`${FIXTURES_DIR}bar/3-large-recent.txt`] =
-			['abc', 135000, now - 10 * 1000];
-		synced[`${FIXTURES_DIR}bar/4-large-long-ago.txt`] =
-			['abc', 135000, now - 31 * 24 * 3600 * 1000];
 		utils.setDataContent({
-			all: all,
-			synced: synced
+			locals: [
+				utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
+				utils.mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
+				utils.mockLocal(`${FIXTURES_DIR}bar/3-large-recent.txt`),
+				utils.mockLocal(`${FIXTURES_DIR}bar/4-large-long-ago.txt`),
+			],
+			remotes: [
+				utils.mockRemote(`${FIXTURES_DIR}bar/1-small-recent.txt`,
+					'abc', 1024, now - 10 * 1000),
+				utils.mockRemote(`${FIXTURES_DIR}bar/2-small-long-ago.txt`,
+					'abc', 1024, now - 31 * 24 * 3600 * 1000),
+				utils.mockRemote(`${FIXTURES_DIR}bar/3-large-recent.txt`,
+					'abc', 135000, now - 10 * 1000),
+				utils.mockRemote(`${FIXTURES_DIR}bar/4-large-long-ago.txt`,
+					'abc', 135000, now - 31 * 24 * 3600 * 1000),
+			]
 		});
 
 		return transfer()
@@ -205,28 +208,28 @@ describe('backuper', () => {
 					/s3:\/\/test\-bucket\/.*\/bar\/2\-small\-long\-ago\.txt/);
 				assertAWS(awsLog, 2, 'rm',
 					/s3:\/\/test\-bucket\/.*\/bar\/4\-large\-long\-ago\.txt/);
-				assertAWS(awsLog, 3, 'cp', /s3:\/\/test\-bucket\/db\-test\.json/);
+				assertAWS(awsLog, 3, 'cp', /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
 			.then((db) => {
-				assert.equal(Object.keys(db.all).length, 1);
-				assert.equal(Object.keys(db.synced).length, 1);
+				assert.equal(db.locals.length, 1);
+				assert.equal(db.remotes.length, 1);
 
 				const file = `${FIXTURES_DIR}bar/3-large-recent.txt`;
-				assert.equal(db.all[file], DELETED);
-				assert.isArray(db.synced[file]);
+				utils.assertLocalDeleted(db, file);
+				assert.isObject(db.remotesByPath[file]);
 			});
 	});
 
 	it('should stop transfer after max failed', () => {
 		utils.clean();
 
-		const all = {};
-		all[`${FIXTURES_DIR}foo/1-fail.dat`] = ['abc', 1];
-		all[`${FIXTURES_DIR}foo/3-fail.dat`] = ['abc', 1];
-		all[`${FIXTURES_DIR}foo/4-small.dat`] = ['abc', 1];
 		utils.setDataContent({
-			all: all
+			locals: [
+				utils.mockLocal(`${FIXTURES_DIR}foo/1-fail.dat`, 'abc'),
+				utils.mockLocal(`${FIXTURES_DIR}foo/3-fail.dat`, 'abc'),
+				utils.mockLocal(`${FIXTURES_DIR}foo/4-small.dat`, 'abc'),
+			]
 		});
 
 		return transfer()
@@ -236,11 +239,11 @@ describe('backuper', () => {
 				assert.equal(awsLog.length, 3);
 				assertAWS(awsLog, 0, 'cp', /s3:\/\/test\-bucket\/.+\/1\-fail\.dat/);
 				assertAWS(awsLog, 1, 'cp', /s3:\/\/test\-bucket\/.+\/3\-fail\.dat/);
-				assertAWS(awsLog, 2, 'cp', /s3:\/\/test\-bucket\/db\-test\.json/);
+				assertAWS(awsLog, 2, 'cp', /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
 			.then((db) => {
-				assert.isUndefined(db.synced[`${FIXTURES_DIR}foo/4-small.dat`]);
+				assert.isUndefined(db.remotesByPath[`${FIXTURES_DIR}foo/4-small.dat`]);
 			});
 	});
 });

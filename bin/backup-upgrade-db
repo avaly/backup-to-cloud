@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+const DBJSON = require('../lib/DB.json');
+const DBSQLite = require('../lib/DB.sqlite');
+
+let dbJSON = new DBJSON();
+let dbSQLite = new DBSQLite();
+
+function main() {
+	dbSQLite.setSetting('lastScanTimestamp', dbJSON.get('lastScanTimestamp'));
+
+	const all = dbJSON.get('all', {});
+	Object.keys(all).forEach((path) => {
+		dbSQLite.updateLocal(path, all[path][0], all[path][1]);
+	});
+
+	const synced = dbJSON.get('synced', {});
+	Object.keys(synced).forEach((path) => {
+		dbSQLite.updateRemote(path, synced[path][0], synced[path][1], synced[path][2]);
+	});
+
+	dbSQLite.close();
+}
+
+main();

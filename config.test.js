@@ -4,7 +4,9 @@ const config = require('./config.sample');
 
 module.exports = Object.assign({}, config, {
 	aws: path.resolve(__dirname, 'test', '_mocks_', 'aws-mock.js'),
+	// Deprecated
 	db: 'data/db-test.json',
+	dbSQLite: 'data/db-test.sqlite',
 	encryptionPassphrase: 'password',
 	logTimestamp: false,
 	maxSessionFailures: 2,

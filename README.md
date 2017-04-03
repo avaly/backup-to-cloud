@@ -63,3 +63,13 @@ Ideally, it should be setup to run in a crontab entry.
 ./bin/backup-decrypt --help
 ./bin/backup-decrypt --output OUTPUT_FILE INPUT_FILE
 ```
+
+## Upgrade
+
+### `1.6.0` -> `2.0.0`
+
+The DB format has switched from JSON to SQLite. To upgrade existing DB, run:
+
+```
+./bin/backup-upgrade-db
+```
