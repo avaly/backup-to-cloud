@@ -24,6 +24,7 @@ Ideally, it should be setup to run in a crontab entry.
 
 ## Install
 
+- `yarn install --production` OR `npm install --production`
 - `cp config.sample.js config.default.js`
 - Modify your new config file
 - Double check your config file: `bin/backup-to-cloud --check-config`
