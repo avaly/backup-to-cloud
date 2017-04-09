@@ -2,8 +2,13 @@ const path = require('path');
 
 const config = require('./config.sample');
 
+const FIXTURES_DIR = path.resolve(__dirname, 'test', '_fixtures_');
+
 module.exports = Object.assign({}, config, {
 	aws: path.resolve(__dirname, 'test', '_mocks_', 'aws-mock.js'),
+	compressLeavesPatterns: [
+		FIXTURES_DIR + path.sep + 'ham'
+	],
 	// Deprecated
 	db: 'data/db-test.json',
 	dbSQLite: 'data/db-test.sqlite',
@@ -16,8 +21,9 @@ module.exports = Object.assign({}, config, {
 	],
 	scanInterval: 1000,
 	sources: [
-		path.resolve(__dirname, 'test', '_fixtures_', 'foo'),
-		path.resolve(__dirname, 'test', '_fixtures_', 'bar'),
+		FIXTURES_DIR + path.sep + 'foo',
+		FIXTURES_DIR + path.sep + 'bar',
+		FIXTURES_DIR + path.sep + 'ham'
 	],
 	s3bucket: 'test-bucket'
 });

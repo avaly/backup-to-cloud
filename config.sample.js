@@ -1,6 +1,11 @@
 module.exports = {
 	// The path to the `aws` binary to use for backup
 	aws: '/usr/bin/aws',
+	// Leaves folders of paths matching these patterns will:
+	// - compress their files before backup
+	// - uncompress the contents after restore
+	compressLeavesPatterns: [
+	],
 	// File scan data and info about uploaded files is stored here
 	dbSQLite: 'data/db.sqlite',
 	// The files are encrypted locally using this passphrase using `gpg`
@@ -11,6 +16,7 @@ module.exports = {
 	ignorePatterns: [
 		'/Thumbs.db',
 		'/.DS_Store',
+		'/desktop.ini',
 		'/.@__thumb/',
 		'/@Recycle/',
 		'/.git/',
@@ -37,5 +43,7 @@ module.exports = {
 	],
 	// The S3 bucket name to use for backup
 	// Note: the bucket needs to be created before
-	s3bucket: 'REPLACE-ME-WITH-YOUR-BUCKET-NAME'
+	s3bucket: 'REPLACE-ME-WITH-YOUR-BUCKET-NAME',
+	// The path to the `gpg` binary to use for encryption
+	tar: '/bin/tar'
 };

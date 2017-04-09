@@ -33,7 +33,7 @@ describe('restorer', () => {
 			.then((output) => {
 				assert.include(output, 'This is a DRY run!');
 				assert.include(output, 'Restorer.start: remotePrefix=/ localPath=/');
-				assert.include(output, 'Restorer.filter: 5 matching files in DB');
+				assert.include(output, 'Restorer.filter: 6 matching files in DB');
 			})
 			.then(utils.getAWSLog)
 			.then((awsLog) => {
@@ -88,21 +88,22 @@ describe('restorer', () => {
 	it('restores all', () => {
 		return restore(['--output', TEMP_DIR, '/'])
 			.then((output) => {
-				assert.include(output, 'Restorer.filter: 5 matching files in DB');
-				assert.include(output, 'Restorer.finish: 4 restored, 1 failed');
+				assert.include(output, 'Restorer.filter: 6 matching files in DB');
+				assert.include(output, 'Restorer.finish: 5 restored, 1 failed');
 				assert.include(output, 'Failed to restore:');
 				assert.include(output, '/foo/1-fail.dat');
 			})
 			.then(utils.getAWSLog)
 			.then((awsLog) => {
 				assert.isArray(awsLog);
-				assert.equal(awsLog.length, 6);
+				assert.equal(awsLog.length, 7);
 				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 				assertAWS(awsLog, 1, /s3:\/\/test\-bucket\/bar\/1\-small\.txt/);
 				assertAWS(awsLog, 2, /s3:\/\/test\-bucket\/bar\/2\-medium\.txt/);
 				assertAWS(awsLog, 3, /s3:\/\/test\-bucket\/bar\/3\-large\.txt/);
 				assertAWS(awsLog, 4, /s3:\/\/test\-bucket\/1\-fail\.dat/);
 				assertAWS(awsLog, 5, /s3:\/\/test\-bucket\/2 medium\.dat/);
+				assertAWS(awsLog, 6, /s3:\/\/test\-bucket\/ham\/first\/first.tar/);
 
 				utils.assertFilesEqual(
 					TEMP_DIR + 'bar/1-small.txt',
@@ -122,6 +123,14 @@ describe('restorer', () => {
 				utils.assertFilesEqual(
 					TEMP_DIR + '2 medium.dat',
 					FIXTURES_DIR + 'foo/2 medium.dat'
+				);
+				utils.assertFilesEqual(
+					TEMP_DIR + 'ham/first/1-first.txt',
+					FIXTURES_DIR + 'ham/first/1-first.txt'
+				);
+				utils.assertFilesEqual(
+					TEMP_DIR + 'ham/first/2-first.txt',
+					FIXTURES_DIR + 'ham/first/2-first.txt'
 				);
 			});
 	});

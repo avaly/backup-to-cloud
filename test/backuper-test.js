@@ -1,6 +1,7 @@
 const assert = require('chai').assert;
 const fs = require('fs');
 
+const Archiver = require('../lib/Archiver');
 const Crypter = require('../lib/Crypter');
 const utils = require('./utils');
 
@@ -36,8 +37,8 @@ describe('backuper', () => {
 		return transfer(true)
 			.then((output) => {
 				assert.include(output, 'This is a DRY run!');
-				assert.include(output, 'Backuper.start: locals=7 / remotes=0');
-				assert.include(output, 'Backuper.add:');
+				assert.include(output, 'Backuper.start: locals=9 / remotes=0');
+				assert.include(output, 'Backuper.add file:');
 			})
 			.then(utils.getAWSLog)
 			.then((awsLog) => {
@@ -95,14 +96,18 @@ describe('backuper', () => {
 					db.remotesByPath[firstFile].hash,
 					db.localsByPath[firstFile].hash
 				);
+				assert.equal(
+					db.remotesByPath[firstFile].type,
+					utils.DB_TYPES.FILE
+				);
 				assert.notEqual(
 					db.remotesByPath[firstFile].size,
 					db.localsByPath[firstFile].size
 				);
 				assert.isAbove(
 					db.remotesByPath[firstFile].timestamp,
-					Date.now() - 5 * 1000,
-					'timestamp of upload should be withing last 5 seconds'
+					Date.now() - 60 * 1000,
+					'timestamp of upload should be withing last 60 seconds'
 				);
 			});
 	});
@@ -151,6 +156,58 @@ describe('backuper', () => {
 				);
 				assert.isObject(
 					db.remotesByPath[`${FIXTURES_DIR}foo/2 medium.dat`]
+				);
+			});
+	});
+
+	it('uploads archives', () => {
+		const db = utils.getDataContent();
+		utils.clean();
+		utils.setDataContent({
+			locals: db.locals.filter(
+				(local) => local.type === utils.DB_TYPES.ARCHIVE
+			)
+		});
+
+		return transfer()
+			.then(utils.getAWSLog)
+			.then((awsLog) => {
+				assert.isArray(awsLog);
+				assert.equal(awsLog.length, 2);
+
+				assertAWS(awsLog, 0, 'cp',
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/ham\/first\/first.tar/,
+					'STANDARD');
+				assertAWS(awsLog, 1, 'cp', /s3:\/\/test\-bucket\/db\-test\.sqlite/);
+			})
+			.then(utils.getDataContent)
+			.then((db) => {
+				assert.equal(db.remotes.length, 1);
+
+				const archiveName = `${FIXTURES_DIR}ham/first/first.tar`;
+				assert.isObject(db.remotesByPath[archiveName]);
+				assert.equal(
+					db.remotesByPath[archiveName].type,
+					utils.DB_TYPES.ARCHIVE
+				);
+
+				return Crypter.decrypt(
+					TEMP_DIR + 'first.tar',
+					TEMP_DIR + 'first-decrypted.tar'
+				);
+			})
+			.then(() => Archiver.decompress(
+				TEMP_DIR + 'first-decrypted.tar',
+				TEMP_DIR + 'first'
+			))
+			.then(() => {
+				utils.assertFilesEqual(
+					TEMP_DIR + 'first/1-first.txt',
+					FIXTURES_DIR + 'ham/first/1-first.txt'
+				);
+				utils.assertFilesEqual(
+					TEMP_DIR + 'first/2-first.txt',
+					FIXTURES_DIR + 'ham/first/2-first.txt'
 				);
 			});
 	});
@@ -246,4 +303,5 @@ describe('backuper', () => {
 				assert.isUndefined(db.remotesByPath[`${FIXTURES_DIR}foo/4-small.dat`]);
 			});
 	});
+
 });

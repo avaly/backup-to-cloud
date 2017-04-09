@@ -11,6 +11,7 @@ Ideally, it should be setup to run in a crontab entry.
 
 - Encrypts files locally with `gpg`
 - Uploads files to S3 in batches of customizable size
+- Support for uploading a `tar` archive of files in certain folders (useful for sources with thousands of files (e.g. photo library))
 - Rescans sources at specific intervals to find new or updated files
 - Removes files from S3 if they are removed locally
 
@@ -21,6 +22,7 @@ Ideally, it should be setup to run in a crontab entry.
 - [`awscli`](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html) 1.8.6+ (for support of `STANDARD_IA` storage class)
 - `find`
 - `gpg`
+- `tar`
 
 ## Install
 
