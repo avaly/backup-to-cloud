@@ -5,11 +5,6 @@
 
 set -u
 
-if [[ "$TRAVIS_JOB_NUMBER" != *.1 ]]; then
-	echo "Publishing only for first Travis job!"
-	exit 0
-fi
-
 TAG=$(git tag -l --contains HEAD)
 
 if [[ -z $TAG ]]; then

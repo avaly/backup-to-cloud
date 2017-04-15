@@ -1,0 +1,21 @@
+machine:
+  node:
+    version: 6
+  pre:
+    - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+    - sudo apt-get update
+    - sudo apt-get install -y gcc-4.9 g++-4.9
+  environment:
+    CC: gcc-4.9
+    CXX: g++-4.9
+
+test:
+  post:
+    - npm run lint
+    - npm run codecov
+
+deployment:
+  publish:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - ./tools/publish.sh
