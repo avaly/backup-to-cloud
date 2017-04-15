@@ -24,7 +24,6 @@ Options:
 	--only-scan
 	--skip-scan
 	--random-order
-	--reset-synced
 	--ignore-lock
 	--verbose
 	--dry
@@ -63,12 +62,6 @@ function main() {
 	}
 
 	db = new DB();
-
-	if (utils.hasFlag('reset-synced')) {
-		utils.log('Resetting synced...');
-		db.set('synced', {});
-		return finish();
-	}
 
 	if (!utils.hasFlag('skip-scan')) {
 		const scanner = new Scanner(db);
