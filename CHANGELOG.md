@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/avaly/backup-to-cloud/compare/v2.1.0...v2.2.0) (2017-04-15)
+
+
+### Bug Fixes
+
+* Use progress conditional for archives scanning also :zap: ([88ce6f0](https://github.com/avaly/backup-to-cloud/commit/88ce6f0))
+
+
+### Features
+
+* Pipe output from aws CLI in real time :lipstick: ([992c0bb](https://github.com/avaly/backup-to-cloud/commit/992c0bb))
+* Support for backing up files in random order :tada: ([a4b6d89](https://github.com/avaly/backup-to-cloud/commit/a4b6d89))
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/avaly/backup-to-cloud/compare/v2.0.1...v2.1.0) (2017-04-09)
 
