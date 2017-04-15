@@ -144,9 +144,9 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-better-sqlite3@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-2.0.1.tgz#6341612df3562be39e749b9dd9cb00caee75af77"
+better-sqlite3@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-2.3.2.tgz#d3faae0f0744eab3a90dca4707e88e88718040d1"
   dependencies:
     bindings "^1.2.1"
     nan "^2.5.1"
