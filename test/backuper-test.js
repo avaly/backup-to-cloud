@@ -24,13 +24,18 @@ function assertAWS(log, index, operation, pattern, storageClass) {
 }
 
 describe('backuper', () => {
-	const transfer = (dry) => utils.run(
-		['--skip-scan', '--verbose', dry && '--dry']
+	const transfer = (dry, random) => utils.run(
+		['--skip-scan', '--verbose', dry && '--dry', random && '--random-order']
 	);
+
+	let dbFromScan;
 
 	before(() => {
 		utils.clean();
-		return utils.run(['--only-scan']);
+		return utils.run(['--only-scan'])
+			.then(() => {
+				dbFromScan = utils.getDataContent();
+			});
 	});
 
 	it('transfers nothing on dry mode', () => {
@@ -161,10 +166,9 @@ describe('backuper', () => {
 	});
 
 	it('uploads archives', () => {
-		const db = utils.getDataContent();
 		utils.clean();
 		utils.setDataContent({
-			locals: db.locals.filter(
+			locals: dbFromScan.locals.filter(
 				(local) => local.type === utils.DB_TYPES.ARCHIVE
 			)
 		});
@@ -213,11 +217,10 @@ describe('backuper', () => {
 	});
 
 	it('does not sync the DB file when no file syncs have been made', () => {
-		const db = utils.getDataContent();
 		utils.clean();
 		utils.setDataContent({
-			locals: db.locals,
-			remotes: db.locals.map((local) => Object.assign({
+			locals: dbFromScan.locals,
+			remotes: dbFromScan.locals.map((local) => Object.assign({
 				timestamp: 456
 			}, local))
 		});
@@ -227,6 +230,28 @@ describe('backuper', () => {
 			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 0);
+			});
+	});
+
+	it('uploads files in random order', () => {
+		utils.clean();
+		utils.setDataContent({
+			locals: dbFromScan.locals.slice(0, 2)
+		});
+
+		return transfer(false, true)
+			.then(utils.getAWSLog)
+			.then((awsLog) => {
+				assert.isArray(awsLog);
+				assert.isAtLeast(awsLog.length, 2);
+				assertAWS(awsLog, 0, 'cp',
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/bar\/(1-small|2-medium)\.txt/);
+				assertAWS(awsLog, awsLog.length - 1, 'cp',
+					/s3:\/\/test\-bucket\/db\-test\.sqlite/);
+			})
+			.then(utils.getDataContent)
+			.then((db) => {
+				assert.isAtLeast(db.remotes.length, 1);
 			});
 	});
 

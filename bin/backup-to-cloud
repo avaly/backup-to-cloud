@@ -23,6 +23,7 @@ Options:
 	--check-config
 	--only-scan
 	--skip-scan
+	--random-order
 	--reset-synced
 	--ignore-lock
 	--verbose
@@ -75,7 +76,9 @@ function main() {
 	}
 
 	if (!utils.hasFlag('only-scan')) {
-		const backuper = new Backuper(db);
+		const backuper = new Backuper(db, {
+			random: utils.hasFlag('random-order')
+		});
 		backuper.start()
 			.then(
 				(result) => {
