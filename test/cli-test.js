@@ -17,4 +17,11 @@ describe('cli', () => {
 				);
 			});
 	});
+
+	it('checks config', () => {
+		return utils.run(['--check-config'])
+			.then((result) => {
+				assert.include(result, 'Config seems in order!');
+			});
+	});
 });
