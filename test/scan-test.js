@@ -41,7 +41,7 @@ describe('scan', () => {
 					1024
 				);
 				assert.equal(
-					db.localsByPath[`${FIXTURES_DIR}foo/2 medium.dat`].size,
+					db.localsByPath[`${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`].size,
 					102400
 				);
 				assert.equal(

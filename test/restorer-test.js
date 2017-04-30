@@ -102,7 +102,7 @@ describe('restorer', () => {
 				assertAWS(awsLog, 2, /s3:\/\/test\-bucket\/bar\/2\-medium\.txt/);
 				assertAWS(awsLog, 3, /s3:\/\/test\-bucket\/bar\/3\-large\.txt/);
 				assertAWS(awsLog, 4, /s3:\/\/test\-bucket\/1\-fail\.dat/);
-				assertAWS(awsLog, 5, /s3:\/\/test\-bucket\/2 medium\.dat/);
+				assertAWS(awsLog, 5, /s3:\/\/test\-bucket\/2 '"\$@%&`medium\.dat/);
 				assertAWS(awsLog, 6, /s3:\/\/test\-bucket\/ham\/first\/first.tar/);
 
 				utils.assertFilesEqual(
@@ -121,8 +121,8 @@ describe('restorer', () => {
 					fs.existsSync(TEMP_DIR + '1-fail.dat')
 				);
 				utils.assertFilesEqual(
-					TEMP_DIR + '2 medium.dat',
-					FIXTURES_DIR + 'foo/2 medium.dat'
+					TEMP_DIR + '2 \'"$@%&`medium.dat',
+					FIXTURES_DIR + 'foo/2 \'"$@%&`medium.dat'
 				);
 				utils.assertFilesEqual(
 					TEMP_DIR + 'ham/first/1-first.txt',

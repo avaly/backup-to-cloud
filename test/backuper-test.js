@@ -148,7 +148,7 @@ describe('backuper', () => {
 					/s3:\/\/test\-bucket\/.*\/_fixtures_\/1\-fail\.dat/,
 					'STANDARD');
 				assertAWS(awsLog, 6, 'cp',
-					/s3:\/\/test\-bucket\/.*\/_fixtures_\/2 medium\.dat/,
+					/s3:\/\/test\-bucket\/.*\/_fixtures_\/2 '"\$@%&`medium\.dat/,
 					'STANDARD');
 				assertAWS(awsLog, 7, 'cp', /s3:\/\/test\-bucket\/db\-test\.sqlite/);
 			})
@@ -160,7 +160,7 @@ describe('backuper', () => {
 					db.remotesByPath[`${FIXTURES_DIR}foo/1-fail.dat`]
 				);
 				assert.isObject(
-					db.remotesByPath[`${FIXTURES_DIR}foo/2 medium.dat`]
+					db.remotesByPath[`${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`]
 				);
 			});
 	});

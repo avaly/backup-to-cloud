@@ -17,11 +17,12 @@ const RESTORE_FIXTURES_DIR = path.resolve(
 const LOG_FILE = DATA_DIR + 'aws.json';
 
 function escape(s) {
-	return s.replace(/(\s)/g, '\\$1');
+	return s.replace(/([\s'"`\$&])/g, '\\$1');
 }
 
 function cp(from, to) {
-	execSync(['cp', escape(from), escape(to)].join(' '), {
+	const cmd = ['cp', escape(from), escape(to)].join(' ');
+	execSync(cmd, {
 		encoding: 'utf-8'
 	});
 }
