@@ -52,9 +52,12 @@ Ideally, it should be setup to run in a crontab entry.
 ./bin/backup-to-cloud --help
 ./bin/backup-to-cloud --check-config
 ./bin/backup-to-cloud --dry
+./bin/backup-to-cloud
 ```
 
 ### backup-restore
+
+Restore a file or folder and decrypt:
 
 ```
 ./bin/backup-restore --help
@@ -63,9 +66,21 @@ Ideally, it should be setup to run in a crontab entry.
 
 ### backup-decrypt
 
+Decrypt a downloaded encrypted file:
+
 ```
 ./bin/backup-decrypt --help
 ./bin/backup-decrypt --output OUTPUT_FILE INPUT_FILE
+```
+
+## backup-verify
+
+Verify that the DB and remote files are in sync:
+
+```
+./bin/backup-verify --help
+./bin/backup-verify --dry
+./bin/backup-verify
 ```
 
 ## Upgrade

@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+
+const Verifier = require('../lib/Verifier');
+const package = require('../package.json');
+const utils = require('../lib/utils');
+
+function usage() {
+	console.log(`${package.name} version ${package.version}
+
+Usage: ${__filename} OPTIONS
+
+Options:
+	--dry
+	--verbose
+	--help
+`);
+}
+
+function main() {
+	utils.log(`${package.name} version ${package.version}`);
+	if (utils.DRY_RUN) {
+		utils.log('This is a DRY run! No changes/uploads will be made.');
+	}
+
+	const verifier = new Verifier();
+	verifier.start(
+		utils.TEST ? utils.getOption('aws-ls-mock') : null
+	)
+		.catch(
+			(err) => {
+				utils.log('Verifier error:', err);
+			}
+		);
+}
+
+if (utils.hasFlag('help')) {
+	usage();
+}
+else {
+	main();
+}

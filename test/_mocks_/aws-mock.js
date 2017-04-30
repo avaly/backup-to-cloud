@@ -85,6 +85,10 @@ function main() {
 			console.log(`aws-mock: Copied fixture file ${fileFixture} to ${args[3]}`);
 		}
 	}
+
+	if (args[0] === 's3' && args[1] === 'ls') {
+		console.log(fs.readFileSync(args.pop(), 'utf-8'));
+	}
 }
 
 main();

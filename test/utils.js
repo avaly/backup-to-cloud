@@ -13,6 +13,7 @@ const BIN_FILES = {
 	backup: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud'),
 	decrypt: path.resolve(__dirname, '..', 'bin', 'backup-decrypt'),
 	restore: path.resolve(__dirname, '..', 'bin', 'backup-restore'),
+	verify: path.resolve(__dirname, '..', 'bin', 'backup-verify'),
 };
 const DATA_DIR = path.resolve(__dirname, '..', 'data') + path.sep;
 const TEMP_DIR = path.resolve(__dirname, '..', 'tmp') + path.sep;
@@ -120,5 +121,12 @@ module.exports = {
 			fs.readFileSync(a, 'utf-8'),
 			fs.readFileSync(b, 'utf-8')
 		);
-	}
+	},
+
+	cp: (from, to) => {
+		const cmd = ['cp', from, to].join(' ');
+		execSync(cmd, {
+			encoding: 'utf-8'
+		});
+	},
 };
