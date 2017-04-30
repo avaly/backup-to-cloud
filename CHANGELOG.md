@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/avaly/backup-to-cloud/compare/v2.2.0...v2.3.0) (2017-04-30)
+
+
+### Bug Fixes
+
+* Support special characters in filenames :truck: ([46e9057](https://github.com/avaly/backup-to-cloud/commit/46e9057))
+
+
+### Features
+
+* backup-verify tool :wrench: ([bc3bd1b](https://github.com/avaly/backup-to-cloud/commit/bc3bd1b))
+* Removed --reset-synced flag :heavy_minus_sign: ([41f32f5](https://github.com/avaly/backup-to-cloud/commit/41f32f5))
+* Upgrade better-sqlite3 :arrow_up: ([f79d959](https://github.com/avaly/backup-to-cloud/commit/f79d959))
+
+
+
 <a name="2.2.0"></a>
 # [2.2.0](https://github.com/avaly/backup-to-cloud/compare/v2.1.0...v2.2.0) (2017-04-15)
 
