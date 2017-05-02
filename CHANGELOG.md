@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.1"></a>
+## [2.3.1](https://github.com/avaly/backup-to-cloud/compare/v2.3.0...v2.3.1) (2017-05-02)
+
+
+### Bug Fixes
+
+* Dry mode on backup :bug: ([d44e044](https://github.com/avaly/backup-to-cloud/commit/d44e044))
+* verify with prefixes support :bug: ([c59bb03](https://github.com/avaly/backup-to-cloud/commit/c59bb03))
+
+
+
 <a name="2.3.0"></a>
 # [2.3.0](https://github.com/avaly/backup-to-cloud/compare/v2.2.0...v2.3.0) (2017-04-30)
 
