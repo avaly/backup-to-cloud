@@ -24,7 +24,8 @@
     "backup-decrypt": "./bin/backup-decrypt",
     "backup-restore": "./bin/backup-restore",
     "backup-to-cloud": "./bin/backup-to-cloud",
-    "backup-upgrade-db": "./bin/backup-upgrade-db"
+    "backup-upgrade-db": "./bin/backup-upgrade-db",
+    "backup-verify": "./bin/backup-verify"
   },
   "files": [
     "LICENSE",

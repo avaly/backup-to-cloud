@@ -31,6 +31,7 @@ module.exports = {
 	maxSessionSize: 50 * 1024 * 1024,
 	// These prefixes will be removed from the remote object path
 	prefixRemove: [
+		// '/home/foo'
 	],
 	// The file system will be scanned to find new or changed files
 	// with this interval (in milliseconds)

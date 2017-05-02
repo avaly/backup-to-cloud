@@ -17,7 +17,7 @@ module.exports = Object.assign({}, config, {
 	maxSessionFailures: 2,
 	maxSessionSize: 1 * 1024,
 	prefixRemove: [
-		'foo/'
+		'/foo'
 	],
 	scanInterval: 1000,
 	sources: [
