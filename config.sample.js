@@ -36,6 +36,8 @@ module.exports = {
 	// The file system will be scanned to find new or changed files
 	// with this interval (in milliseconds)
 	scanInterval: 7 * 24 * 3600 * 1000,
+	// The Slack webhook URL for posting notifications
+	slackHook: '',
 	// The main backup sources
 	sources: [
 		// '/home/foo',

@@ -20,6 +20,7 @@ module.exports = Object.assign({}, config, {
 		'/foo'
 	],
 	scanInterval: 1000,
+	slackHook: 'https://localhost/slack',
 	sources: [
 		FIXTURES_DIR + path.sep + 'foo',
 		FIXTURES_DIR + path.sep + 'bar',

@@ -34,7 +34,9 @@
     "bin/"
   ],
   "dependencies": {
-    "better-sqlite3": "^2.3.2"
+    "better-sqlite3": "^2.3.2",
+    "pretty-bytes": "^4.0.2",
+    "slackr": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
