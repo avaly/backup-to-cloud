@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.4.1"></a>
+## [2.4.1](https://github.com/avaly/backup-to-cloud/compare/v2.4.0...v2.4.1) (2017-11-03)
+
+
+### Bug Fixes
+
+* Scanner does not halt on permission errors :bug: ([8f09ebf](https://github.com/avaly/backup-to-cloud/commit/8f09ebf))
+
+
+
 <a name="2.4.0"></a>
 # [2.4.0](https://github.com/avaly/backup-to-cloud/compare/v2.3.1...v2.4.0) (2017-05-13)
 
