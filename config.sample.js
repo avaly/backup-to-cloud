@@ -4,8 +4,7 @@ module.exports = {
 	// Leaves folders of paths matching these patterns will:
 	// - compress their files before backup
 	// - uncompress the contents after restore
-	compressLeavesPatterns: [
-	],
+	compressLeavesPatterns: [],
 	// File scan data and info about uploaded files is stored here
 	dbSQLite: 'data/db.sqlite',
 	// The files are encrypted locally using this passphrase using `gpg`
@@ -21,7 +20,7 @@ module.exports = {
 		'/@Recycle/',
 		'/.git/',
 		'/.svn/',
-		'/node_modules/'
+		'/node_modules/',
 	],
 	// Whether to use timestamps for logs
 	logTimestamp: true,
@@ -48,5 +47,5 @@ module.exports = {
 	// Note: the bucket needs to be created before
 	s3bucket: 'REPLACE-ME-WITH-YOUR-BUCKET-NAME',
 	// The path to the `gpg` binary to use for encryption
-	tar: '/bin/tar'
+	tar: '/bin/tar',
 };

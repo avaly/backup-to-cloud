@@ -8,6 +8,8 @@
     "coverage": "rm -rf coverage/ && COVERAGE=1 npm test && istanbul report lcov",
     "codecov": "npm run coverage && codecov",
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
+    "pretty": "prettier --write --list-different \"**/*.js\"",
+    "precommit": "lint-staged",
     "start": "bin/backup-to-cloud",
     "test": "BACKUP_ENV=test mocha test/*-test.js",
     "version": "standard-version"
@@ -43,9 +45,11 @@
     "codecov": "^1.0.1",
     "conventional-recommended-bump": "^1.0.0",
     "eslint": "^3.17.1",
-    "husky": "^0.13.3",
+    "husky": "0.14.3",
     "istanbul": "^0.4.5",
+    "lint-staged": "7.2.0",
     "mocha": "^3.2.0",
+    "prettier": "1.13.7",
     "standard-version": "^4.0.0",
     "validate-commit-msg": "^2.11.2"
   },

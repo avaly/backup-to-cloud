@@ -11,9 +11,7 @@ const execSync = childProcess.execSync;
 
 const DATA_DIR = path.resolve(__dirname, '..', '..', 'data') + path.sep;
 const TEMP_DIR = path.resolve(__dirname, '..', '..', 'tmp') + path.sep;
-const RESTORE_FIXTURES_DIR = path.resolve(
-	__dirname, '..', '..', 'test', '_fixtures_', 'restore'
-);
+const RESTORE_FIXTURES_DIR = path.resolve(__dirname, '..', '..', 'test', '_fixtures_', 'restore');
 const LOG_FILE = DATA_DIR + 'aws.json';
 
 function escape(s) {
@@ -23,7 +21,7 @@ function escape(s) {
 function cp(from, to) {
 	const cmd = ['cp', escape(from), escape(to)].join(' ');
 	execSync(cmd, {
-		encoding: 'utf-8'
+		encoding: 'utf-8',
 	});
 }
 
@@ -52,9 +50,7 @@ function main() {
 			// Copy temp files for encryption verification
 			const fileName = args[3].split('/').pop();
 			if (fileName.indexOf('fail') > -1) {
-				console.log(
-					'aws-mock: This file is supposed to fail under test environment!'
-				);
+				console.log('aws-mock: This file is supposed to fail under test environment!');
 				process.exit(1);
 			}
 
@@ -65,14 +61,11 @@ function main() {
 
 		// s3 cp s3://bucket/foo /local/bar
 		if (args[2].match(/^s3:\/\//)) {
-			const fileFixture = RESTORE_FIXTURES_DIR +
-				args[2].replace(/s3:\/\/[^\/]+/, '');
+			const fileFixture = RESTORE_FIXTURES_DIR + args[2].replace(/s3:\/\/[^\/]+/, '');
 			const fileName = args[2].split('/').pop();
 
 			if (fileName.indexOf('fail') > -1) {
-				console.log(
-					'aws-mock: This file is supposed to fail under test environment!'
-				);
+				console.log('aws-mock: This file is supposed to fail under test environment!');
 				process.exit(1);
 			}
 
