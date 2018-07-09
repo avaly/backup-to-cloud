@@ -6,3 +6,4 @@
 /config.default.js
 /config.dev.js
 /*.log
+package-lock.json

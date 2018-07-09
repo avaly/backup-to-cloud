@@ -17,26 +17,22 @@ function assertAWS(log, index, remotePattern, localPattern) {
 }
 
 describe('restorer', () => {
-	const restore = (args, dry) => utils.run(
-		['--verbose', dry && '--dry'].concat(args || []),
-		'restore'
-	);
+	const restore = (args, dry) =>
+		utils.run(['--verbose', dry && '--dry'].concat(args || []), 'restore');
 
 	beforeEach(() => {
-		utils.clean([
-			TEMP_DIR + '*'
-		]);
+		utils.clean([TEMP_DIR + '*']);
 	});
 
 	it('transfers nothing on dry mode', () => {
-		return restore(['--output',	'.', '/'], true)
-			.then((output) => {
+		return restore(['--output', '.', '/'], true)
+			.then(output => {
 				assert.include(output, 'This is a DRY run!');
 				assert.include(output, 'Restorer.start: remotePrefix=/ localPath=/');
 				assert.include(output, 'Restorer.filter: 6 matching files in DB');
 			})
 			.then(utils.getAWSLog)
-			.then((awsLog) => {
+			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 1);
 				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
@@ -45,11 +41,11 @@ describe('restorer', () => {
 
 	it('shows help with no output flag', () => {
 		return restore([])
-			.then((output) => {
+			.then(output => {
 				assert.include(output, 'Usage:');
 			})
 			.then(utils.getAWSLog)
-			.then((awsLog) => {
+			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 0);
 			});
@@ -57,12 +53,12 @@ describe('restorer', () => {
 
 	it('restores prefix only', () => {
 		return restore(['--output', TEMP_DIR, '/bar/'])
-			.then((output) => {
+			.then(output => {
 				assert.include(output, 'Restorer.filter: 3 matching files in DB');
 				assert.include(output, 'Restorer.finish: 3 restored, 0 failed');
 			})
 			.then(utils.getAWSLog)
-			.then((awsLog) => {
+			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 4);
 				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
@@ -70,31 +66,22 @@ describe('restorer', () => {
 				assertAWS(awsLog, 2, /s3:\/\/test\-bucket\/bar\/2\-medium\.txt/);
 				assertAWS(awsLog, 3, /s3:\/\/test\-bucket\/bar\/3\-large\.txt/);
 
-				utils.assertFilesEqual(
-					TEMP_DIR + 'bar/1-small.txt',
-					FIXTURES_DIR + 'bar/1-small.txt'
-				);
-				utils.assertFilesEqual(
-					TEMP_DIR + 'bar/2-medium.txt',
-					FIXTURES_DIR + 'bar/2-medium.txt'
-				);
-				utils.assertFilesEqual(
-					TEMP_DIR + 'bar/3-large.txt',
-					FIXTURES_DIR + 'bar/3-large.txt'
-				);
+				utils.assertFilesEqual(TEMP_DIR + 'bar/1-small.txt', FIXTURES_DIR + 'bar/1-small.txt');
+				utils.assertFilesEqual(TEMP_DIR + 'bar/2-medium.txt', FIXTURES_DIR + 'bar/2-medium.txt');
+				utils.assertFilesEqual(TEMP_DIR + 'bar/3-large.txt', FIXTURES_DIR + 'bar/3-large.txt');
 			});
 	});
 
 	it('restores all', () => {
 		return restore(['--output', TEMP_DIR, '/'])
-			.then((output) => {
+			.then(output => {
 				assert.include(output, 'Restorer.filter: 6 matching files in DB');
 				assert.include(output, 'Restorer.finish: 5 restored, 1 failed');
 				assert.include(output, 'Failed to restore:');
 				assert.include(output, '/foo/1-fail.dat');
 			})
 			.then(utils.getAWSLog)
-			.then((awsLog) => {
+			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 7);
 				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
@@ -105,32 +92,21 @@ describe('restorer', () => {
 				assertAWS(awsLog, 5, /s3:\/\/test\-bucket\/2 '"\$@%&`medium\.dat/);
 				assertAWS(awsLog, 6, /s3:\/\/test\-bucket\/ham\/first\/first.tar/);
 
-				utils.assertFilesEqual(
-					TEMP_DIR + 'bar/1-small.txt',
-					FIXTURES_DIR + 'bar/1-small.txt'
-				);
-				utils.assertFilesEqual(
-					TEMP_DIR + 'bar/2-medium.txt',
-					FIXTURES_DIR + 'bar/2-medium.txt'
-				);
-				utils.assertFilesEqual(
-					TEMP_DIR + 'bar/3-large.txt',
-					FIXTURES_DIR + 'bar/3-large.txt'
-				);
-				assert.isFalse(
-					fs.existsSync(TEMP_DIR + '1-fail.dat')
-				);
+				utils.assertFilesEqual(TEMP_DIR + 'bar/1-small.txt', FIXTURES_DIR + 'bar/1-small.txt');
+				utils.assertFilesEqual(TEMP_DIR + 'bar/2-medium.txt', FIXTURES_DIR + 'bar/2-medium.txt');
+				utils.assertFilesEqual(TEMP_DIR + 'bar/3-large.txt', FIXTURES_DIR + 'bar/3-large.txt');
+				assert.isFalse(fs.existsSync(TEMP_DIR + '1-fail.dat'));
 				utils.assertFilesEqual(
 					TEMP_DIR + '2 \'"$@%&`medium.dat',
-					FIXTURES_DIR + 'foo/2 \'"$@%&`medium.dat'
+					FIXTURES_DIR + 'foo/2 \'"$@%&`medium.dat',
 				);
 				utils.assertFilesEqual(
 					TEMP_DIR + 'ham/first/1-first.txt',
-					FIXTURES_DIR + 'ham/first/1-first.txt'
+					FIXTURES_DIR + 'ham/first/1-first.txt',
 				);
 				utils.assertFilesEqual(
 					TEMP_DIR + 'ham/first/2-first.txt',
-					FIXTURES_DIR + 'ham/first/2-first.txt'
+					FIXTURES_DIR + 'ham/first/2-first.txt',
 				);
 			});
 	});

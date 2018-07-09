@@ -16,27 +16,24 @@ describe('decrypt', () => {
 	}
 
 	it('shows help', () => {
-		return utils.run(['--help'], 'decrypt')
-			.then((result) => {
-				assert.include(result, 'Usage:');
-			});
+		return utils.run(['--help'], 'decrypt').then(result => {
+			assert.include(result, 'Usage:');
+		});
 	});
 
 	it('stops if input file does not exist', () => {
 		const fileOutput = TEMP_DIR + 'should-not-be-created.txt';
 
-		const args = [
-			'--output',
-			fileOutput,
-			TEMP_DIR + 'this-should-not-exist.txt'
-		];
+		const args = ['--output', fileOutput, TEMP_DIR + 'this-should-not-exist.txt'];
 
-		return utils.run(args, 'decrypt')
-			.then(() => {
+		return utils.run(args, 'decrypt').then(
+			() => {
 				assert.isOk(false);
-			}, () => {
+			},
+			() => {
 				assert.isNotOk(fs.existsSync(fileOutput));
-			});
+			},
+		);
 	});
 
 	it('decrypts file', () => {
@@ -46,12 +43,8 @@ describe('decrypt', () => {
 		const contentSource = fs.readFileSync(fileSource, 'utf-8');
 
 		return Crypter.encrypt(fileSource)
-			.then((encryptedFile) => {
-				const args = [
-					'--output',
-					fileOutput,
-					encryptedFile.path
-				];
+			.then(encryptedFile => {
+				const args = ['--output', fileOutput, encryptedFile.path];
 
 				const contentEncrypted = fs.readFileSync(encryptedFile.path, 'utf-8');
 				assert.notEqual(contentSource, contentEncrypted);

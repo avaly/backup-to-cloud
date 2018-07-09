@@ -32,7 +32,7 @@ module.exports = {
 
 	execPromise: utils.execPromise,
 
-	clean: (items) => {
+	clean: items => {
 		if (fs.existsSync(AWS_LOG)) {
 			fs.unlinkSync(AWS_LOG);
 		}
@@ -40,7 +40,7 @@ module.exports = {
 			fs.unlinkSync(DB_FILE);
 		}
 		if (items && Array.isArray(items)) {
-			items.forEach((item) => {
+			items.forEach(item => {
 				execSync('rm -rf ' + item);
 			});
 		}
@@ -53,24 +53,26 @@ module.exports = {
 		return [];
 	},
 
-	getDataContent: () => {
+	async getDataContent() {
 		if (fs.existsSync(DB_FILE)) {
 			const db = new DB();
+			await db.initialize();
 			return db.getAll();
 		}
 		return {};
 	},
 
-	setDataContent: (data) => {
+	async setDataContent(data) {
 		const db = new DB();
+		await db.initialize();
 		return db.setAll(data);
 	},
 
 	run: (args, binFile) => {
 		const bin = BIN_FILES[binFile || 'backup'];
-		const cmd = process.env.COVERAGE
-			? './node_modules/.bin/istanbul'
-			: bin;
+		const cmd = process.env.COVERAGE ? './node_modules/.bin/istanbul' : bin;
+		const filteredArgs = args.filter(arg => !!arg);
+		// prettier-ignore
 		const execArgs = process.env.COVERAGE
 			? [
 				'cover',
@@ -79,13 +81,14 @@ module.exports = {
 				'--include-pid',
 				bin,
 				'--'
-			].concat(args)
-			: args;
+			].concat(filteredArgs)
+			: filteredArgs;
+
 		return utils.execPromise(cmd, execArgs);
 	},
 
-	delay: (timeout) => {
-		return new Promise((resolve) => {
+	delay: timeout => {
+		return new Promise(resolve => {
 			setTimeout(resolve, timeout);
 		});
 	},
@@ -95,7 +98,7 @@ module.exports = {
 			path: path,
 			hash: hash || utils.DELETED,
 			type: type || DB.TYPES.FILE,
-			size: size || 123
+			size: size || 123,
 		};
 	},
 
@@ -105,28 +108,22 @@ module.exports = {
 			hash: hash || 'abc',
 			type: type || DB.TYPES.FILE,
 			size: size || 123,
-			timestamp: timestamp || 456
+			timestamp: timestamp || 456,
 		};
 	},
 
 	assertLocalDeleted: (db, path) => {
-		assert.equal(
-			db.localsByPath[path].hash,
-			utils.DELETED
-		);
+		assert.equal(db.localsByPath[path].hash, utils.DELETED);
 	},
 
 	assertFilesEqual: (a, b) => {
-		assert.equal(
-			fs.readFileSync(a, 'utf-8'),
-			fs.readFileSync(b, 'utf-8')
-		);
+		assert.equal(fs.readFileSync(a, 'utf-8'), fs.readFileSync(b, 'utf-8'));
 	},
 
 	cp: (from, to) => {
 		const cmd = ['cp', from, to].join(' ');
 		execSync(cmd, {
-			encoding: 'utf-8'
+			encoding: 'utf-8',
 		});
 	},
 };

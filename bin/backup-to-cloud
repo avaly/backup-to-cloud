@@ -31,7 +31,7 @@ Options:
 `);
 }
 
-function main() {
+async function main() {
 	if (fs.existsSync(LOCK_FILE) && !utils.hasFlag('ignore-lock')) {
 		utils.log('Another instance of the backup is already running or has not ' +
 			'properly terminated. Remove lock file to continue.');
@@ -62,10 +62,11 @@ function main() {
 	}
 
 	db = new DB();
+	await db.initialize();
 
 	if (!utils.hasFlag('skip-scan')) {
 		const scanner = new Scanner(db);
-		scanner.scan();
+		await scanner.scan();
 	}
 
 	if (!utils.hasFlag('only-scan')) {
