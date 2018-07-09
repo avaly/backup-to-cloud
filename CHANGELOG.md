@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.5.0"></a>
+# [2.5.0](https://github.com/avaly/backup-to-cloud/compare/v2.4.2...v2.5.0) (2018-07-09)
+
+
+### Features
+
+* Bump minimum node to v8 ([258aad5](https://github.com/avaly/backup-to-cloud/commit/258aad5))
+* Switch to sqlite library ([3615b2e](https://github.com/avaly/backup-to-cloud/commit/3615b2e)), closes [#12](https://github.com/avaly/backup-to-cloud/issues/12)
+
+
+
 <a name="2.4.2"></a>
 ## [2.4.2](https://github.com/avaly/backup-to-cloud/compare/v2.4.1...v2.4.2) (2017-11-13)
 
