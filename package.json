@@ -10,9 +10,9 @@
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
     "pretty": "prettier --write --list-different \"**/*.js\"",
     "precommit": "lint-staged",
+    "release": "standard-version",
     "start": "bin/backup-to-cloud",
-    "test": "BACKUP_ENV=test mocha test/*-test.js",
-    "version": "standard-version"
+    "test": "BACKUP_ENV=test mocha test/*-test.js"
   },
   "license": "MIT",
   "engines": {
