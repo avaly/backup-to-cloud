@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/avaly/backup-to-cloud/compare/v2.5.1...v3.0.0) (2018-07-11)
+
+
+### Bug Fixes
+
+* Slacker promise rejection ([94832cd](https://github.com/avaly/backup-to-cloud/commit/94832cd))
+
+
+### Features
+
+* Drop milliseconds from modified time on scan ([8d6b1b0](https://github.com/avaly/backup-to-cloud/commit/8d6b1b0)), closes [#13](https://github.com/avaly/backup-to-cloud/issues/13)
+
+
+### BREAKING CHANGES
+
+* file hashing algorithm is changed - files will be
+re-uploaded to cloud storage
+
+
+
 <a name="2.5.1"></a>
 ## [2.5.1](https://github.com/avaly/backup-to-cloud/compare/v2.5.0...v2.5.1) (2018-07-11)
 

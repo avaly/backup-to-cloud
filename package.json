@@ -1,6 +1,6 @@
 {
   "name": "backup-to-cloud",
-  "version": "2.5.1",
+  "version": "3.0.0",
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "scripts": {
