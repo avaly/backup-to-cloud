@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.5.1"></a>
+## [2.5.1](https://github.com/avaly/backup-to-cloud/compare/v2.5.0...v2.5.1) (2018-07-11)
+
+
+### Bug Fixes
+
+* Use batch flag for gpg calls ([738e42e](https://github.com/avaly/backup-to-cloud/commit/738e42e))
+
+
+
 <a name="2.5.0"></a>
 # [2.5.0](https://github.com/avaly/backup-to-cloud/compare/v2.4.2...v2.5.0) (2018-07-09)
 
