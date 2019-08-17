@@ -4,19 +4,17 @@
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "scripts": {
-    "commitmsg": "validate-commit-msg",
     "coverage": "rm -rf coverage/ && COVERAGE=1 npm test && istanbul report lcov",
     "codecov": "npm run coverage && codecov",
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
     "pretty": "prettier --write --list-different \"**/*.js\"",
-    "precommit": "lint-staged",
     "release": "standard-version",
     "start": "bin/backup-to-cloud",
     "test": "BACKUP_ENV=test mocha test/*-test.js"
   },
   "license": "MIT",
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "os": [
     "darwin",
@@ -36,25 +34,31 @@
     "bin/"
   ],
   "dependencies": {
-    "pretty-bytes": "^4.0.2",
+    "pretty-bytes": "^5.3.0",
     "slackr": "^1.0.0",
-    "sqlite": "2.9.2"
+    "sqlite": "3.0.3"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "codecov": "^1.0.1",
-    "conventional-recommended-bump": "^1.0.0",
-    "eslint": "^3.17.1",
-    "husky": "0.14.3",
+    "chai": "^4.2.0",
+    "codecov": "^3.5.0",
+    "conventional-recommended-bump": "^6.0.0",
+    "eslint": "^6.1.0",
+    "husky": "3.0.4",
     "istanbul": "^0.4.5",
-    "lint-staged": "7.2.0",
-    "mocha": "^3.2.0",
-    "prettier": "1.13.7",
-    "standard-version": "^4.0.0",
-    "validate-commit-msg": "^2.11.2"
+    "lint-staged": "9.2.2",
+    "mocha": "^6.2.0",
+    "prettier": "1.18.2",
+    "standard-version": "^7.0.0",
+    "validate-commit-msg": "^2.14.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/avaly/backup-to-cloud.git"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "validate-commit-msg",
+      "pre-commit": "lint-staged"
+    }
   }
 }

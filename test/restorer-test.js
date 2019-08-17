@@ -35,7 +35,7 @@ describe('restorer', () => {
 			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 1);
-				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
+				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
 			});
 	});
 
@@ -61,10 +61,10 @@ describe('restorer', () => {
 			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 4);
-				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
-				assertAWS(awsLog, 1, /s3:\/\/test\-bucket\/bar\/1\-small\.txt/);
-				assertAWS(awsLog, 2, /s3:\/\/test\-bucket\/bar\/2\-medium\.txt/);
-				assertAWS(awsLog, 3, /s3:\/\/test\-bucket\/bar\/3\-large\.txt/);
+				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
+				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/bar\/1-small\.txt/);
+				assertAWS(awsLog, 2, /s3:\/\/test-bucket\/bar\/2-medium\.txt/);
+				assertAWS(awsLog, 3, /s3:\/\/test-bucket\/bar\/3-large\.txt/);
 
 				utils.assertFilesEqual(TEMP_DIR + 'bar/1-small.txt', FIXTURES_DIR + 'bar/1-small.txt');
 				utils.assertFilesEqual(TEMP_DIR + 'bar/2-medium.txt', FIXTURES_DIR + 'bar/2-medium.txt');
@@ -84,13 +84,13 @@ describe('restorer', () => {
 			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 7);
-				assertAWS(awsLog, 0, /s3:\/\/test\-bucket\/db\-test\.sqlite/);
-				assertAWS(awsLog, 1, /s3:\/\/test\-bucket\/bar\/1\-small\.txt/);
-				assertAWS(awsLog, 2, /s3:\/\/test\-bucket\/bar\/2\-medium\.txt/);
-				assertAWS(awsLog, 3, /s3:\/\/test\-bucket\/bar\/3\-large\.txt/);
-				assertAWS(awsLog, 4, /s3:\/\/test\-bucket\/1\-fail\.dat/);
-				assertAWS(awsLog, 5, /s3:\/\/test\-bucket\/2 '"\$@%&`medium\.dat/);
-				assertAWS(awsLog, 6, /s3:\/\/test\-bucket\/ham\/first\/first.tar/);
+				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
+				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/bar\/1-small\.txt/);
+				assertAWS(awsLog, 2, /s3:\/\/test-bucket\/bar\/2-medium\.txt/);
+				assertAWS(awsLog, 3, /s3:\/\/test-bucket\/bar\/3-large\.txt/);
+				assertAWS(awsLog, 4, /s3:\/\/test-bucket\/1-fail\.dat/);
+				assertAWS(awsLog, 5, /s3:\/\/test-bucket\/2 '"\$@%&`medium\.dat/);
+				assertAWS(awsLog, 6, /s3:\/\/test-bucket\/ham\/first\/first.tar/);
 
 				utils.assertFilesEqual(TEMP_DIR + 'bar/1-small.txt', FIXTURES_DIR + 'bar/1-small.txt');
 				utils.assertFilesEqual(TEMP_DIR + 'bar/2-medium.txt', FIXTURES_DIR + 'bar/2-medium.txt');

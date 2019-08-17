@@ -15,7 +15,7 @@ const RESTORE_FIXTURES_DIR = path.resolve(__dirname, '..', '..', 'test', '_fixtu
 const LOG_FILE = DATA_DIR + 'aws.json';
 
 function escape(s) {
-	return s.replace(/([\s'"`\$&])/g, '\\$1');
+	return s.replace(/([\s'"`$&])/g, '\\$1');
 }
 
 function cp(from, to) {
@@ -61,7 +61,7 @@ function main() {
 
 		// s3 cp s3://bucket/foo /local/bar
 		if (args[2].match(/^s3:\/\//)) {
-			const fileFixture = RESTORE_FIXTURES_DIR + args[2].replace(/s3:\/\/[^\/]+/, '');
+			const fileFixture = RESTORE_FIXTURES_DIR + args[2].replace(/s3:\/\/[^/]+/, '');
 			const fileName = args[2].split('/').pop();
 
 			if (fileName.indexOf('fail') > -1) {
