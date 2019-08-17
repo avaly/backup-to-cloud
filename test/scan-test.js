@@ -1,6 +1,7 @@
 const assert = require('chai').assert;
 const fs = require('fs');
 const utils = require('./utils');
+const Scanner = require('../lib/Scanner');
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 
@@ -9,6 +10,16 @@ describe('scan', () => {
 
 	beforeEach(() => {
 		utils.clean();
+	});
+
+	it('prepares file hash', () => {
+		const file = Scanner.scanFile(`${FIXTURES_DIR}bar/1-small.txt`);
+
+		assert.match(
+			file.hash,
+			/^\/test\/_fixtures_\/bar\/1-small\.txt 1024 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+		);
+		assert.equal(file.size, 1024);
 	});
 
 	it('saves nothing for dry mode', () => {

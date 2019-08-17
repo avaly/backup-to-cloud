@@ -14,7 +14,7 @@ module.exports = Object.assign({}, config, {
 	logTimestamp: false,
 	maxSessionFailures: 2,
 	maxSessionSize: 1 * 1024,
-	prefixRemove: ['/foo'],
+	prefixRemove: ['/foo', __dirname],
 	scanInterval: 1000,
 	slackHook: null,
 	sources: [
