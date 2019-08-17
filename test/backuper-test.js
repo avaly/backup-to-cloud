@@ -300,6 +300,67 @@ describe('backuper', () => {
 			});
 	});
 
+	it('transfers files and removes a deleted file in the same run', () => {
+		utils.clean();
+
+		const now = Date.now();
+		utils.setDataContent({
+			locals: [
+				...dbFromScan.locals,
+				utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
+				utils.mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
+			],
+			remotes: [
+				utils.mockRemote(`${FIXTURES_DIR}bar/1-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
+				utils.mockRemote(
+					`${FIXTURES_DIR}bar/2-small-long-ago.txt`,
+					'abc',
+					1024,
+					now - 31 * 24 * 3600 * 1000,
+				),
+			],
+		});
+
+		return transfer()
+			.then(utils.getAWSLog)
+			.then(awsLog => {
+				assert.isArray(awsLog);
+				// Only the first 2 files fit into the session size
+				// Plus one deleted file
+				// The last file is the DB file
+				assert.equal(awsLog.length, 4);
+
+				assertAWS(
+					awsLog,
+					0,
+					'cp',
+					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/1-small\.txt/,
+					'STANDARD',
+				);
+				assertAWS(
+					awsLog,
+					1,
+					'cp',
+					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/2-medium\.txt/,
+					'STANDARD',
+				);
+
+				assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/.*\/bar\/1-small-recent\.txt/);
+
+				assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
+			})
+			.then(utils.getDataContent)
+			.then(db => {
+				assert.equal(db.locals.length, dbFromScan.locals.length + 1);
+				assert.isUndefined(db.locals.find(item => item.path.includes('2-small-recent.txt')));
+				assert.isDefined(db.locals.find(item => item.path.includes('2-small-long-ago.txt')));
+
+				assert.equal(db.remotes.length, 3);
+				assert.isUndefined(db.remotes.find(item => item.path.includes('2-small-recent.txt')));
+				assert.isDefined(db.remotes.find(item => item.path.includes('2-small-long-ago.txt')));
+			});
+	});
+
 	it('should stop transfer after max failed', () => {
 		utils.clean();
 
