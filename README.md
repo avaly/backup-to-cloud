@@ -18,7 +18,7 @@ Ideally, it should be setup to run in a crontab entry.
 ## Requirements
 
 - OS: Linux, MacOS (untested)
-- node.js 6+
+- node.js 10+
 - [`awscli`](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html) 1.8.6+ (for support of `STANDARD_IA` storage class)
 - `find`
 - `gpg`
