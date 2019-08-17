@@ -1,6 +1,13 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [3.0.1](https://github.com/avaly/backup-to-cloud/compare/v3.0.0...v3.0.1) (2019-08-17)
+
+
+### Bug Fixes
+
+* Upgrade all dependencies, require node>=10 ([d3b8181](https://github.com/avaly/backup-to-cloud/commit/d3b8181))
 
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/avaly/backup-to-cloud/compare/v2.5.1...v3.0.0) (2018-07-11)
