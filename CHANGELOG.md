@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/avaly/backup-to-cloud/compare/v3.1.0...v4.0.0) (2019-08-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* file hashing algorithm is changed - files will be
+re-uploaded to cloud storage
+
+### Features
+
+* File hash uses remote file path ([988f918](https://github.com/avaly/backup-to-cloud/commit/988f918))
+
 ## [3.1.0](https://github.com/avaly/backup-to-cloud/compare/v3.0.1...v3.1.0) (2019-08-17)
 
 
