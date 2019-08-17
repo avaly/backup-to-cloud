@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.0.1](https://github.com/avaly/backup-to-cloud/compare/v4.0.0...v4.0.1) (2019-08-17)
+
+
+### Bug Fixes
+
+* Remove temporary archive file after upload ([d17ce9c](https://github.com/avaly/backup-to-cloud/commit/d17ce9c))
+
 ## [4.0.0](https://github.com/avaly/backup-to-cloud/compare/v3.1.0...v4.0.0) (2019-08-17)
 
 
