@@ -56,7 +56,11 @@ describe('scan', () => {
 				assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/3-large.txt`]);
 
 				assert.isObject(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`]);
+				// 2 files @ 1024 bytes
+				assert.equal(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`].size, 2048);
 				assert.isObject(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`]);
+				// 2 files @ 1024 bytes
+				assert.equal(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`].size, 2048);
 
 				// Ignored files
 				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}bar/.svn/info`]);

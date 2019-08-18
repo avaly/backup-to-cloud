@@ -1,4 +1,5 @@
 const assert = require('chai').assert;
+const fs = require('fs');
 
 const Archiver = require('../lib/Archiver');
 const Crypter = require('../lib/Crypter');
@@ -198,6 +199,8 @@ describe('backuper', () => {
 					TEMP_DIR + 'first/2-first.txt',
 					FIXTURES_DIR + 'ham/first/2-first.txt',
 				);
+				assert.isFalse(fs.existsSync(`${TEMP_DIR}first/second/1-second.txt`));
+				assert.isFalse(fs.existsSync(`${TEMP_DIR}first/second/2-second.txt`));
 			});
 	});
 
