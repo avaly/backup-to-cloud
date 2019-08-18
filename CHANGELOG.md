@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.0.2](https://github.com/avaly/backup-to-cloud/compare/v4.0.1...v4.0.2) (2019-08-18)
+
+
+### Bug Fixes
+
+* Archives only contain immediate files in folder ([88599e3](https://github.com/avaly/backup-to-cloud/commit/88599e3))
+* Decrypt binary files correctly ([b84320d](https://github.com/avaly/backup-to-cloud/commit/b84320d))
+
 ### [4.0.1](https://github.com/avaly/backup-to-cloud/compare/v4.0.0...v4.0.1) (2019-08-17)
 
 
