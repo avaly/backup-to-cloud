@@ -1,5 +1,4 @@
 const assert = require('chai').assert;
-const fs = require('fs');
 
 const Archiver = require('../lib/Archiver');
 const Crypter = require('../lib/Crypter');
@@ -81,15 +80,15 @@ describe('backuper', () => {
 				utils.assertFilesEqual(TEMP_DIR + 'db-test.sqlite', DATA_DIR + 'db-test.sqlite');
 
 				// Verify encryption
-				assert.notEqual(
-					fs.readFileSync(TEMP_DIR + '1-small.txt', 'utf-8'),
-					fs.readFileSync(FIXTURES_DIR + 'bar/1-small.txt', 'utf-8'),
-				);
+				utils.assertFilesNotEqual(`${TEMP_DIR}1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
 
-				return Crypter.decrypt(TEMP_DIR + '1-small.txt');
+				return Crypter.decrypt(`${TEMP_DIR}1-small.txt`, `${TEMP_DIR}1-small-decrypted.txt`);
 			})
-			.then(decrypted => {
-				assert.equal(decrypted, fs.readFileSync(FIXTURES_DIR + 'bar/1-small.txt', 'utf-8'));
+			.then(() => {
+				utils.assertFilesEqual(
+					`${TEMP_DIR}1-small-decrypted.txt`,
+					`${FIXTURES_DIR}bar/1-small.txt`,
+				);
 			})
 			.then(utils.getDataContent)
 			.then(db => {

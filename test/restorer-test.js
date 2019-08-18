@@ -29,7 +29,7 @@ describe('restorer', () => {
 			.then(output => {
 				assert.include(output, 'This is a DRY run!');
 				assert.include(output, 'Restorer.start: remotePrefix=/ localPath=/');
-				assert.include(output, 'Restorer.filter: 6 matching files in DB');
+				assert.include(output, 'Restorer.filter: 7 matching files in DB');
 			})
 			.then(utils.getAWSLog)
 			.then(awsLog => {
@@ -75,22 +75,23 @@ describe('restorer', () => {
 	it('restores all', () => {
 		return restore(['--output', TEMP_DIR, '/'])
 			.then(output => {
-				assert.include(output, 'Restorer.filter: 6 matching files in DB');
-				assert.include(output, 'Restorer.finish: 5 restored, 1 failed');
+				assert.include(output, 'Restorer.filter: 7 matching files in DB');
+				assert.include(output, 'Restorer.finish: 6 restored, 1 failed');
 				assert.include(output, 'Failed to restore:');
 				assert.include(output, '/foo/1-fail.dat');
 			})
 			.then(utils.getAWSLog)
 			.then(awsLog => {
 				assert.isArray(awsLog);
-				assert.equal(awsLog.length, 7);
+				assert.equal(awsLog.length, 8);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
 				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/bar\/1-small\.txt/);
 				assertAWS(awsLog, 2, /s3:\/\/test-bucket\/bar\/2-medium\.txt/);
 				assertAWS(awsLog, 3, /s3:\/\/test-bucket\/bar\/3-large\.txt/);
 				assertAWS(awsLog, 4, /s3:\/\/test-bucket\/1-fail\.dat/);
 				assertAWS(awsLog, 5, /s3:\/\/test-bucket\/2 '"\$@%&`medium\.dat/);
-				assertAWS(awsLog, 6, /s3:\/\/test-bucket\/ham\/first\/first.tar/);
+				assertAWS(awsLog, 6, /s3:\/\/test-bucket\/3-dummy\.pdf/);
+				assertAWS(awsLog, 7, /s3:\/\/test-bucket\/ham\/first\/first.tar/);
 
 				utils.assertFilesEqual(TEMP_DIR + 'bar/1-small.txt', FIXTURES_DIR + 'bar/1-small.txt');
 				utils.assertFilesEqual(TEMP_DIR + 'bar/2-medium.txt', FIXTURES_DIR + 'bar/2-medium.txt');
@@ -100,6 +101,7 @@ describe('restorer', () => {
 					TEMP_DIR + '2 \'"$@%&`medium.dat',
 					FIXTURES_DIR + 'foo/2 \'"$@%&`medium.dat',
 				);
+				utils.assertFilesEqual(TEMP_DIR + '3-dummy.pdf', FIXTURES_DIR + 'originals/3-dummy.pdf');
 				utils.assertFilesEqual(
 					TEMP_DIR + 'ham/first/1-first.txt',
 					FIXTURES_DIR + 'ham/first/1-first.txt',

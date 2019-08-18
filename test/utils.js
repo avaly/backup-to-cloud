@@ -1,6 +1,7 @@
 const assert = require('chai').assert;
 const childProcess = require('child_process');
 const fs = require('fs');
+const md5File = require('md5-file');
 const path = require('path');
 
 const DB = require('../lib/DB.sqlite');
@@ -116,8 +117,12 @@ module.exports = {
 		assert.equal(db.localsByPath[path].hash, utils.DELETED);
 	},
 
-	assertFilesEqual: (a, b) => {
-		assert.equal(fs.readFileSync(a, 'utf-8'), fs.readFileSync(b, 'utf-8'));
+	assertFilesEqual: (fileA, fileB) => {
+		assert.equal(md5File.sync(fileA), md5File.sync(fileB));
+	},
+
+	assertFilesNotEqual: (fileA, fileB) => {
+		assert.notEqual(md5File.sync(fileA), md5File.sync(fileB));
 	},
 
 	cp: (from, to) => {
