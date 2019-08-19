@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/avaly/backup-to-cloud/compare/v4.0.2...v4.1.0) (2019-08-19)
+
+
+### Features
+
+* Configurable temporary directory ([25bbfd7](https://github.com/avaly/backup-to-cloud/commit/25bbfd7))
+
 ### [4.0.2](https://github.com/avaly/backup-to-cloud/compare/v4.0.1...v4.0.2) (2019-08-18)
 
 
