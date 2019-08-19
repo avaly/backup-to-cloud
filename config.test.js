@@ -23,4 +23,5 @@ module.exports = Object.assign({}, config, {
 		FIXTURES_DIR + path.sep + 'ham',
 	],
 	s3bucket: 'test-bucket',
+	tempDir: path.resolve(__dirname, 'tmp', 'tmp'),
 });

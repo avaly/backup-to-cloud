@@ -42,7 +42,7 @@ describe('backuper', () => {
 				assert.include(output, 'This is a DRY run!');
 				assert.include(output, 'Backuper.start: locals=9 / remotes=0');
 				assert.include(output, 'Backuper.add file:');
-				assert.include(output, 'Backuper.next sessionSize=1024 maxSessionSize=1024');
+				assert.include(output, 'Backuper.next sessionSize=1.02 kB maxSessionSize=1.02 kB');
 				assert.include(output, 'Transfer result MAX_SESSION_SIZE');
 			})
 			.then(utils.getAWSLog)

@@ -43,6 +43,8 @@ module.exports = {
 		// '/mnt/nas',
 		// '/media/nas',
 	],
+	// Custom temporary directory for encryption/archiving operations
+	tempDir: '/tmp/backup-to-cloud',
 	// The S3 bucket name to use for backup
 	// Note: the bucket needs to be created before
 	s3bucket: 'REPLACE-ME-WITH-YOUR-BUCKET-NAME',
