@@ -12,11 +12,12 @@ const LOCK_FILE = path.join(__dirname, '.backup-restore.lock');
 function usage() {
 	console.log(`${package.name} version ${package.version}
 
-Usage: ${__filename} OPTIONS REMOTE_DIR_OR_FILE
+Usage: ${__filename} [OPTIONS] REMOTE_DIR_OR_FILE
 
 Options:
 	--output OUTPUT_DIR_OR_FILE [required]
 	--ignore-lock
+	--yes
 	--verbose
 	--dry
 	--help
@@ -33,8 +34,9 @@ Examples:
 
 function main() {
 	if (fs.existsSync(LOCK_FILE) && !utils.hasFlag('ignore-lock')) {
-		utils.log('Another instance of the ${package.name} is already running or ' +
-			'has not properly terminated. Remove lock file to continue.');
+		utils.log(
+			`Another instance of the ${package.name} is already running or has not properly terminated. Remove lock file to continue.`,
+		);
 		return;
 	}
 	fs.writeFileSync(LOCK_FILE, '');
@@ -48,14 +50,15 @@ function main() {
 	const output = path.resolve(utils.getOption('output'));
 
 	const restorer = new Restorer();
-	restorer.start(input, output)
+	restorer
+		.start(input, output)
 		.then(
-			(result) => {
+			result => {
 				utils.debug('Restorer result:', result);
 			},
-			(err) => {
+			err => {
 				utils.log('Restorer error:', err);
-			}
+			},
 		)
 		.then(() => restorer.finish())
 		.then(finish);
@@ -65,10 +68,8 @@ function finish() {
 	fs.unlinkSync(LOCK_FILE);
 }
 
-
 if (utils.hasFlag('help') || !utils.getOption('output')) {
 	usage();
-}
-else {
+} else {
 	main();
 }

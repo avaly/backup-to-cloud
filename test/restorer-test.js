@@ -29,7 +29,10 @@ describe('restorer', () => {
 			.then(output => {
 				assert.include(output, 'This is a DRY run!');
 				assert.include(output, 'Restorer.start: remotePrefix=/ localPath=/');
-				assert.include(output, 'Restorer.filter: 7 matching files in DB');
+				assert.include(
+					output,
+					'Restorer.filter: 7 matching files with a total file size of 427 kB in DB',
+				);
 			})
 			.then(utils.getAWSLog)
 			.then(awsLog => {
@@ -52,9 +55,12 @@ describe('restorer', () => {
 	});
 
 	it('restores prefix only', () => {
-		return restore(['--output', TEMP_DIR, '/bar/'])
+		return restore(['--yes', '--output', TEMP_DIR, '/bar/'])
 			.then(output => {
-				assert.include(output, 'Restorer.filter: 3 matching files in DB');
+				assert.include(
+					output,
+					'Restorer.filter: 3 matching files with a total file size of 308 kB in DB',
+				);
 				assert.include(output, 'Restorer.finish: 3 restored, 0 failed');
 			})
 			.then(utils.getAWSLog)
@@ -73,9 +79,12 @@ describe('restorer', () => {
 	});
 
 	it('restores all', () => {
-		return restore(['--output', TEMP_DIR, '/'])
+		return restore(['--yes', '--output', TEMP_DIR, '/'])
 			.then(output => {
-				assert.include(output, 'Restorer.filter: 7 matching files in DB');
+				assert.include(
+					output,
+					'Restorer.filter: 7 matching files with a total file size of 427 kB in DB',
+				);
 				assert.include(output, 'Restorer.finish: 6 restored, 1 failed');
 				assert.include(output, 'Failed to restore:');
 				assert.include(output, '/foo/1-fail.dat');
