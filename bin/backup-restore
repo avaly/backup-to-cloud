@@ -16,6 +16,7 @@ Usage: ${__filename} [OPTIONS] REMOTE_DIR_OR_FILE
 
 Options:
 	--output OUTPUT_DIR_OR_FILE [required]
+	--test
 	--ignore-lock
 	--yes
 	--verbose
@@ -48,6 +49,7 @@ function main() {
 
 	const input = process.argv.pop();
 	const output = path.resolve(utils.getOption('output'));
+	let finalResult;
 
 	const restorer = new Restorer();
 	restorer
@@ -55,13 +57,19 @@ function main() {
 		.then(
 			result => {
 				utils.debug('Restorer result:', result);
+				finalResult = result;
 			},
 			err => {
 				utils.log('Restorer error:', err);
 			},
 		)
 		.then(() => restorer.finish())
-		.then(finish);
+		.then(finish)
+		.then(() => {
+			if (finalResult.includes('FAIL')) {
+				process.exit(1);
+			}
+		});
 }
 
 function finish() {

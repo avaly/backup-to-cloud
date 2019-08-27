@@ -15,10 +15,7 @@ describe('scan', () => {
 	it('prepares file hash', () => {
 		const file = Scanner.scanFile(`${FIXTURES_DIR}bar/1-small.txt`);
 
-		assert.match(
-			file.hash,
-			/^\/test\/_fixtures_\/bar\/1-small\.txt 1024 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
-		);
+		assert.match(file.hash, /^\/bar\/1-small\.txt 1024 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
 		assert.equal(file.size, 1024);
 	});
 

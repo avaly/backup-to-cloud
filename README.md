@@ -33,11 +33,13 @@ Ideally, it should be setup to run in a crontab entry.
 - Check your config file: `bin/backup-to-cloud --check-config`
 - Try it out first with: `bin/backup-to-cloud --dry`
 - Set up a crontab entry for it, for example:
+
   - run every hour with verbose logging:
 
   ```
   0 * * * * cd /path/to/this && ./bin/backup-to-cloud --verbose >> cron.log 2>&1
   ```
+
   - run every 12 hours:
 
   ```
@@ -62,6 +64,12 @@ Restore a file or folder and decrypt:
 ```
 ./bin/backup-restore --help
 ./bin/backup-restore --output OUTPUT_DIR_OR_FILE REMOTE_DIR_OR_FILE
+```
+
+Schedule a restore test:
+
+```
+0 1 * * * cd /path/to/this && ./bin/backup-restore --output TEMPORARY_DIR --test / >> restore-test.log 2>&1
 ```
 
 ### backup-decrypt

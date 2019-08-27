@@ -62,20 +62,8 @@ describe('backuper', () => {
 				// The last file is the DB file
 				assert.equal(awsLog.length, 3);
 
-				assertAWS(
-					awsLog,
-					0,
-					'cp',
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/1-small\.txt/,
-					'STANDARD',
-				);
-				assertAWS(
-					awsLog,
-					1,
-					'cp',
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/2-medium\.txt/,
-					'STANDARD',
-				);
+				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/1-small\.txt/, 'STANDARD');
+				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/bar\/2-medium\.txt/, 'STANDARD');
 				assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
 				utils.assertFilesEqual(TEMP_DIR + 'db-test.sqlite', DATA_DIR + 'db-test.sqlite');
@@ -116,13 +104,7 @@ describe('backuper', () => {
 				// Only one new file + the db (+ the other 3) fit into the session size
 				assert.equal(awsLog.length, 5);
 
-				assertAWS(
-					awsLog,
-					3,
-					'cp',
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/3-large\.txt/,
-					'STANDARD_IA',
-				);
+				assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/bar\/3-large\.txt/, 'STANDARD_IA');
 				assertAWS(awsLog, 4, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
@@ -139,14 +121,8 @@ describe('backuper', () => {
 				// 1-fail.dat should fail by aws-mock,
 				assert.equal(awsLog.length, 8);
 
-				assertAWS(awsLog, 5, 'cp', /s3:\/\/test-bucket\/.*\/_fixtures_\/1-fail\.dat/, 'STANDARD');
-				assertAWS(
-					awsLog,
-					6,
-					'cp',
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/2 '"\$@%&`medium\.dat/,
-					'STANDARD',
-				);
+				assertAWS(awsLog, 5, 'cp', /s3:\/\/test-bucket\/1-fail\.dat/, 'STANDARD');
+				assertAWS(awsLog, 6, 'cp', /s3:\/\/test-bucket\/2 '"\$@%&`medium\.dat/, 'STANDARD');
 				assertAWS(awsLog, 7, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
@@ -170,13 +146,7 @@ describe('backuper', () => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 2);
 
-				assertAWS(
-					awsLog,
-					0,
-					'cp',
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/ham\/first\/first.tar/,
-					'STANDARD',
-				);
+				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/ham\/first\/first.tar/, 'STANDARD');
 				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
@@ -237,12 +207,7 @@ describe('backuper', () => {
 			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.isAtLeast(awsLog.length, 2);
-				assertAWS(
-					awsLog,
-					0,
-					'cp',
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/(1-small|2-medium)\.txt/,
-				);
+				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/(1-small|2-medium)\.txt/);
 				assertAWS(awsLog, awsLog.length - 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
@@ -286,9 +251,9 @@ describe('backuper', () => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 4);
 
-				assertAWS(awsLog, 0, 'rm', /s3:\/\/test-bucket\/.*\/bar\/1-small-recent\.txt/);
-				assertAWS(awsLog, 1, 'rm', /s3:\/\/test-bucket\/.*\/bar\/2-small-long-ago\.txt/);
-				assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/.*\/bar\/4-large-long-ago\.txt/);
+				assertAWS(awsLog, 0, 'rm', /s3:\/\/test-bucket\/bar\/1-small-recent\.txt/);
+				assertAWS(awsLog, 1, 'rm', /s3:\/\/test-bucket\/bar\/2-small-long-ago\.txt/);
+				assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/bar\/4-large-long-ago\.txt/);
 				assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
@@ -332,22 +297,10 @@ describe('backuper', () => {
 				// The last file is the DB file
 				assert.equal(awsLog.length, 4);
 
-				assertAWS(
-					awsLog,
-					0,
-					'cp',
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/1-small\.txt/,
-					'STANDARD',
-				);
-				assertAWS(
-					awsLog,
-					1,
-					'cp',
-					/s3:\/\/test-bucket\/.*\/_fixtures_\/bar\/2-medium\.txt/,
-					'STANDARD',
-				);
+				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/1-small\.txt/, 'STANDARD');
+				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/bar\/2-medium\.txt/, 'STANDARD');
 
-				assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/.*\/bar\/1-small-recent\.txt/);
+				assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/bar\/1-small-recent\.txt/);
 
 				assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 			})
@@ -379,8 +332,8 @@ describe('backuper', () => {
 			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 3);
-				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/.+\/1-fail\.dat/);
-				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/.+\/3-fail\.dat/);
+				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/1-fail\.dat/);
+				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/3-fail\.dat/);
 				assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
