@@ -17,8 +17,8 @@ function assertAWS(log, index, remotePattern, localPattern) {
 }
 
 describe('restorer', () => {
-	const restore = (args, dry) =>
-		utils.run(['--verbose', dry && '--dry'].concat(args || []), 'restore');
+	const restore = (args, dry, allowFailure = false) =>
+		utils.run(['--verbose', dry && '--dry'].concat(args || []), 'restore', allowFailure);
 
 	beforeEach(() => {
 		utils.clean([TEMP_DIR + '*']);
@@ -120,5 +120,55 @@ describe('restorer', () => {
 					FIXTURES_DIR + 'ham/first/2-first.txt',
 				);
 			});
+	});
+
+	it('tests a file', () => {
+		return restore(['--test', '0', '--output', TEMP_DIR, '/'])
+			.then(output => {
+				assert.include(output, 'Restorer.test OK: /bar/1-small.txt');
+				assert.include(output, 'Restorer result: PASS');
+				assert.include(output, 'Restorer.finish: 1 restored, 0 failed');
+			})
+			.then(utils.getAWSLog)
+			.then(awsLog => {
+				assert.isArray(awsLog);
+				assert.equal(awsLog.length, 2);
+				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
+				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/bar\/1-small\.txt/);
+			});
+	});
+
+	it('tests an archive', () => {
+		return restore(['--test', '6', '--output', TEMP_DIR, '/'])
+			.then(output => {
+				assert.include(output, 'Restorer.test OK: /ham/first/first.tar');
+				assert.include(output, 'Restorer result: PASS');
+				assert.include(output, 'Restorer.finish: 1 restored, 0 failed');
+			})
+			.then(utils.getAWSLog)
+			.then(awsLog => {
+				assert.isArray(awsLog);
+				assert.equal(awsLog.length, 2);
+				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
+				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/ham\/first\/first\.tar/);
+			});
+	});
+
+	it('tests a failing file', () => {
+		return restore(['--test', '3', '--output', TEMP_DIR, '/'], false, true)
+			.then(output => {
+				assert.include(output, 'exit code: 1');
+				assert.include(output, 'Restorer.test FAIL: /1-fail.dat');
+				assert.include(output, 'Restorer result: FAIL');
+				assert.include(output, 'Restorer.finish: 0 restored, 1 failed');
+			})
+			.then(utils.getAWSLog)
+			.then(awsLog => {
+				assert.isArray(awsLog);
+				assert.equal(awsLog.length, 2);
+				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
+				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/1-fail\.dat/);
+			})
+			.catch(err => console.log('err', err));
 	});
 });

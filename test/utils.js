@@ -69,7 +69,7 @@ module.exports = {
 		return db.setAll(data);
 	},
 
-	run: (args, binFile) => {
+	run: (args, binFile, allowFailure = false) => {
 		const bin = BIN_FILES[binFile || 'backup'];
 		const cmd = process.env.COVERAGE ? './node_modules/.bin/istanbul' : bin;
 		const filteredArgs = args.filter(arg => !!arg);
@@ -85,7 +85,13 @@ module.exports = {
 			].concat(filteredArgs)
 			: filteredArgs;
 
-		return utils.execPromise(cmd, execArgs);
+		const promise = utils.execPromise(cmd, execArgs);
+
+		if (allowFailure) {
+			return promise.catch(err => err);
+		}
+
+		return promise;
 	},
 
 	delay: timeout => {
