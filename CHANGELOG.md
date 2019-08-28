@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/avaly/backup-to-cloud/compare/v4.1.0...v4.2.0) (2019-08-28)
+
+
+### Features
+
+* Restore confirmation ([3de3b08](https://github.com/avaly/backup-to-cloud/commit/3de3b08))
+* Restore test ([90cfcfc](https://github.com/avaly/backup-to-cloud/commit/90cfcfc))
+
 ## [4.1.0](https://github.com/avaly/backup-to-cloud/compare/v4.0.2...v4.1.0) (2019-08-19)
 
 
