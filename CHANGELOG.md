@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.2.1](https://github.com/avaly/backup-to-cloud/compare/v4.2.0...v4.2.1) (2020-11-01)
+
+
+### Bug Fixes
+
+* Support large file lists ([30875b2](https://github.com/avaly/backup-to-cloud/commit/30875b2))
+
 ## [4.2.0](https://github.com/avaly/backup-to-cloud/compare/v4.1.0...v4.2.0) (2019-08-28)
 
 
