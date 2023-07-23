@@ -3,19 +3,26 @@ const fs = require('fs');
 
 const Archiver = require('../lib/Archiver');
 const Crypter = require('../lib/Crypter');
+const Scanner = require('../lib/Scanner');
+const appUtils = require('../lib/utils');
 const utils = require('./utils');
 
 const DATA_DIR = utils.DATA_DIR;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
 
-function assertAWS(log, index, operation, pattern, storageClass) {
+function assertAWS(log, index, operation, pattern, storageClass, hash) {
 	assert.isAbove(log.length, index);
 	assert.equal(log[index][1], operation);
 	if (operation === 'cp') {
 		assert.match(log[index][3], pattern);
 		if (storageClass) {
+			assert.include(log[index], '--storage-class');
 			assert.include(log[index], storageClass);
+		}
+		if (hash) {
+			assert.include(log[index], '--metadata');
+			assert.include(log[index], `hash=${hash}`);
 		}
 	} else {
 		assert.match(log[index][2], pattern);
@@ -62,7 +69,16 @@ describe('backuper', () => {
 				// The last file is the DB file
 				assert.equal(awsLog.length, 3);
 
-				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/1-small\.txt/, 'STANDARD');
+				const file = Scanner.scanFile(`${FIXTURES_DIR}bar/1-small.txt`);
+
+				assertAWS(
+					awsLog,
+					0,
+					'cp',
+					/s3:\/\/test-bucket\/bar\/1-small\.txt/,
+					'STANDARD',
+					appUtils.hash(file.hash),
+				);
 				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/bar\/2-medium\.txt/, 'STANDARD');
 				assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
@@ -332,8 +348,8 @@ describe('backuper', () => {
 			.then(awsLog => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 3);
-				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/1-fail\.dat/);
-				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/3-fail\.dat/);
+				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/1-fail\.dat/, 'STANDARD', 'abc');
+				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/3-fail\.dat/, 'STANDARD_IA', 'abc');
 				assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
