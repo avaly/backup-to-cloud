@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.3.0](https://github.com/avaly/backup-to-cloud/compare/v4.2.1...v4.3.0) (2023-07-23)
+
+
+### Features
+
+* Save file hash as S3 metadata ([#45](https://github.com/avaly/backup-to-cloud/issues/45)) ([ffed47b](https://github.com/avaly/backup-to-cloud/commit/ffed47b))
+* Upgrade sqlite ([#44](https://github.com/avaly/backup-to-cloud/issues/44)) ([f44fc65](https://github.com/avaly/backup-to-cloud/commit/f44fc65))
+
 ### [4.2.1](https://github.com/avaly/backup-to-cloud/compare/v4.2.0...v4.2.1) (2020-11-01)
 
 
