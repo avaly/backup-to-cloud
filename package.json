@@ -39,6 +39,8 @@
     "sqlite3": "5.1.6"
   },
   "devDependencies": {
+    "@commitlint/cli": "17.6.7",
+    "@commitlint/config-conventional": "17.6.7",
     "chai": "^4.2.0",
     "conventional-recommended-bump": "^6.0.0",
     "eslint": "^6.2.2",
@@ -48,16 +50,29 @@
     "mocha": "^6.2.0",
     "nyc": "15.1.0",
     "prettier": "1.18.2",
-    "standard-version": "^7.0.0",
-    "validate-commit-msg": "^2.14.0"
+    "standard-version": "^7.0.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/avaly/backup-to-cloud.git"
   },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "subject-case": [
+        2,
+        "always",
+        [
+          "sentence-case"
+        ]
+      ]
+    }
+  },
   "husky": {
     "hooks": {
-      "commit-msg": "validate-commit-msg",
+      "commit-msg": "commitlint --edit $1",
       "pre-commit": "lint-staged"
     }
   }
