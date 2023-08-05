@@ -9,15 +9,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         node: [12, 14, 16, 18, 20]
-
     name: Node.js ${{ matrix.node }}
-
     steps:
       - uses: actions/checkout@v3.3.0
       - uses: actions/setup-node@v3.6.0
@@ -27,4 +24,13 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn lint
       - run: yarn test
-      - run: yarn codecov
+      - run: yarn coverage
+        if: matrix.node == 18
+      - name: Upload coverage to Codecov
+        if: matrix.node == 18
+        uses: codecov/codecov-action@v3.1.4
+        with:
+          directory: ./coverage/
+          fail_ci_if_error: true
+          name: codecov
+          verbose: true

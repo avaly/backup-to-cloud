@@ -1,4 +1,5 @@
 /bin/*.lock
+/.nyc_output/
 /coverage/
 /data/
 /node_modules

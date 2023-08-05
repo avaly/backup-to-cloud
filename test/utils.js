@@ -71,21 +71,9 @@ module.exports = {
 
 	run: (args, binFile, allowFailure = false) => {
 		const bin = BIN_FILES[binFile || 'backup'];
-		const cmd = process.env.COVERAGE ? './node_modules/.bin/istanbul' : bin;
 		const filteredArgs = args.filter(arg => !!arg);
-		// prettier-ignore
-		const execArgs = process.env.COVERAGE
-			? [
-				'cover',
-				'--report', 'none',
-				'--print', 'none',
-				'--include-pid',
-				bin,
-				'--'
-			].concat(filteredArgs)
-			: filteredArgs;
 
-		const promise = utils.execPromise(cmd, execArgs);
+		const promise = utils.execPromise(bin, filteredArgs);
 
 		if (allowFailure) {
 			return promise.catch(err => err);
