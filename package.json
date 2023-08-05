@@ -41,16 +41,16 @@
   "devDependencies": {
     "@commitlint/cli": "17.6.7",
     "@commitlint/config-conventional": "17.6.7",
-    "chai": "^4.2.0",
-    "conventional-recommended-bump": "^6.0.0",
-    "eslint": "^6.2.2",
+    "chai": "4.2.0",
+    "conventional-recommended-bump": "6.0.0",
+    "eslint": "6.2.2",
     "husky": "3.0.4",
     "lint-staged": "9.2.5",
     "md5-file": "4.0.0",
-    "mocha": "^6.2.0",
+    "mocha": "6.2.0",
     "nyc": "15.1.0",
     "prettier": "1.18.2",
-    "standard-version": "^8.0.0"
+    "standard-version": "8.0.0"
   },
   "repository": {
     "type": "git",
