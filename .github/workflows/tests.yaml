@@ -30,7 +30,7 @@ jobs:
         if: matrix.node == 18
         uses: codecov/codecov-action@v3.1.4
         with:
-          directory: ./nyc_output/
+          directory: ./coverage/
           fail_ci_if_error: true
           name: codecov
           verbose: true

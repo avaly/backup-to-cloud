@@ -4,7 +4,7 @@
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "scripts": {
-    "coverage": "rm -rf .nyc_output/ coverage/ && BACKUP_ENV=test nyc --reporter=html --reporter=text mocha test/*-test.js",
+    "coverage": "rm -rf .nyc_output/ coverage/ && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha test/*-test.js",
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
     "pretty": "prettier --write --list-different \"**/*.js\"",
     "release": "standard-version",
