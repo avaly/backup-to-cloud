@@ -13,7 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        node: [12, 14, 16, 18, 20]
+        node:
+          - 14
+          - 16
+          - 18
+          - 20
     name: Node.js ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v3.3.0
