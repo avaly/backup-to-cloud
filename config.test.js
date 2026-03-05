@@ -22,6 +22,7 @@ module.exports = Object.assign({}, config, {
 		`${FIXTURES_DIR}${path.sep}bar`,
 		`${FIXTURES_DIR}${path.sep}ham`,
 	],
+	storageClassIAMinimumSize: 128 * 1024,
 	s3bucket: 'test-bucket',
 	tempDir: path.resolve(__dirname, 'tmp', 'tmp'),
 });
