@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.4.0](https://github.com/avaly/backup-to-cloud/compare/v4.3.0...v4.4.0) (2026-03-05)
+
+
+### Features
+
+* Storage class IA file size config ([#60](https://github.com/avaly/backup-to-cloud/issues/60)) ([b767e77](https://github.com/avaly/backup-to-cloud/commit/b767e774c7b8b4d991ad68f6ef17de9e768b6893))
+
 ## [4.3.0](https://github.com/avaly/backup-to-cloud/compare/v4.2.1...v4.3.0) (2023-07-23)
 
 
