@@ -18,10 +18,12 @@ jobs:
           - 16
           - 18
           - 20
+          - 22
+          - 24
     name: Node.js ${{ matrix.node }}
     steps:
-      - uses: actions/checkout@v3.3.0
-      - uses: actions/setup-node@v3.6.0
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version: ${{ matrix.node }}
           cache: 'yarn'
@@ -29,10 +31,10 @@ jobs:
       - run: yarn lint
       - run: yarn test
       - run: yarn coverage
-        if: matrix.node == 18
+        if: matrix.node == 24
       - name: Upload coverage to Codecov
-        if: matrix.node == 18
-        uses: codecov/codecov-action@v3.1.4
+        if: matrix.node == 24
+        uses: codecov/codecov-action@v3.1.6
         with:
           directory: ./coverage/
           fail_ci_if_error: true
