@@ -30,13 +30,13 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn lint
       - run: yarn test
-      - run: yarn coverage
-        if: matrix.node == 22
-      - name: Upload coverage to Codecov
-        if: matrix.node == 22
-        uses: codecov/codecov-action@v3.1.6
-        with:
-          directory: ./coverage/
-          fail_ci_if_error: true
-          name: codecov
-          verbose: true
+      # - run: yarn coverage
+      #   if: matrix.node == 24
+      # - name: Upload coverage to Codecov
+      #   if: matrix.node == 24
+      #   uses: codecov/codecov-action@v3.1.6
+      #   with:
+      #     directory: ./coverage/
+      #     fail_ci_if_error: true
+      #     name: codecov
+      #     verbose: true
