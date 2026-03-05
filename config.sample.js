@@ -45,6 +45,10 @@ module.exports = {
 	],
 	// Custom temporary directory for encryption/archiving operations
 	tempDir: '/tmp/backup-to-cloud',
+	// Files larger than this size (in bytes) will be stored with the S3 Infrequent Access storage class
+	// `STANDARD_IA` has a minimum object size of 128KB. Smaller objects will be charged for 128KB of storage.
+	// This can be used to disable the storage class for alternate S3 services which don't support it.
+	storageClassIAMinimumSize: 128 * 1024,
 	// The S3 bucket name to use for backup
 	// Note: the bucket needs to be created before
 	s3bucket: 'REPLACE-ME-WITH-YOUR-BUCKET-NAME',
