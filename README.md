@@ -3,7 +3,6 @@
 [![Github Actions](https://github.com/avaly/backup-to-cloud/actions/workflows/tests.yaml/badge.svg)](https://github.com/avaly/backup-to-cloud/actions)
 [![NPM version](https://img.shields.io/npm/v/backup-to-cloud.svg?style=flat)](https://www.npmjs.com/package/backup-to-cloud)
 [![Install size](https://packagephobia.now.sh/badge?p=backup-to-cloud)](https://packagephobia.now.sh/result?p=backup-to-cloud)
-[![codecov](https://codecov.io/gh/avaly/backup-to-cloud/branch/main/graph/badge.svg?token=7LMESYrEby)](https://codecov.io/gh/avaly/backup-to-cloud)
 
 A simple backup tool which uploads encrypted files to S3, in batches.
 
@@ -29,7 +28,7 @@ Ideally, it should be setup to run in a crontab entry.
 ## Install
 
 - `aws configure`
-- `yarn install --production` OR `npm install --production`
+- `npm install --production`
 - `cp config.sample.js config.default.js`
 - Modify your new config file
 - Check your config file: `bin/backup-to-cloud --check-config`
