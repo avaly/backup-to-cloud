@@ -15,7 +15,7 @@ const LOCK_FILE = path.join(__dirname, '.backup-to-cloud.lock');
 let db;
 
 function usage() {
-	console.log(`${package.name} version ${package.version}
+	console.log(`${package.name} v${package.version}
 
 Usage: ${__filename} OPTIONS
 
@@ -39,7 +39,7 @@ async function main() {
 	}
 	fs.writeFileSync(LOCK_FILE, '');
 
-	utils.log(`${package.name} version ${package.version}`);
+	utils.log(`${package.name} v${package.version}`);
 
 	if (utils.hasFlag('check-config')) {
 		const configChecker = new ConfigChecker();

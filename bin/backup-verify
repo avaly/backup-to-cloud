@@ -5,7 +5,7 @@ const package = require('../package.json');
 const utils = require('../lib/utils');
 
 function usage() {
-	console.log(`${package.name} version ${package.version}
+	console.log(`${package.name} v${package.version}
 
 Usage: ${__filename} OPTIONS
 
@@ -17,7 +17,7 @@ Options:
 }
 
 async function main() {
-	utils.log(`${package.name} version ${package.version}`);
+	utils.log(`${package.name} v${package.version}`);
 	if (utils.DRY_RUN) {
 		utils.log('This is a DRY run! No changes/uploads will be made.');
 	}
