@@ -6,7 +6,6 @@
 	"commitMessageTopic": "{{depName}}",
 	"extends": ["config:recommended"],
 	"labels": ["dependencies"],
-	"postUpdateOptions": ["yarnDedupeHighest"],
 	"prCreation": "not-pending",
 	"prConcurrentLimit": 3,
 	"prHourlyLimit": 1,
