@@ -27,6 +27,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
+      - run: npm -v
       - run: npm ci --include prod
       - run: npm run lint
       - run: npm test
