@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
-      - run: npm ci || cat ~/.npm/_logs/*.log
+      - run: npm ci --include prod
       - run: npm run lint
       - run: npm test
       # - run: npm run coverage
