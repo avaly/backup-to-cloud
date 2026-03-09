@@ -14,23 +14,21 @@ jobs:
       matrix:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         node:
-          - 14
-          - 16
-          - 18
-          - 20
           - 22
           - 24
+          - 25
     name: Node.js ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v6.0.2
       - uses: actions/setup-node@v6.3.0
         with:
           node-version: ${{ matrix.node }}
-          cache: 'yarn'
-      - run: yarn install --frozen-lockfile
-      - run: yarn lint
-      - run: yarn test
-      # - run: yarn coverage
+          cache: 'npm'
+      - run: npm -v
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      # - run: npm run coverage
       #   if: matrix.node == 24
       # - name: Upload coverage to Codecov
       #   if: matrix.node == 24
