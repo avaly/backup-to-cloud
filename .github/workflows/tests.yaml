@@ -16,6 +16,7 @@ jobs:
         node:
           - 22
           - 24
+          - 25
     name: Node.js ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v6.0.2
@@ -24,7 +25,7 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: 'npm'
       - run: npm -v
-      - run: npm ci --include prod
+      - run: npm ci
       - run: npm run lint
       - run: npm test
       # - run: npm run coverage
