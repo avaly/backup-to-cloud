@@ -28,7 +28,7 @@ Ideally, it should be setup to run in a crontab entry.
 ## Install
 
 - `aws configure`
-- `npm install --production`
+- `npm ci`
 - `cp config.sample.js config.default.js`
 - Modify your new config file
 - Check your config file: `bin/backup-to-cloud --check-config`
