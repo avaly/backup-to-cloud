@@ -1,6 +1,6 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"branchConcurrentLimit": 9,
+	"branchConcurrentLimit": 8,
 	"commitMessageAction": "Upgrade",
 	"commitMessagePrefix": "chore:",
 	"commitMessageTopic": "{{depName}}",
@@ -10,8 +10,7 @@
 	"minimumReleaseAge": "7 days",
 	"postUpdateOptions": ["npmDedupe"],
 	"prCreation": "not-pending",
-	"prConcurrentLimit": 3,
-	"prHourlyLimit": 1,
+	"prConcurrentLimit": 4,
 	"rebaseWhen": "conflicted",
 	"reviewers": ["avaly"],
 	"timezone": "Etc/UTC",
