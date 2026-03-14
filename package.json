@@ -40,8 +40,8 @@
     "sqlite3": "5.1.7"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.8.1",
-    "@commitlint/config-conventional": "17.8.1",
+    "@commitlint/cli": "20.4.3",
+    "@commitlint/config-conventional": "20.4.3",
     "chai": "4.5.0",
     "conventional-recommended-bump": "6.1.0",
     "eslint": "6.8.0",
