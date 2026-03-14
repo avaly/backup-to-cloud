@@ -45,7 +45,7 @@
     "chai": "4.5.0",
     "conventional-recommended-bump": "6.1.0",
     "eslint": "6.8.0",
-    "husky": "3.1.0",
+    "husky": "9.1.7",
     "lint-staged": "9.5.0",
     "md5-file": "4.0.0",
     "mocha": "6.2.3",
