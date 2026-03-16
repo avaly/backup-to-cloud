@@ -70,7 +70,7 @@ Restore a file or folder and decrypt:
 Schedule a restore test:
 
 ```
-0 1 * * * cd /path/to/this && ./bin/backup-restore --output TEMPORARY_DIR --test / >> restore-test.log 2>&1
+0 1 * * * cd /path/to/this && ./bin/backup-restore --max-size 1000000 --output TEMPORARY_DIR --test / >> restore-test.log 2>&1
 ```
 
 ### backup-decrypt

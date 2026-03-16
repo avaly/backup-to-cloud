@@ -122,6 +122,23 @@ describe('restorer', () => {
 			});
 	});
 
+	it('filters by max size on dry mode', () => {
+		return restore(['--max-size', '10000', '--output', TEMP_DIR, '/'], true)
+			.then(output => {
+				assert.include(output, 'This is a DRY run!');
+				assert.include(
+					output,
+					'Restorer.filter: 3 matching files with a total file size of 4.1 kB in DB',
+				);
+			})
+			.then(utils.getAWSLog)
+			.then(awsLog => {
+				assert.isArray(awsLog);
+				assert.equal(awsLog.length, 1);
+				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
+			});
+	});
+
 	it('tests a file', () => {
 		return restore(['--test', '0', '--output', TEMP_DIR, '/'])
 			.then(output => {
