@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.5.0](https://github.com/avaly/backup-to-cloud/compare/v4.4.0...v4.5.0) (2026-03-16)
+
+
+### Features
+
+* Add max-size option to restore tool ([#76](https://github.com/avaly/backup-to-cloud/issues/76)) ([d7621a3](https://github.com/avaly/backup-to-cloud/commit/d7621a3239ec473753b8007c0d44ebaffcb28134))
+
 ## [4.4.0](https://github.com/avaly/backup-to-cloud/compare/v4.3.0...v4.4.0) (2026-03-05)
 
 
