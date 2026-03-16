@@ -16,7 +16,8 @@ Usage: ${__filename} [OPTIONS] REMOTE_DIR_OR_FILE
 
 Options:
 	--output OUTPUT_DIR_OR_FILE [required]
-	--test
+	--max-size BYTES            Restore only files <= to this size in bytes
+	--test                      Restore only one random file
 	--ignore-lock
 	--yes
 	--verbose
@@ -30,6 +31,9 @@ Examples:
 	${__filename} --output /foo/ /remote/
 		Will restore s3://BUCKET/remote/dir/file1.txt to /foo/remote/dir/file1.txt
 		Will restore s3://BUCKET/remote/other/file2.txt to /foo/remote/other/file2.txt
+
+	${__filename} --output /foo/ --test /remote/
+		Will restore a random file with the prefix s3://BUCKET/remote/ to /foo/remote/
 `);
 }
 
