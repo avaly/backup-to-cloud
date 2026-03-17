@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.5.1](https://github.com/avaly/backup-to-cloud/compare/v4.5.0...v4.5.1) (2026-03-17)
+
+
+### Bug Fixes
+
+* Restore test respects max-size flag ([#79](https://github.com/avaly/backup-to-cloud/issues/79)) ([9846fca](https://github.com/avaly/backup-to-cloud/commit/9846fcac3ac29f1cc5ec9a5c5f4def182043fcb2))
+
 ## [4.5.0](https://github.com/avaly/backup-to-cloud/compare/v4.4.0...v4.5.0) (2026-03-16)
 
 
