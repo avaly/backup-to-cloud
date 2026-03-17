@@ -45,18 +45,15 @@ async function main() {
 
 	if (utils.hasFlag('check-config')) {
 		const configChecker = new ConfigChecker();
-		return configChecker
-			.check()
-			.then(
-				() => {
-					utils.log('Config seems in order!');
-				},
-				(err) => {
-					utils.log('Config check failed:');
-					utils.log(err.message || err);
-				},
-			)
-			.then(finish);
+		try {
+			await configChecker.check();
+			utils.log('Config seems in order!');
+		} catch (err) {
+			utils.log('Config check failed:');
+			utils.log(err.message || err);
+		}
+		finish();
+		return;
 	}
 
 	utils.log('Starting...');
@@ -76,21 +73,17 @@ async function main() {
 		const backuper = new Backuper(db, {
 			random: utils.hasFlag('random-order'),
 		});
-		backuper
-			.start()
-			.then(
-				(result) => {
-					utils.log('Transfer result', result);
-				},
-				(err) => {
-					utils.log('Transfer error', err);
-				},
-			)
-			.then(() => backuper.finish())
-			.then(finish);
-	} else {
-		finish();
+
+		try {
+			const result = await backuper.start();
+			utils.log('Transfer result', result);
+		} catch (err) {
+			utils.log('Transfer error', err);
+		}
+		await backuper.finish();
 	}
+
+	finish();
 }
 
 function finish() {
@@ -104,5 +97,11 @@ function finish() {
 if (utils.hasFlag('help')) {
 	usage();
 } else {
-	main();
+	try {
+		main();
+	} catch (err) {
+		utils.log(`Error: ${err.message}`);
+		finish();
+		process.exit(1);
+	}
 }

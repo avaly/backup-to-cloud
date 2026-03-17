@@ -33,7 +33,7 @@ module.exports = {
 
 	execPromise: utils.execPromise,
 
-	clean: (items) => {
+	clean(items) {
 		if (fs.existsSync(AWS_LOG)) {
 			fs.unlinkSync(AWS_LOG);
 		}
@@ -47,7 +47,7 @@ module.exports = {
 		}
 	},
 
-	getAWSLog: () => {
+	getAWSLog() {
 		if (fs.existsSync(AWS_LOG)) {
 			return JSON.parse(fs.readFileSync(AWS_LOG, 'utf-8'));
 		}
@@ -69,26 +69,27 @@ module.exports = {
 		return db.setAll(data);
 	},
 
-	run: (args, binFile, allowFailure = false) => {
+	async run(args, binFile, allowFailure = false) {
 		const bin = BIN_FILES[binFile || 'backup'];
 		const filteredArgs = args.filter((arg) => !!arg);
 
-		const promise = utils.execPromise(bin, filteredArgs);
-
-		if (allowFailure) {
-			return promise.catch((err) => err);
+		try {
+			return await utils.execPromise(bin, filteredArgs);
+		} catch (err) {
+			if (allowFailure) {
+				return err;
+			}
+			throw err;
 		}
-
-		return promise;
 	},
 
-	delay: (timeout) => {
+	delay(timeout) {
 		return new Promise((resolve) => {
 			setTimeout(resolve, timeout);
 		});
 	},
 
-	mockLocal: (path, hash, size, type) => {
+	mockLocal(path, hash, size, type) {
 		return {
 			path: path,
 			hash: hash || utils.DELETED,
@@ -97,7 +98,7 @@ module.exports = {
 		};
 	},
 
-	mockRemote: (path, hash, size, timestamp, type) => {
+	mockRemote(path, hash, size, timestamp, type) {
 		return {
 			path: path,
 			hash: hash || 'abc',
@@ -107,19 +108,19 @@ module.exports = {
 		};
 	},
 
-	assertLocalDeleted: (db, path) => {
+	assertLocalDeleted(db, path) {
 		assert.equal(db.localsByPath[path].hash, utils.DELETED);
 	},
 
-	assertFilesEqual: (fileA, fileB) => {
+	assertFilesEqual(fileA, fileB) {
 		assert.equal(md5File.sync(fileA), md5File.sync(fileB));
 	},
 
-	assertFilesNotEqual: (fileA, fileB) => {
+	assertFilesNotEqual(fileA, fileB) {
 		assert.notEqual(md5File.sync(fileA), md5File.sync(fileB));
 	},
 
-	cp: (from, to) => {
+	cp(from, to) {
 		const cmd = ['cp', from, to].join(' ');
 		execSync(cmd, {
 			encoding: 'utf-8',

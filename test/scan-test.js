@@ -19,58 +19,59 @@ describe('scan', () => {
 		assert.equal(file.size, 1024);
 	});
 
-	it('saves nothing for dry mode', () => {
-		return scan(true).then((output) => {
-			assert.include(output, 'This is a DRY run!');
-			assert.include(output, '/bar - Files found: 3');
-			assert.include(output, '/bar - Archives found: 0');
-			assert.include(output, '/foo - Files found: 4');
-			assert.include(output, '/foo - Archives found: 0');
-			assert.include(output, '/ham - Files found: 0');
-			assert.include(output, '/ham - Archives found: 2');
-			assert.isFalse(fs.existsSync(utils.DATA_FILE), 'data file was not created');
-		});
+	it('saves nothing for dry mode', async () => {
+		const output = await scan(true);
+
+		assert.include(output, 'This is a DRY run!');
+		assert.include(output, '/bar - Files found: 3');
+		assert.include(output, '/bar - Archives found: 0');
+		assert.include(output, '/foo - Files found: 4');
+		assert.include(output, '/foo - Archives found: 0');
+		assert.include(output, '/ham - Files found: 0');
+		assert.include(output, '/ham - Archives found: 2');
+		assert.isFalse(fs.existsSync(utils.DATA_FILE), 'data file was not created');
 	});
 
-	it('scans all files for first time', () => {
-		return scan()
-			.then(utils.getDataContent)
-			.then((db) => {
-				assert.match(db.settings.lastScanTimestamp, /^\d+$/);
-				assert.equal(db.locals.length, 9);
+	it('scans all files for first time', async () => {
+		await scan();
 
-				// File sizes
-				assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/1-fail.dat`].size, 1024);
-				assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`].size, 102400);
-				assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/3-fail.dat`].size, 204800);
+		const db = await utils.getDataContent();
 
-				assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
-				// The hashes depend on the file modified time
-				// so we can't rely on these for tests
-				assert.isString(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`].hash);
-				assert.equal(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`].hash.length, 64);
-				assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/2-medium.txt`]);
-				assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/3-large.txt`]);
+		assert.match(db.settings.lastScanTimestamp, /^\d+$/);
+		assert.equal(db.locals.length, 9);
 
-				assert.isObject(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`]);
-				// 2 files @ 1024 bytes
-				assert.equal(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`].size, 2048);
-				assert.isObject(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`]);
-				// 2 files @ 1024 bytes
-				assert.equal(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`].size, 2048);
+		// File sizes
+		assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/1-fail.dat`].size, 1024);
+		assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`].size, 102400);
+		assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/3-fail.dat`].size, 204800);
 
-				// Ignored files
-				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}bar/.svn/info`]);
-				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}bar/Thumbs.db`]);
-				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/.DS_Store`]);
-				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/node_modules/blah/package.json`]);
-			});
+		assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
+		// The hashes depend on the file modified time
+		// so we can't rely on these for tests
+		assert.isString(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`].hash);
+		assert.equal(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`].hash.length, 64);
+		assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/2-medium.txt`]);
+		assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/3-large.txt`]);
+
+		assert.isObject(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`]);
+		// 2 files @ 1024 bytes
+		assert.equal(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`].size, 2048);
+		assert.isObject(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`]);
+		// 2 files @ 1024 bytes
+		assert.equal(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`].size, 2048);
+
+		// Ignored files
+		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}bar/.svn/info`]);
+		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}bar/Thumbs.db`]);
+		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/.DS_Store`]);
+		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/node_modules/blah/package.json`]);
 	});
 
 	it('scans again only after interval', async () => {
 		await scan();
 
 		const db1 = await utils.getDataContent();
+
 		assert.match(db1.settings.lastScanTimestamp, /^\d+$/);
 		const timestamp = db1.settings.lastScanTimestamp;
 
@@ -78,6 +79,7 @@ describe('scan', () => {
 		await scan();
 
 		const db2 = await utils.getDataContent();
+
 		assert.equal(db2.settings.lastScanTimestamp, timestamp);
 
 		await utils.delay(1001);
@@ -86,10 +88,11 @@ describe('scan', () => {
 		await scan();
 
 		const db3 = await utils.getDataContent();
+
 		assert.notEqual(db3.settings.lastScanTimestamp, timestamp);
 	});
 
-	it('marks deleted files', () => {
+	it('marks deleted files', async () => {
 		utils.setDataContent({
 			locals: [
 				utils.mockLocal(`${FIXTURES_DIR}foo/old.txt`),
@@ -115,33 +118,34 @@ describe('scan', () => {
 			],
 		});
 
-		return scan()
-			.then(utils.getDataContent)
-			.then((db) => {
-				assert.equal(db.locals.length, 12);
+		await scan();
 
-				utils.assertLocalDeleted(db, `${FIXTURES_DIR}foo/old.txt`);
-				utils.assertLocalDeleted(db, `${FIXTURES_DIR}old/from-old-source.txt`);
-				utils.assertLocalDeleted(db, `${FIXTURES_DIR}ham/third/third.tar`);
+		const db = await utils.getDataContent();
 
-				assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
+		assert.equal(db.locals.length, 12);
 
-				return utils.execPromise('mv', [`${FIXTURES_DIR}bar/1-small.txt`, `${FIXTURES_DIR}../`]);
-			})
-			.then(() => utils.delay(1001))
-			.then(scan)
-			.then(utils.getDataContent)
-			.then((db) => {
-				utils.assertLocalDeleted(db, `${FIXTURES_DIR}bar/1-small.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}foo/old.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}old/from-old-source.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}ham/third/third.tar`);
 
-				return utils.execPromise('mv', [
-					`${FIXTURES_DIR}../1-small.txt`,
-					`${FIXTURES_DIR}bar/1-small.txt`,
-				]);
-			});
+		assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
+
+		await utils.execPromise('mv', [`${FIXTURES_DIR}bar/1-small.txt`, `${FIXTURES_DIR}../`]);
+		await utils.delay(1001);
+
+		await scan();
+
+		const db2 = await utils.getDataContent();
+
+		utils.assertLocalDeleted(db2, `${FIXTURES_DIR}bar/1-small.txt`);
+
+		await utils.execPromise('mv', [
+			`${FIXTURES_DIR}../1-small.txt`,
+			`${FIXTURES_DIR}bar/1-small.txt`,
+		]);
 	});
 
-	it('removes deleted files which have not been synced yet', () => {
+	it('removes deleted files which have not been synced yet', async () => {
 		utils.setDataContent({
 			locals: [
 				utils.mockLocal(`${FIXTURES_DIR}foo/old.txt`),
@@ -155,12 +159,12 @@ describe('scan', () => {
 			remotes: [],
 		});
 
-		return scan()
-			.then(utils.getDataContent)
-			.then((db) => {
-				assert.equal(db.locals.length, 9);
-				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`]);
-				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}ham/fourth/fourth.tar`]);
-			});
+		await scan();
+
+		const db = await utils.getDataContent();
+
+		assert.equal(db.locals.length, 9);
+		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`]);
+		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}ham/fourth/fourth.tar`]);
 	});
 });
