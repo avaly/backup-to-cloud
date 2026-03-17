@@ -6,6 +6,7 @@
   "scripts": {
     "coverage": "rm -rf .nyc_output/ coverage/ && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha test/*-test.js",
     "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
+    "prepare": "husky install",
     "pretty": "prettier --write --list-different \"**/*.js\"",
     "pretty-ci": "prettier --check \"**/*.js\"",
     "release": "standard-version",
@@ -69,12 +70,6 @@
           "sentence-case"
         ]
       ]
-    }
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint --edit $1",
-      "pre-commit": "lint-staged"
     }
   }
 }
