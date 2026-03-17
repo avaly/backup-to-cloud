@@ -53,7 +53,7 @@ function main() {
 
 	const input = process.argv.pop();
 	const output = path.resolve(utils.getOption('output'));
-	let finalResult;
+	let finalResult = '';
 
 	const restorer = new Restorer();
 	restorer
@@ -65,6 +65,7 @@ function main() {
 			},
 			err => {
 				utils.log('Restorer error:', err);
+				finalResult = 'FAIL';
 			},
 		)
 		.then(() => restorer.finish())
