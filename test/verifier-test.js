@@ -17,14 +17,14 @@ describe('verifier', () => {
 	});
 
 	it('OK state', () => {
-		return verify('ls-ok.txt').then(output => {
+		return verify('ls-ok.txt').then((output) => {
 			assert.include(output, 'All remote files are present in the DB!');
 			assert.include(output, 'All DB files are present remotely!');
 		});
 	});
 
 	it('extra remote file, do nothing', () => {
-		return verify('ls-extra-remote.txt').then(output => {
+		return verify('ls-extra-remote.txt').then((output) => {
 			assert.include(output, 'Found 2 remote file(s) not in the DB:');
 			assert.include(output, '/blah/who.dat');
 			assert.include(output, '/what/is/this.txt');
@@ -34,7 +34,7 @@ describe('verifier', () => {
 
 	it('extra DB file, do nothing', () => {
 		return verify('ls-extra-db.txt', true)
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'This is a DRY run! No changes/uploads will be made.');
 				assert.include(output, 'All remote files are present in the DB!');
 				assert.include(output, 'Found 2 DB file(s) not present remotely:');
@@ -42,21 +42,21 @@ describe('verifier', () => {
 				assert.include(output, '/foo/1-fail.dat');
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.remotes.length, 6);
 			});
 	});
 
 	it('extra DB file, remove from DB', () => {
 		return verify('ls-extra-db.txt', false)
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'All remote files are present in the DB!');
 				assert.include(output, 'Found 2 DB file(s) not present remotely:');
 				assert.include(output, '/bar/3-large.txt');
 				assert.include(output, '/foo/1-fail.dat');
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.remotes.length, 4);
 				assert.isUndefined(db.remotesByPath['/bar/3-large.txt']);
 				assert.isUndefined(db.remotesByPath['/foo/1-fail.dat']);

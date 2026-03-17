@@ -28,20 +28,18 @@ function main() {
 		process.exit(1);
 	}
 
-	Crypter.decrypt(fileInput, fileOutput)
-		.then(
-			() => {
-				utils.log(`decrypted: ${fileInput} > ${fileOutput}`);
-			},
-			(err) => {
-				utils.log('Decrypt error', err);
-			}
-		);
+	Crypter.decrypt(fileInput, fileOutput).then(
+		() => {
+			utils.log(`decrypted: ${fileInput} > ${fileOutput}`);
+		},
+		(err) => {
+			utils.log('Decrypt error', err);
+		},
+	);
 }
 
 if (utils.hasFlag('help')) {
 	usage();
-}
-else {
+} else {
 	main();
 }

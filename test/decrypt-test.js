@@ -16,7 +16,7 @@ describe('decrypt', () => {
 	}
 
 	it('shows help', () => {
-		return utils.run(['--help'], 'decrypt').then(result => {
+		return utils.run(['--help'], 'decrypt').then((result) => {
 			assert.include(result, 'Usage:');
 		});
 	});
@@ -43,7 +43,7 @@ describe('decrypt', () => {
 		const contentSource = fs.readFileSync(fileSource, 'utf-8');
 
 		return Crypter.encrypt(fileSource)
-			.then(encryptedFile => {
+			.then((encryptedFile) => {
 				const args = ['--output', fileOutput, encryptedFile.path];
 
 				const contentEncrypted = fs.readFileSync(encryptedFile.path, 'utf-8');

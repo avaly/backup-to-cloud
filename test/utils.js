@@ -33,7 +33,7 @@ module.exports = {
 
 	execPromise: utils.execPromise,
 
-	clean: items => {
+	clean: (items) => {
 		if (fs.existsSync(AWS_LOG)) {
 			fs.unlinkSync(AWS_LOG);
 		}
@@ -41,7 +41,7 @@ module.exports = {
 			fs.unlinkSync(DB_FILE);
 		}
 		if (items && Array.isArray(items)) {
-			items.forEach(item => {
+			items.forEach((item) => {
 				execSync('rm -rf ' + item);
 			});
 		}
@@ -71,19 +71,19 @@ module.exports = {
 
 	run: (args, binFile, allowFailure = false) => {
 		const bin = BIN_FILES[binFile || 'backup'];
-		const filteredArgs = args.filter(arg => !!arg);
+		const filteredArgs = args.filter((arg) => !!arg);
 
 		const promise = utils.execPromise(bin, filteredArgs);
 
 		if (allowFailure) {
-			return promise.catch(err => err);
+			return promise.catch((err) => err);
 		}
 
 		return promise;
 	},
 
-	delay: timeout => {
-		return new Promise(resolve => {
+	delay: (timeout) => {
+		return new Promise((resolve) => {
 			setTimeout(resolve, timeout);
 		});
 	},

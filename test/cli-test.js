@@ -8,14 +8,14 @@ describe('cli', () => {
 	});
 
 	it('shows help', () => {
-		return utils.run(['--help']).then(result => {
+		return utils.run(['--help']).then((result) => {
 			assert.include(result, 'Usage:');
 			assert.isFalse(fs.existsSync(utils.DATA_FILE), 'data file was not created');
 		});
 	});
 
 	it('checks config', () => {
-		return utils.run(['--check-config']).then(result => {
+		return utils.run(['--check-config']).then((result) => {
 			assert.include(result, 'Config seems in order!');
 		});
 	});
