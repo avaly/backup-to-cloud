@@ -1,0 +1,7 @@
+module.exports = {
+	bail: true,
+	inlineDiffs: true,
+	spec: 'test/*-test.js',
+	slow: '2500',
+	timeout: '10000',
+};
