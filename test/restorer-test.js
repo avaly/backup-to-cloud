@@ -122,7 +122,7 @@ describe('restorer', () => {
 			});
 	});
 
-	it('filters by max size', () => {
+	it('filters by max size in dry mode', () => {
 		return restore(['--max-size', '10000', '--output', TEMP_DIR, '/'], true)
 			.then(output => {
 				assert.include(output, 'This is a DRY run!');
@@ -190,10 +190,14 @@ describe('restorer', () => {
 	});
 
 	it('tests a file filtered by max size', () => {
-		return restore(['--test', '0', '--max-size', '10000', '--output', TEMP_DIR, '/'])
+		// Use a test index that would have selected a large file (e.g. /bar/3-large.txt)
+		// before max-size filtering, and ensure that a small file is tested instead.
+		return restore(['--test', '2', '--max-size', '10000', '--output', TEMP_DIR, '/'])
 			.then(output => {
-				assert.include(output, 'Restorer.test OK: /bar/1-small.txt');
-				assert.include(output, 'Restorer result: PASS');
+				// The tested file should be one of the small (<= max-size) files.
+				assert.include(output, 'Restorer.test OK: /ham/first/first.tar');
+				// Ensure the large file is not selected.
+				assert.notInclude(output, 'Restorer.test OK: /bar/3-large.txt');
 				assert.include(output, 'Restorer.finish: 1 restored, 0 failed');
 			})
 			.then(utils.getAWSLog)
@@ -201,7 +205,7 @@ describe('restorer', () => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 2);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
-				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/bar\/1-small\.txt/);
+				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/ham\/first\/first\.tar/);
 			});
 	});
 });
