@@ -7,8 +7,6 @@ const FIXTURES_DIR = path.resolve(__dirname, 'test', '_fixtures_');
 module.exports = Object.assign({}, config, {
 	aws: path.resolve(__dirname, 'test', '_mocks_', 'aws-mock.js'),
 	compressLeavesPatterns: [`${FIXTURES_DIR}${path.sep}ham`],
-	// Deprecated
-	db: 'data/db-test.json',
 	dbSQLite: 'data/db-test.sqlite',
 	encryptionPassphrase: 'password',
 	logTimestamp: false,
