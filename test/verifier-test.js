@@ -8,12 +8,12 @@ const FIXTURES_DIR = utils.FIXTURES_DIR;
 describe('verifier', () => {
 	const verify = (awsLSMock, dry) =>
 		utils.run(
-			['--verbose', dry ? '--dry' : '', '--aws-ls-mock', FIXTURES_DIR + 'verify/' + awsLSMock],
+			['--verbose', dry ? '--dry' : '', '--aws-ls-mock', `${FIXTURES_DIR}verify/${awsLSMock}`],
 			'verify',
 		);
 
 	beforeEach(() => {
-		utils.cp(FIXTURES_DIR + 'verify/db-test.sqlite', config.dbSQLite);
+		utils.cp(`${FIXTURES_DIR}verify/db-test.sqlite`, config.dbSQLite);
 	});
 
 	it('OK state', async () => {

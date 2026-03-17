@@ -21,7 +21,7 @@ describe('restorer', () => {
 		utils.run(['--verbose', dry && '--dry'].concat(args || []), 'restore', allowFailure);
 
 	beforeEach(() => {
-		utils.clean([TEMP_DIR + '*']);
+		utils.clean([`${TEMP_DIR}*`]);
 	});
 
 	it('transfers nothing on dry mode', async () => {
@@ -70,9 +70,9 @@ describe('restorer', () => {
 		assertAWS(awsLog, 2, /s3:\/\/test-bucket\/bar\/2-medium\.txt/);
 		assertAWS(awsLog, 3, /s3:\/\/test-bucket\/bar\/3-large\.txt/);
 
-		utils.assertFilesEqual(TEMP_DIR + 'bar/1-small.txt', FIXTURES_DIR + 'bar/1-small.txt');
-		utils.assertFilesEqual(TEMP_DIR + 'bar/2-medium.txt', FIXTURES_DIR + 'bar/2-medium.txt');
-		utils.assertFilesEqual(TEMP_DIR + 'bar/3-large.txt', FIXTURES_DIR + 'bar/3-large.txt');
+		utils.assertFilesEqual(`${TEMP_DIR}bar/1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
+		utils.assertFilesEqual(`${TEMP_DIR}bar/2-medium.txt`, `${FIXTURES_DIR}bar/2-medium.txt`);
+		utils.assertFilesEqual(`${TEMP_DIR}bar/3-large.txt`, `${FIXTURES_DIR}bar/3-large.txt`);
 	});
 
 	it('restores all', async () => {
@@ -99,22 +99,22 @@ describe('restorer', () => {
 		assertAWS(awsLog, 6, /s3:\/\/test-bucket\/3-dummy\.pdf/);
 		assertAWS(awsLog, 7, /s3:\/\/test-bucket\/ham\/first\/first.tar/);
 
-		utils.assertFilesEqual(TEMP_DIR + 'bar/1-small.txt', FIXTURES_DIR + 'bar/1-small.txt');
-		utils.assertFilesEqual(TEMP_DIR + 'bar/2-medium.txt', FIXTURES_DIR + 'bar/2-medium.txt');
-		utils.assertFilesEqual(TEMP_DIR + 'bar/3-large.txt', FIXTURES_DIR + 'bar/3-large.txt');
-		assert.isFalse(fs.existsSync(TEMP_DIR + '1-fail.dat'));
+		utils.assertFilesEqual(`${TEMP_DIR}bar/1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
+		utils.assertFilesEqual(`${TEMP_DIR}bar/2-medium.txt`, `${FIXTURES_DIR}bar/2-medium.txt`);
+		utils.assertFilesEqual(`${TEMP_DIR}bar/3-large.txt`, `${FIXTURES_DIR}bar/3-large.txt`);
+		assert.isFalse(fs.existsSync(`${TEMP_DIR}1-fail.dat`));
 		utils.assertFilesEqual(
-			TEMP_DIR + '2 \'"$@%&`medium.dat',
-			FIXTURES_DIR + 'foo/2 \'"$@%&`medium.dat',
+			`${TEMP_DIR}2 '"$@%&\`medium.dat`,
+			`${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`,
 		);
-		utils.assertFilesEqual(TEMP_DIR + '3-dummy.pdf', FIXTURES_DIR + 'originals/3-dummy.pdf');
+		utils.assertFilesEqual(`${TEMP_DIR}3-dummy.pdf`, `${FIXTURES_DIR}originals/3-dummy.pdf`);
 		utils.assertFilesEqual(
-			TEMP_DIR + 'ham/first/1-first.txt',
-			FIXTURES_DIR + 'ham/first/1-first.txt',
+			`${TEMP_DIR}ham/first/1-first.txt`,
+			`${FIXTURES_DIR}ham/first/1-first.txt`,
 		);
 		utils.assertFilesEqual(
-			TEMP_DIR + 'ham/first/2-first.txt',
-			FIXTURES_DIR + 'ham/first/2-first.txt',
+			`${TEMP_DIR}ham/first/2-first.txt`,
+			`${FIXTURES_DIR}ham/first/2-first.txt`,
 		);
 	});
 

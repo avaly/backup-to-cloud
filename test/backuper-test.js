@@ -79,7 +79,7 @@ describe('backuper', () => {
 		assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/bar\/2-medium\.txt/, 'STANDARD');
 		assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
-		utils.assertFilesEqual(TEMP_DIR + 'db-test.sqlite', DATA_DIR + 'db-test.sqlite');
+		utils.assertFilesEqual(`${TEMP_DIR}db-test.sqlite`, `${DATA_DIR}db-test.sqlite`);
 
 		// Verify encryption
 		utils.assertFilesNotEqual(`${TEMP_DIR}1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
@@ -144,7 +144,7 @@ describe('backuper', () => {
 
 	it('uploads archives', async () => {
 		utils.clean();
-		utils.setDataContent({
+		await utils.setDataContent({
 			locals: dbFromScan.locals.filter((local) => local.type === utils.DB_TYPES.ARCHIVE),
 		});
 
@@ -166,18 +166,18 @@ describe('backuper', () => {
 		assert.isObject(db.remotesByPath[archiveName]);
 		assert.equal(db.remotesByPath[archiveName].type, utils.DB_TYPES.ARCHIVE);
 
-		await Crypter.decrypt(TEMP_DIR + 'first.tar', TEMP_DIR + 'first-decrypted.tar');
-		await Archiver.decompress(TEMP_DIR + 'first-decrypted.tar', TEMP_DIR + 'first');
+		await Crypter.decrypt(`${TEMP_DIR}first.tar`, `${TEMP_DIR}first-decrypted.tar`);
+		await Archiver.decompress(`${TEMP_DIR}first-decrypted.tar`, `${TEMP_DIR}first`);
 
-		utils.assertFilesEqual(TEMP_DIR + 'first/1-first.txt', FIXTURES_DIR + 'ham/first/1-first.txt');
-		utils.assertFilesEqual(TEMP_DIR + 'first/2-first.txt', FIXTURES_DIR + 'ham/first/2-first.txt');
+		utils.assertFilesEqual(`${TEMP_DIR}first/1-first.txt`, `${FIXTURES_DIR}ham/first/1-first.txt`);
+		utils.assertFilesEqual(`${TEMP_DIR}first/2-first.txt`, `${FIXTURES_DIR}ham/first/2-first.txt`);
 		assert.isFalse(fs.existsSync(`${TEMP_DIR}first/second/1-second.txt`));
 		assert.isFalse(fs.existsSync(`${TEMP_DIR}first/second/2-second.txt`));
 	});
 
 	it('does not sync the DB file when no file syncs have been made', async () => {
 		utils.clean();
-		utils.setDataContent({
+		await utils.setDataContent({
 			locals: dbFromScan.locals,
 			remotes: dbFromScan.locals.map((local) =>
 				Object.assign(
@@ -199,7 +199,7 @@ describe('backuper', () => {
 
 	it('uploads files in random order', async () => {
 		utils.clean();
-		utils.setDataContent({
+		await utils.setDataContent({
 			locals: dbFromScan.locals.slice(0, 2),
 		});
 
@@ -221,7 +221,7 @@ describe('backuper', () => {
 		utils.clean();
 
 		const now = Date.now();
-		utils.setDataContent({
+		await utils.setDataContent({
 			locals: [
 				utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
 				utils.mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
@@ -272,7 +272,7 @@ describe('backuper', () => {
 		utils.clean();
 
 		const now = Date.now();
-		utils.setDataContent({
+		await utils.setDataContent({
 			locals: [
 				...dbFromScan.locals,
 				utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
@@ -320,7 +320,7 @@ describe('backuper', () => {
 	it('should stop transfer after max failed', async () => {
 		utils.clean();
 
-		utils.setDataContent({
+		await utils.setDataContent({
 			locals: [
 				utils.mockLocal(`${FIXTURES_DIR}foo/1-fail.dat`, 'abc'),
 				utils.mockLocal(`${FIXTURES_DIR}foo/3-fail.dat`, 'abc'),

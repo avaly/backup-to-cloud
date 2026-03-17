@@ -29,7 +29,7 @@ describe('scan', () => {
 		assert.include(output, '/foo - Archives found: 0');
 		assert.include(output, '/ham - Files found: 0');
 		assert.include(output, '/ham - Archives found: 2');
-		assert.isFalse(fs.existsSync(utils.DATA_FILE), 'data file was not created');
+		assert.isFalse(fs.existsSync(utils.DB_FILE), 'db file was not created');
 	});
 
 	it('scans all files for first time', async () => {
@@ -93,7 +93,7 @@ describe('scan', () => {
 	});
 
 	it('marks deleted files', async () => {
-		utils.setDataContent({
+		await utils.setDataContent({
 			locals: [
 				utils.mockLocal(`${FIXTURES_DIR}foo/old.txt`),
 				utils.mockLocal(`${FIXTURES_DIR}old/from-old-source.txt`),
@@ -146,7 +146,7 @@ describe('scan', () => {
 	});
 
 	it('removes deleted files which have not been synced yet', async () => {
-		utils.setDataContent({
+		await utils.setDataContent({
 			locals: [
 				utils.mockLocal(`${FIXTURES_DIR}foo/old.txt`),
 				utils.mockLocal(

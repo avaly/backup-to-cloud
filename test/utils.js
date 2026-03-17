@@ -18,7 +18,7 @@ const BIN_FILES = {
 };
 const DATA_DIR = path.resolve(__dirname, '..', 'data') + path.sep;
 const TEMP_DIR = path.resolve(__dirname, '..', 'tmp') + path.sep;
-const AWS_LOG = DATA_DIR + 'aws.json';
+const AWS_LOG = `${DATA_DIR}aws.json`;
 const DB_FILE = path.resolve(__dirname, '..') + path.sep + config.dbSQLite;
 const FIXTURES_DIR = path.resolve(__dirname, '_fixtures_') + path.sep;
 
@@ -42,7 +42,7 @@ module.exports = {
 		}
 		if (items && Array.isArray(items)) {
 			items.forEach((item) => {
-				execSync('rm -rf ' + item);
+				execSync(`rm -rf ${item}`);
 			});
 		}
 	},

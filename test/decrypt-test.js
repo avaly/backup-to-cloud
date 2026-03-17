@@ -22,9 +22,9 @@ describe('decrypt', () => {
 	});
 
 	it('stops if input file does not exist', async () => {
-		const fileOutput = TEMP_DIR + 'should-not-be-created.txt';
+		const fileOutput = `${TEMP_DIR}should-not-be-created.txt`;
 
-		const args = ['--output', fileOutput, TEMP_DIR + 'this-should-not-exist.txt'];
+		const args = ['--output', fileOutput, `${TEMP_DIR}this-should-not-exist.txt`];
 
 		try {
 			await utils.run(args, 'decrypt');
@@ -36,8 +36,8 @@ describe('decrypt', () => {
 	});
 
 	it('decrypts file', async () => {
-		const fileSource = FIXTURES_DIR + 'bar/1-small.txt';
-		const fileOutput = TEMP_DIR + 'decrypted.txt';
+		const fileSource = `${FIXTURES_DIR}bar/1-small.txt`;
+		const fileOutput = `${TEMP_DIR}decrypted.txt`;
 
 		const contentSource = fs.readFileSync(fileSource, 'utf-8');
 		const encryptedFile = await Crypter.encrypt(fileSource);
