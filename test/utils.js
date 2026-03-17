@@ -4,7 +4,7 @@ const fs = require('fs');
 const md5File = require('md5-file');
 const path = require('path');
 
-const DB = require('../lib/DB.sqlite');
+const DB = require('../lib/DB');
 const config = require('../lib/config');
 const utils = require('../lib/utils');
 

@@ -90,13 +90,3 @@ Verify that the DB and remote files are in sync:
 ./bin/backup-verify --dry
 ./bin/backup-verify
 ```
-
-## Upgrade
-
-### `1.6.0` -> `2.0.0`
-
-The DB format has switched from JSON to SQLite. To upgrade existing DB, run:
-
-```
-./bin/backup-upgrade-db
-```
