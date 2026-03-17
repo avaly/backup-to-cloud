@@ -9,7 +9,6 @@
     "prepare": "husky install",
     "pretty": "prettier --write --list-different \"**/*.js\"",
     "pretty-ci": "prettier --check \"**/*.js\"",
-    "release": "standard-version",
     "start": "bin/backup-to-cloud",
     "test": "BACKUP_ENV=test mocha test/*-test.js"
   },
@@ -50,8 +49,7 @@
     "md5-file": "4.0.0",
     "mocha": "6.2.3",
     "nyc": "15.1.0",
-    "prettier": "1.19.1",
-    "standard-version": "8.0.0"
+    "prettier": "1.19.1"
   },
   "repository": {
     "type": "git",
