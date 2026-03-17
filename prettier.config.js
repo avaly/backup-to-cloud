@@ -7,7 +7,7 @@ module.exports = {
 	useTabs: true,
 	overrides: [
 		{
-			files: ['package.json'],
+			files: ['package.json', 'package-lock.json'],
 			options: {
 				tabWidth: 2,
 				useTabs: false,
