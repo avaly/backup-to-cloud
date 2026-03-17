@@ -1,72 +1,74 @@
 {
-  "name": "backup-to-cloud",
-  "version": "4.5.1",
-  "description": "A simple backup tool which uploads encrypted files to S3",
-  "author": "Valentin Agachi",
-  "scripts": {
-    "coverage": "rm -rf .nyc_output/ coverage/ && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha test/*-test.js",
-    "lint": "eslint . bin/backup-to-cloud --ignore-pattern '!.eslintrc.js'",
-    "prepare": "husky install",
-    "pretty": "prettier --write --list-different \"**/*.js\"",
-    "pretty-ci": "prettier --check \"**/*.js\"",
-    "start": "bin/backup-to-cloud",
-    "test": "BACKUP_ENV=test mocha test/*-test.js"
-  },
-  "license": "MIT",
-  "engines": {
-    "node": ">=22"
-  },
-  "os": [
-    "darwin",
-    "linux"
-  ],
-  "bin": {
-    "backup-decrypt": "./bin/backup-decrypt",
-    "backup-restore": "./bin/backup-restore",
-    "backup-to-cloud": "./bin/backup-to-cloud",
-    "backup-upgrade-db": "./bin/backup-upgrade-db",
-    "backup-verify": "./bin/backup-verify"
-  },
-  "files": [
-    "LICENSE",
-    "config.sample.js",
-    "lib/",
-    "bin/"
-  ],
-  "dependencies": {
-    "pretty-bytes": "5.6.0",
-    "slackr": "1.0.0",
-    "sqlite": "5.1.1",
-    "sqlite3": "5.1.7"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "20.4.3",
-    "@commitlint/config-conventional": "20.4.3",
-    "chai": "6.2.2",
-    "eslint": "6.8.0",
-    "husky": "9.1.7",
-    "lint-staged": "16.3.3",
-    "md5-file": "5.0.0",
-    "mocha": "11.7.5",
-    "nyc": "15.1.0",
-    "prettier": "1.19.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/avaly/backup-to-cloud.git"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ],
-    "rules": {
-      "subject-case": [
-        2,
-        "always",
-        [
-          "sentence-case"
-        ]
-      ]
-    }
-  }
+	"name": "backup-to-cloud",
+	"version": "4.5.1",
+	"description": "A simple backup tool which uploads encrypted files to S3",
+	"author": "Valentin Agachi",
+	"scripts": {
+		"coverage": "rm -rf .nyc_output/ coverage/ && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha test/*-test.js",
+		"lint": "eslint .",
+		"prepare": "husky install",
+		"pretty": "prettier --write --list-different \"**/*.js\"",
+		"pretty-ci": "prettier --check \"**/*.js\"",
+		"start": "bin/backup-to-cloud",
+		"test": "BACKUP_ENV=test mocha test/*-test.js"
+	},
+	"license": "MIT",
+	"engines": {
+		"node": ">=22"
+	},
+	"os": [
+		"darwin",
+		"linux"
+	],
+	"bin": {
+		"backup-decrypt": "./bin/backup-decrypt",
+		"backup-restore": "./bin/backup-restore",
+		"backup-to-cloud": "./bin/backup-to-cloud",
+		"backup-upgrade-db": "./bin/backup-upgrade-db",
+		"backup-verify": "./bin/backup-verify"
+	},
+	"files": [
+		"LICENSE",
+		"config.sample.js",
+		"lib/",
+		"bin/"
+	],
+	"dependencies": {
+		"pretty-bytes": "5.6.0",
+		"slackr": "1.0.0",
+		"sqlite": "5.1.1",
+		"sqlite3": "5.1.7"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "20.4.3",
+		"@commitlint/config-conventional": "20.4.3",
+		"@eslint/js": "10.0.1",
+		"chai": "6.2.2",
+		"eslint": "10.0.3",
+		"globals": "17.4.0",
+		"husky": "9.1.7",
+		"lint-staged": "16.3.3",
+		"md5-file": "5.0.0",
+		"mocha": "11.7.5",
+		"nyc": "15.1.0",
+		"prettier": "1.19.1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/avaly/backup-to-cloud.git"
+	},
+	"commitlint": {
+		"extends": [
+			"@commitlint/config-conventional"
+		],
+		"rules": {
+			"subject-case": [
+				2,
+				"always",
+				[
+					"sentence-case"
+				]
+			]
+		}
+	}
 }
