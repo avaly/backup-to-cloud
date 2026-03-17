@@ -33,8 +33,10 @@ Options:
 
 async function main() {
 	if (fs.existsSync(LOCK_FILE) && !utils.hasFlag('ignore-lock')) {
-		utils.log('Another instance of the backup is already running or has not ' +
-			'properly terminated. Remove lock file to continue.');
+		utils.log(
+			'Another instance of the backup is already running or has not ' +
+				'properly terminated. Remove lock file to continue.',
+		);
 		return;
 	}
 	fs.writeFileSync(LOCK_FILE, '');
@@ -43,7 +45,8 @@ async function main() {
 
 	if (utils.hasFlag('check-config')) {
 		const configChecker = new ConfigChecker();
-		return configChecker.check()
+		return configChecker
+			.check()
 			.then(
 				() => {
 					utils.log('Config seems in order!');
@@ -51,7 +54,7 @@ async function main() {
 				(err) => {
 					utils.log('Config check failed:');
 					utils.log(err.message || err);
-				}
+				},
 			)
 			.then(finish);
 	}
@@ -71,21 +74,21 @@ async function main() {
 
 	if (!utils.hasFlag('only-scan')) {
 		const backuper = new Backuper(db, {
-			random: utils.hasFlag('random-order')
+			random: utils.hasFlag('random-order'),
 		});
-		backuper.start()
+		backuper
+			.start()
 			.then(
 				(result) => {
 					utils.log('Transfer result', result);
 				},
 				(err) => {
 					utils.log('Transfer error', err);
-				}
+				},
 			)
 			.then(() => backuper.finish())
 			.then(finish);
-	}
-	else {
+	} else {
 		finish();
 	}
 }
@@ -100,7 +103,6 @@ function finish() {
 
 if (utils.hasFlag('help')) {
 	usage();
-}
-else {
+} else {
 	main();
 }

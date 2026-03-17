@@ -26,7 +26,7 @@ describe('restorer', () => {
 
 	it('transfers nothing on dry mode', () => {
 		return restore(['--output', '.', '/'], true)
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'This is a DRY run!');
 				assert.include(output, 'Restorer.start: remotePrefix=/ localPath=/');
 				assert.include(
@@ -35,7 +35,7 @@ describe('restorer', () => {
 				);
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 1);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
@@ -44,11 +44,11 @@ describe('restorer', () => {
 
 	it('shows help with no output flag', () => {
 		return restore([])
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'Usage:');
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 0);
 			});
@@ -56,7 +56,7 @@ describe('restorer', () => {
 
 	it('restores prefix only', () => {
 		return restore(['--yes', '--output', TEMP_DIR, '/bar/'])
-			.then(output => {
+			.then((output) => {
 				assert.include(
 					output,
 					'Restorer.filter: 3 matching files with a total file size of 308 kB in DB',
@@ -64,7 +64,7 @@ describe('restorer', () => {
 				assert.include(output, 'Restorer.finish: 3 restored, 0 failed');
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 4);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
@@ -80,7 +80,7 @@ describe('restorer', () => {
 
 	it('restores all', () => {
 		return restore(['--yes', '--output', TEMP_DIR, '/'])
-			.then(output => {
+			.then((output) => {
 				assert.include(
 					output,
 					'Restorer.filter: 7 matching files with a total file size of 427 kB in DB',
@@ -90,7 +90,7 @@ describe('restorer', () => {
 				assert.include(output, '/foo/1-fail.dat');
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 8);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
@@ -124,7 +124,7 @@ describe('restorer', () => {
 
 	it('filters by max size in dry mode', () => {
 		return restore(['--max-size', '10000', '--output', TEMP_DIR, '/'], true)
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'This is a DRY run!');
 				assert.include(
 					output,
@@ -132,7 +132,7 @@ describe('restorer', () => {
 				);
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 1);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
@@ -141,13 +141,13 @@ describe('restorer', () => {
 
 	it('tests a file', () => {
 		return restore(['--test', '0', '--output', TEMP_DIR, '/'])
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'Restorer.test OK: /bar/1-small.txt');
 				assert.include(output, 'Restorer result: PASS');
 				assert.include(output, 'Restorer.finish: 1 restored, 0 failed');
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 2);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
@@ -157,13 +157,13 @@ describe('restorer', () => {
 
 	it('tests an archive', () => {
 		return restore(['--test', '6', '--output', TEMP_DIR, '/'])
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'Restorer.test OK: /ham/first/first.tar');
 				assert.include(output, 'Restorer result: PASS');
 				assert.include(output, 'Restorer.finish: 1 restored, 0 failed');
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 2);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
@@ -173,27 +173,27 @@ describe('restorer', () => {
 
 	it('tests a failing file', () => {
 		return restore(['--test', '3', '--output', TEMP_DIR, '/'], false, true)
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'exit code: 1');
 				assert.include(output, 'Restorer.test FAIL: /1-fail.dat');
 				assert.include(output, 'Restorer result: FAIL');
 				assert.include(output, 'Restorer.finish: 0 restored, 1 failed');
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 2);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);
 				assertAWS(awsLog, 1, /s3:\/\/test-bucket\/1-fail\.dat/);
 			})
-			.catch(err => console.log('err', err));
+			.catch((err) => console.log('err', err));
 	});
 
 	it('tests a file filtered by max size', () => {
 		// Use a test index that would have selected a large file (e.g. /bar/3-large.txt)
 		// before max-size filtering, and ensure that a small file is tested instead.
 		return restore(['--test', '2', '--max-size', '10000', '--output', TEMP_DIR, '/'])
-			.then(output => {
+			.then((output) => {
 				// The tested file should be one of the small (<= max-size) files.
 				assert.include(output, 'Restorer.test OK: /ham/first/first.tar');
 				// Ensure the large file is not selected.
@@ -201,7 +201,7 @@ describe('restorer', () => {
 				assert.include(output, 'Restorer.finish: 1 restored, 0 failed');
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 2);
 				assertAWS(awsLog, 0, /s3:\/\/test-bucket\/db-test\.sqlite/);

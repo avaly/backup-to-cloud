@@ -59,11 +59,11 @@ function main() {
 	restorer
 		.start(input, output)
 		.then(
-			result => {
+			(result) => {
 				utils.debug('Restorer result:', result);
 				finalResult = result;
 			},
-			err => {
+			(err) => {
 				utils.log('Restorer error:', err);
 				finalResult = 'FAIL';
 			},

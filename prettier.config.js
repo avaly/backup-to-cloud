@@ -5,4 +5,13 @@ module.exports = {
 	singleQuote: true,
 	trailingComma: 'all',
 	useTabs: true,
+	overrides: [
+		{
+			files: ['package.json'],
+			options: {
+				tabWidth: 2,
+				useTabs: false,
+			},
+		},
+	],
 };

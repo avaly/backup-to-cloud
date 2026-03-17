@@ -6,7 +6,7 @@ const Scanner = require('../lib/Scanner');
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 
 describe('scan', () => {
-	const scan = dry => utils.run(['--only-scan', '--verbose', dry && '--dry']);
+	const scan = (dry) => utils.run(['--only-scan', '--verbose', dry && '--dry']);
 
 	beforeEach(() => {
 		utils.clean();
@@ -20,7 +20,7 @@ describe('scan', () => {
 	});
 
 	it('saves nothing for dry mode', () => {
-		return scan(true).then(output => {
+		return scan(true).then((output) => {
 			assert.include(output, 'This is a DRY run!');
 			assert.include(output, '/bar - Files found: 3');
 			assert.include(output, '/bar - Archives found: 0');
@@ -35,7 +35,7 @@ describe('scan', () => {
 	it('scans all files for first time', () => {
 		return scan()
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.match(db.settings.lastScanTimestamp, /^\d+$/);
 				assert.equal(db.locals.length, 9);
 
@@ -117,7 +117,7 @@ describe('scan', () => {
 
 		return scan()
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.locals.length, 12);
 
 				utils.assertLocalDeleted(db, `${FIXTURES_DIR}foo/old.txt`);
@@ -131,7 +131,7 @@ describe('scan', () => {
 			.then(() => utils.delay(1001))
 			.then(scan)
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				utils.assertLocalDeleted(db, `${FIXTURES_DIR}bar/1-small.txt`);
 
 				return utils.execPromise('mv', [
@@ -157,7 +157,7 @@ describe('scan', () => {
 
 		return scan()
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.locals.length, 9);
 				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`]);
 				assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}ham/fourth/fourth.tar`]);

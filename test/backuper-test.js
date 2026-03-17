@@ -45,7 +45,7 @@ describe('backuper', () => {
 
 	it('transfers nothing on dry mode', () => {
 		return transfer(true)
-			.then(output => {
+			.then((output) => {
 				assert.include(output, 'This is a DRY run!');
 				assert.include(output, 'Backuper.start: locals=9 / remotes=0');
 				assert.include(output, 'Backuper.add file:');
@@ -53,7 +53,7 @@ describe('backuper', () => {
 				assert.include(output, 'Transfer result MAX_SESSION_SIZE');
 			})
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 0);
 			});
@@ -62,7 +62,7 @@ describe('backuper', () => {
 	it('encrypts and transfers files', () => {
 		return transfer()
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				// Only the first 2 files fit into the session size
 				// Since 1-small.txt encrypted is less than the session size
@@ -96,7 +96,7 @@ describe('backuper', () => {
 				);
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.remotes.length, 2);
 
 				const firstFile = `${FIXTURES_DIR}bar/1-small.txt`;
@@ -115,7 +115,7 @@ describe('backuper', () => {
 	it('transfers next file', () => {
 		return transfer()
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				// Only one new file + the db (+ the other 3) fit into the session size
 				assert.equal(awsLog.length, 5);
@@ -124,7 +124,7 @@ describe('backuper', () => {
 				assertAWS(awsLog, 4, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.remotes.length, 3);
 			});
 	});
@@ -132,7 +132,7 @@ describe('backuper', () => {
 	it('skips failed file and continues upload of other files', () => {
 		return transfer()
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				// 1-fail.dat should fail by aws-mock,
 				assert.equal(awsLog.length, 8);
@@ -142,7 +142,7 @@ describe('backuper', () => {
 				assertAWS(awsLog, 7, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.remotes.length, 4);
 
 				assert.isUndefined(db.remotesByPath[`${FIXTURES_DIR}foo/1-fail.dat`]);
@@ -153,12 +153,12 @@ describe('backuper', () => {
 	it('uploads archives', () => {
 		utils.clean();
 		utils.setDataContent({
-			locals: dbFromScan.locals.filter(local => local.type === utils.DB_TYPES.ARCHIVE),
+			locals: dbFromScan.locals.filter((local) => local.type === utils.DB_TYPES.ARCHIVE),
 		});
 
 		return transfer()
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 2);
 
@@ -166,7 +166,7 @@ describe('backuper', () => {
 				assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.remotes.length, 1);
 
 				const archiveName = `${FIXTURES_DIR}ham/first/first.tar`;
@@ -194,7 +194,7 @@ describe('backuper', () => {
 		utils.clean();
 		utils.setDataContent({
 			locals: dbFromScan.locals,
-			remotes: dbFromScan.locals.map(local =>
+			remotes: dbFromScan.locals.map((local) =>
 				Object.assign(
 					{
 						timestamp: 456,
@@ -206,7 +206,7 @@ describe('backuper', () => {
 
 		return transfer()
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 0);
 			});
@@ -220,14 +220,14 @@ describe('backuper', () => {
 
 		return transfer(false, true)
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.isAtLeast(awsLog.length, 2);
 				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/(1-small|2-medium)\.txt/);
 				assertAWS(awsLog, awsLog.length - 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.isAtLeast(db.remotes.length, 1);
 			});
 	});
@@ -263,7 +263,7 @@ describe('backuper', () => {
 
 		return transfer()
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 4);
 
@@ -273,7 +273,7 @@ describe('backuper', () => {
 				assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.locals.length, 1);
 				assert.equal(db.remotes.length, 1);
 
@@ -306,7 +306,7 @@ describe('backuper', () => {
 
 		return transfer()
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				// Only the first 2 files fit into the session size
 				// Plus one deleted file
@@ -321,14 +321,14 @@ describe('backuper', () => {
 				assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.equal(db.locals.length, dbFromScan.locals.length + 1);
-				assert.isUndefined(db.locals.find(item => item.path.includes('2-small-recent.txt')));
-				assert.isDefined(db.locals.find(item => item.path.includes('2-small-long-ago.txt')));
+				assert.isUndefined(db.locals.find((item) => item.path.includes('2-small-recent.txt')));
+				assert.isDefined(db.locals.find((item) => item.path.includes('2-small-long-ago.txt')));
 
 				assert.equal(db.remotes.length, 3);
-				assert.isUndefined(db.remotes.find(item => item.path.includes('2-small-recent.txt')));
-				assert.isDefined(db.remotes.find(item => item.path.includes('2-small-long-ago.txt')));
+				assert.isUndefined(db.remotes.find((item) => item.path.includes('2-small-recent.txt')));
+				assert.isDefined(db.remotes.find((item) => item.path.includes('2-small-long-ago.txt')));
 			});
 	});
 
@@ -345,7 +345,7 @@ describe('backuper', () => {
 
 		return transfer()
 			.then(utils.getAWSLog)
-			.then(awsLog => {
+			.then((awsLog) => {
 				assert.isArray(awsLog);
 				assert.equal(awsLog.length, 3);
 				assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/1-fail\.dat/, 'STANDARD', 'abc');
@@ -353,7 +353,7 @@ describe('backuper', () => {
 				assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 			})
 			.then(utils.getDataContent)
-			.then(db => {
+			.then((db) => {
 				assert.isUndefined(db.remotesByPath[`${FIXTURES_DIR}foo/4-small.dat`]);
 			});
 	});

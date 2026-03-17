@@ -7,8 +7,8 @@
     "coverage": "rm -rf .nyc_output/ coverage/ && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha test/*-test.js",
     "lint": "eslint .",
     "prepare": "husky install",
-    "pretty": "prettier --write --list-different \"**/*.js\"",
-    "pretty-ci": "prettier --check \"**/*.js\"",
+    "pretty": "prettier --ignore-unknown --write \"**/*\"",
+    "pretty-ci": "prettier --ignore-unknown --check \"**/*\"",
     "start": "bin/backup-to-cloud",
     "test": "BACKUP_ENV=test mocha test/*-test.js"
   },
@@ -45,6 +45,7 @@
     "@eslint/js": "10.0.1",
     "chai": "6.2.2",
     "eslint": "10.0.3",
+    "eslint-config-prettier": "10.1.8",
     "globals": "17.4.0",
     "husky": "9.1.7",
     "lint-staged": "16.3.3",

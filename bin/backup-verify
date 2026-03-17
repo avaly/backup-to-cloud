@@ -25,10 +25,8 @@ async function main() {
 	const verifier = new Verifier();
 
 	try {
-		await verifier.start(
-			utils.TEST ? utils.getOption('aws-ls-mock') : null
-		);
-	} catch(err) {
+		await verifier.start(utils.TEST ? utils.getOption('aws-ls-mock') : null);
+	} catch (err) {
 		utils.log('Verifier error:', err);
 
 		verifier.stop();
@@ -39,7 +37,6 @@ async function main() {
 
 if (utils.hasFlag('help')) {
 	usage();
-}
-else {
+} else {
 	main();
 }
