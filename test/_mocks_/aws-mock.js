@@ -12,7 +12,7 @@ const execSync = childProcess.execSync;
 const DATA_DIR = path.resolve(__dirname, '..', '..', 'data') + path.sep;
 const TEMP_DIR = path.resolve(__dirname, '..', '..', 'tmp') + path.sep;
 const RESTORE_FIXTURES_DIR = path.resolve(__dirname, '..', '..', 'test', '_fixtures_', 'restore');
-const LOG_FILE = DATA_DIR + 'aws.json';
+const LOG_FILE = `${DATA_DIR}aws.json`;
 
 function escape(s) {
 	return s.replace(/([\s'"`$&])/g, '\\$1');
@@ -42,7 +42,7 @@ function main() {
 
 	if (args[0] === 's3' && args[1] === 'cp') {
 		if (!fs.existsSync(TEMP_DIR)) {
-			execSync('mkdir -p ' + TEMP_DIR);
+			execSync(`mkdir -p ${TEMP_DIR}`);
 		}
 
 		// s3 cp /local/bar s3://bucket/foo
@@ -71,7 +71,7 @@ function main() {
 
 			const fileDir = path.dirname(args[3]);
 			if (!fs.existsSync(fileDir)) {
-				execSync('mkdir -p ' + fileDir);
+				execSync(`mkdir -p ${fileDir}`);
 			}
 
 			cp(fileFixture, args[3]);

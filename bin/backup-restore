@@ -37,7 +37,7 @@ Examples:
 `);
 }
 
-function main() {
+async function main() {
 	if (fs.existsSync(LOCK_FILE) && !utils.hasFlag('ignore-lock')) {
 		utils.log(
 			`Another instance of the ${package.name} is already running or has not properly terminated. Remove lock file to continue.`,
@@ -53,28 +53,25 @@ function main() {
 
 	const input = process.argv.pop();
 	const output = path.resolve(utils.getOption('output'));
-	let finalResult = '';
+	let finalResult;
 
 	const restorer = new Restorer();
-	restorer
-		.start(input, output)
-		.then(
-			(result) => {
-				utils.debug('Restorer result:', result);
-				finalResult = result;
-			},
-			(err) => {
-				utils.log('Restorer error:', err);
-				finalResult = 'FAIL';
-			},
-		)
-		.then(() => restorer.finish())
-		.then(finish)
-		.then(() => {
-			if (finalResult.includes('FAIL')) {
-				process.exit(1);
-			}
-		});
+
+	try {
+		const result = await restorer.start(input, output);
+		utils.debug('Restorer result:', result);
+		finalResult = result;
+	} catch (err) {
+		utils.log('Restorer error:', err);
+		finalResult = 'FAIL';
+	}
+
+	restorer.finish();
+	finish();
+
+	if (finalResult && finalResult.includes('FAIL')) {
+		process.exit(1);
+	}
 }
 
 function finish() {
@@ -84,5 +81,11 @@ function finish() {
 if (utils.hasFlag('help') || !utils.getOption('output')) {
 	usage();
 } else {
-	main();
+	try {
+		main();
+	} catch (err) {
+		utils.log(`Error: ${err.message}`);
+		finish();
+		process.exit(1);
+	}
 }

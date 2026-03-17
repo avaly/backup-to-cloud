@@ -15,45 +15,40 @@ describe('decrypt', () => {
 		execFileSync('mkdir', ['-p', TEMP_DIR]);
 	}
 
-	it('shows help', () => {
-		return utils.run(['--help'], 'decrypt').then((result) => {
-			assert.include(result, 'Usage:');
-		});
+	it('shows help', async () => {
+		const result = await utils.run(['--help'], 'decrypt');
+
+		assert.include(result, 'Usage:');
 	});
 
-	it('stops if input file does not exist', () => {
-		const fileOutput = TEMP_DIR + 'should-not-be-created.txt';
+	it('stops if input file does not exist', async () => {
+		const fileOutput = `${TEMP_DIR}should-not-be-created.txt`;
 
-		const args = ['--output', fileOutput, TEMP_DIR + 'this-should-not-exist.txt'];
+		const args = ['--output', fileOutput, `${TEMP_DIR}this-should-not-exist.txt`];
 
-		return utils.run(args, 'decrypt').then(
-			() => {
-				assert.isOk(false);
-			},
-			() => {
-				assert.isNotOk(fs.existsSync(fileOutput));
-			},
-		);
+		try {
+			await utils.run(args, 'decrypt');
+
+			assert.isOk(false);
+		} catch {
+			assert.isNotOk(fs.existsSync(fileOutput));
+		}
 	});
 
-	it('decrypts file', () => {
-		const fileSource = FIXTURES_DIR + 'bar/1-small.txt';
-		const fileOutput = TEMP_DIR + 'decrypted.txt';
+	it('decrypts file', async () => {
+		const fileSource = `${FIXTURES_DIR}bar/1-small.txt`;
+		const fileOutput = `${TEMP_DIR}decrypted.txt`;
 
 		const contentSource = fs.readFileSync(fileSource, 'utf-8');
+		const encryptedFile = await Crypter.encrypt(fileSource);
+		const contentEncrypted = fs.readFileSync(encryptedFile.path, 'utf-8');
 
-		return Crypter.encrypt(fileSource)
-			.then((encryptedFile) => {
-				const args = ['--output', fileOutput, encryptedFile.path];
+		assert.notEqual(contentSource, contentEncrypted);
 
-				const contentEncrypted = fs.readFileSync(encryptedFile.path, 'utf-8');
-				assert.notEqual(contentSource, contentEncrypted);
+		await utils.run(['--output', fileOutput, encryptedFile.path], 'decrypt');
 
-				return utils.run(args, 'decrypt');
-			})
-			.then(() => {
-				const contentDecrypted = fs.readFileSync(fileOutput, 'utf-8');
-				assert.equal(contentSource, contentDecrypted);
-			});
+		const contentDecrypted = fs.readFileSync(fileOutput, 'utf-8');
+
+		assert.equal(contentSource, contentDecrypted);
 	});
 });
