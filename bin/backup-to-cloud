@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const fs = require('fs');
 
 const Backuper = require('../lib/Backuper');
 const ConfigChecker = require('../lib/ConfigChecker');
@@ -32,14 +31,9 @@ Options:
 }
 
 async function main() {
-	if (fs.existsSync(LOCK_FILE) && !utils.hasFlag('ignore-lock')) {
-		utils.log(
-			'Another instance of the backup is already running or has not ' +
-				'properly terminated. Remove lock file to continue.',
-		);
+	if (!utils.acquireLock(LOCK_FILE)) {
 		return;
 	}
-	fs.writeFileSync(LOCK_FILE, '');
 
 	utils.log(`${package.name} v${package.version}`);
 
@@ -91,7 +85,7 @@ function finish() {
 		db.close();
 		utils.log('Finished!');
 	}
-	fs.unlinkSync(LOCK_FILE);
+	utils.releaseLock(LOCK_FILE);
 }
 
 if (utils.hasFlag('help')) {

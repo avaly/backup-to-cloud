@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const fs = require('fs');
 
 const Restorer = require('../lib/Restorer');
 const package = require('../package.json');
@@ -38,13 +37,9 @@ Examples:
 }
 
 async function main() {
-	if (fs.existsSync(LOCK_FILE) && !utils.hasFlag('ignore-lock')) {
-		utils.log(
-			`Another instance of the ${package.name} is already running or has not properly terminated. Remove lock file to continue.`,
-		);
+	if (!utils.acquireLock(LOCK_FILE)) {
 		return;
 	}
-	fs.writeFileSync(LOCK_FILE, '');
 
 	utils.log(`${package.name} v${package.version}`);
 	if (utils.DRY_RUN) {
@@ -75,7 +70,7 @@ async function main() {
 }
 
 function finish() {
-	fs.unlinkSync(LOCK_FILE);
+	utils.releaseLock(LOCK_FILE);
 }
 
 if (utils.hasFlag('help') || !utils.getOption('output')) {
