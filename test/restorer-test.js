@@ -1,10 +1,12 @@
 const assert = require('chai').assert;
 const fs = require('fs');
+const path = require('path');
 
 const utils = require('./utils');
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
+const LOCK_FILE = path.resolve(__dirname, '..', 'bin', '.backup-restore.lock');
 
 function assertAWS(log, index, remotePattern, localPattern) {
 	assert.isAbove(log.length, index);
@@ -22,6 +24,23 @@ describe('restorer', () => {
 
 	beforeEach(() => {
 		utils.clean([`${TEMP_DIR}*`]);
+	});
+
+	it('does not start if lock file exists', async () => {
+		fs.writeFileSync(LOCK_FILE, '');
+		try {
+			const output = await restore(['--output', '.', '/'], false);
+
+			assert.include(output, 'Another instance is already running');
+			assert.notInclude(output, 'Restorer.start');
+
+			const awsLog = utils.getAWSLog();
+
+			assert.isArray(awsLog);
+			assert.equal(awsLog.length, 0);
+		} finally {
+			fs.unlinkSync(LOCK_FILE);
+		}
 	});
 
 	it('transfers nothing on dry mode', async () => {
