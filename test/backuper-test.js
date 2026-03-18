@@ -1,5 +1,6 @@
 const assert = require('chai').assert;
 const fs = require('fs');
+const path = require('path');
 
 const Archiver = require('../lib/Archiver');
 const Crypter = require('../lib/Crypter');
@@ -10,6 +11,7 @@ const utils = require('./utils');
 const DATA_DIR = utils.DATA_DIR;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
+const LOCK_FILE = path.resolve(__dirname, '..', 'bin', '.backup-to-cloud.lock');
 
 function assertAWS(log, index, operation, pattern, storageClass, hash) {
 	assert.isAbove(log.length, index);
@@ -41,6 +43,23 @@ describe('backuper', () => {
 		await utils.run(['--only-scan', '--verbose']);
 
 		dbFromScan = await utils.getDataContent();
+	});
+
+	it('does not start if lock file exists', async () => {
+		fs.writeFileSync(LOCK_FILE, '');
+		try {
+			const output = await transfer(false);
+
+			assert.include(output, 'Another instance is already running');
+			assert.notInclude(output, 'Starting...');
+
+			const awsLog = utils.getAWSLog();
+
+			assert.isArray(awsLog);
+			assert.equal(awsLog.length, 0);
+		} finally {
+			fs.unlinkSync(LOCK_FILE);
+		}
 	});
 
 	it('transfers nothing on dry mode', async () => {
