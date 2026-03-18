@@ -1,3 +1,1 @@
-#!/usr/bin/env sh
-
 npm exec commitlint -- --edit $1
