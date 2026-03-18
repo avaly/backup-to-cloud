@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.6.0](https://github.com/avaly/backup-to-cloud/compare/v4.5.1...v4.6.0) (2026-03-18)
+
+
+### Features
+
+* Remove all extra remote files in one session ([#89](https://github.com/avaly/backup-to-cloud/issues/89)) ([15d9904](https://github.com/avaly/backup-to-cloud/commit/15d99043987f8b56ad2087dfea1e3b25738235e7))
+* Remove the DB upgrade code ([3b8cc2c](https://github.com/avaly/backup-to-cloud/commit/3b8cc2c34fc2d297a067ed573bd06011d25a3589))
+
 ### [4.5.1](https://github.com/avaly/backup-to-cloud/compare/v4.5.0...v4.5.1) (2026-03-17)
 
 
