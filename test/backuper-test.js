@@ -287,7 +287,7 @@ describe('backuper', () => {
 		assert.isObject(db.remotesByPath[file]);
 	});
 
-	it('transfers files and removes a deleted file in the same run', async () => {
+	it('transfers files and removes all deleted files in the same run', async () => {
 		utils.clean();
 
 		const now = Date.now();
@@ -314,26 +314,27 @@ describe('backuper', () => {
 
 		assert.isArray(awsLog);
 		// Only the first 2 files fit into the session size
-		// Plus one deleted file
+		// Plus both deleted files are removed
 		// The last file is the DB file
-		assert.equal(awsLog.length, 4);
+		assert.equal(awsLog.length, 5);
 
 		assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/1-small\.txt/, 'STANDARD');
 		assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/bar\/2-medium\.txt/, 'STANDARD');
 
 		assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/bar\/1-small-recent\.txt/);
+		assertAWS(awsLog, 3, 'rm', /s3:\/\/test-bucket\/bar\/2-small-long-ago\.txt/);
 
-		assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
+		assertAWS(awsLog, 4, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
 		const db = await utils.getDataContent();
 
-		assert.equal(db.locals.length, dbFromScan.locals.length + 1);
-		assert.isUndefined(db.locals.find((item) => item.path.includes('2-small-recent.txt')));
-		assert.isDefined(db.locals.find((item) => item.path.includes('2-small-long-ago.txt')));
+		assert.equal(db.locals.length, dbFromScan.locals.length);
+		assert.isUndefined(db.locals.find((item) => item.path.includes('1-small-recent.txt')));
+		assert.isUndefined(db.locals.find((item) => item.path.includes('2-small-long-ago.txt')));
 
-		assert.equal(db.remotes.length, 3);
-		assert.isUndefined(db.remotes.find((item) => item.path.includes('2-small-recent.txt')));
-		assert.isDefined(db.remotes.find((item) => item.path.includes('2-small-long-ago.txt')));
+		assert.equal(db.remotes.length, 2);
+		assert.isUndefined(db.remotes.find((item) => item.path.includes('1-small-recent.txt')));
+		assert.isUndefined(db.remotes.find((item) => item.path.includes('2-small-long-ago.txt')));
 	});
 
 	it('should stop transfer after max failed', async () => {
