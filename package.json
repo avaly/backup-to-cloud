@@ -36,7 +36,7 @@
     "pretty-bytes": "7.1.0",
     "slackr": "1.0.0",
     "sqlite": "5.1.1",
-    "sqlite3": "5.1.7"
+    "sqlite3": "6.0.1"
   },
   "devDependencies": {
     "@commitlint/cli": "20.4.3",
