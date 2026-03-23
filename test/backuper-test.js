@@ -287,7 +287,7 @@ describe('backuper', () => {
 		assert.isObject(db.remotesByPath[file]);
 	});
 
-	it('transfers files and removes all deleted files in the same run', async () => {
+	it('transfers files and removes deleted files up to maxSessionRemovals limit', async () => {
 		utils.clean();
 
 		const now = Date.now();
@@ -296,6 +296,8 @@ describe('backuper', () => {
 				...dbFromScan.locals,
 				utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
 				utils.mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
+				utils.mockLocal(`${FIXTURES_DIR}bar/3-small-recent.txt`),
+				utils.mockLocal(`${FIXTURES_DIR}bar/4-small-recent.txt`),
 			],
 			remotes: [
 				utils.mockRemote(`${FIXTURES_DIR}bar/1-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
@@ -305,6 +307,8 @@ describe('backuper', () => {
 					1024,
 					now - 31 * 24 * 3600 * 1000,
 				),
+				utils.mockRemote(`${FIXTURES_DIR}bar/3-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
+				utils.mockRemote(`${FIXTURES_DIR}bar/4-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
 			],
 		});
 
@@ -314,27 +318,29 @@ describe('backuper', () => {
 
 		assert.isArray(awsLog);
 		// Only the first 2 files fit into the session size
-		// Plus both deleted files are removed
+		// maxSessionRemovals is 3 in test config, so only 3 of 4 deleted files are removed
 		// The last file is the DB file
-		assert.equal(awsLog.length, 5);
+		assert.equal(awsLog.length, 6);
 
 		assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/1-small\.txt/, 'STANDARD');
 		assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/bar\/2-medium\.txt/, 'STANDARD');
 
 		assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/bar\/1-small-recent\.txt/);
 		assertAWS(awsLog, 3, 'rm', /s3:\/\/test-bucket\/bar\/2-small-long-ago\.txt/);
+		assertAWS(awsLog, 4, 'rm', /s3:\/\/test-bucket\/bar\/3-small-recent\.txt/);
 
-		assertAWS(awsLog, 4, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
+		assertAWS(awsLog, 5, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
 		const db = await utils.getDataContent();
 
-		assert.equal(db.locals.length, dbFromScan.locals.length);
+		assert.equal(db.locals.length, dbFromScan.locals.length + 1);
 		assert.isUndefined(db.locals.find((item) => item.path.includes('1-small-recent.txt')));
 		assert.isUndefined(db.locals.find((item) => item.path.includes('2-small-long-ago.txt')));
+		assert.isUndefined(db.locals.find((item) => item.path.includes('3-small-recent.txt')));
 
-		assert.equal(db.remotes.length, 2);
-		assert.isUndefined(db.remotes.find((item) => item.path.includes('1-small-recent.txt')));
-		assert.isUndefined(db.remotes.find((item) => item.path.includes('2-small-long-ago.txt')));
+		// 4th deleted file should still exist due to maxSessionRemovals limit
+		assert.equal(db.remotes.length, 3);
+		assert.isObject(db.remotesByPath[`${FIXTURES_DIR}bar/4-small-recent.txt`]);
 	});
 
 	it('should stop transfer after max failed', async () => {
