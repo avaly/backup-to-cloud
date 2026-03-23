@@ -11,6 +11,7 @@ module.exports = Object.assign({}, config, {
 	encryptionPassphrase: 'password',
 	logTimestamp: false,
 	maxSessionFailures: 2,
+	maxSessionRemovals: 3,
 	maxSessionSize: 1 * 1024,
 	prefixRemove: [FIXTURES_DIR, '/foo', __dirname],
 	scanInterval: 1000,
