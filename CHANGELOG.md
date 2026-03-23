@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.7.0](https://github.com/avaly/backup-to-cloud/compare/v4.6.0...v4.7.0) (2026-03-23)
+
+
+### Features
+
+* Add session removals limit config option ([#93](https://github.com/avaly/backup-to-cloud/issues/93)) ([91c4d8c](https://github.com/avaly/backup-to-cloud/commit/91c4d8c0012ce3a89df5fed02f524df7b94f5be0))
+
 ## [4.6.0](https://github.com/avaly/backup-to-cloud/compare/v4.5.1...v4.6.0) (2026-03-18)
 
 
