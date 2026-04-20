@@ -145,6 +145,26 @@ describe('scan', () => {
 		]);
 	});
 
+	it('marks deleted files when source becomes empty', async () => {
+		const tempDir = `${FIXTURES_DIR}/scan-empty`;
+		const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
+
+		fs.mkdirSync(tempDir, { recursive: true });
+
+		await utils.setDataContent({
+			locals: files.map((file) => utils.mockLocal(`${FIXTURES_DIR}scan-empty/${file}`, 'abc')),
+			remotes: files.map((file) => utils.mockRemote(`${FIXTURES_DIR}scan-empty/${file}`)),
+		});
+
+		await scan();
+
+		const db = await utils.getDataContent();
+
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/1-small.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/2-medium.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/3-large.txt`);
+	});
+
 	it('removes deleted files which have not been synced yet', async () => {
 		await utils.setDataContent({
 			locals: [
