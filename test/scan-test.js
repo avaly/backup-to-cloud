@@ -1,4 +1,6 @@
 const assert = require('chai').assert;
+const config = require('../lib/config');
+const DB = require('../lib/DB');
 const fs = require('fs');
 const utils = require('./utils');
 const Scanner = require('../lib/Scanner');
@@ -146,23 +148,60 @@ describe('scan', () => {
 	});
 
 	it('marks deleted files when source becomes empty', async () => {
-		const tempDir = `${FIXTURES_DIR}/scan-empty`;
+		const tempDir = `${FIXTURES_DIR}scan-empty`;
 		const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
+		const originalSources = config.sources.slice();
 
 		fs.mkdirSync(tempDir, { recursive: true });
+		config.sources = originalSources.concat(tempDir);
 
+		try {
+			await utils.setDataContent({
+				locals: files.map((file) => utils.mockLocal(`${tempDir}/${file}`, 'abc')),
+				remotes: files.map((file) => utils.mockRemote(`${tempDir}/${file}`)),
+			});
+
+			await scan();
+
+			const db = await utils.getDataContent();
+
+			utils.assertLocalDeleted(db, `${tempDir}/1-small.txt`);
+			utils.assertLocalDeleted(db, `${tempDir}/2-medium.txt`);
+			utils.assertLocalDeleted(db, `${tempDir}/3-large.txt`);
+		} finally {
+			config.sources = originalSources;
+			fs.rmSync(tempDir, { recursive: true, force: true });
+		}
+	});
+
+	it('fails scan when source discovery fails', async () => {
+		const missingSource = `${FIXTURES_DIR}scan-missing`;
+		const missingFile = `${missingSource}/missing.txt`;
+		const originalSources = config.sources.slice();
+		const db = new DB();
+
+		config.sources = originalSources.concat(missingSource);
 		await utils.setDataContent({
-			locals: files.map((file) => utils.mockLocal(`${FIXTURES_DIR}scan-empty/${file}`, 'abc')),
-			remotes: files.map((file) => utils.mockRemote(`${FIXTURES_DIR}scan-empty/${file}`)),
+			locals: [utils.mockLocal(missingFile, 'abc')],
+			remotes: [utils.mockRemote(missingFile)],
 		});
 
-		await scan();
+		await db.initialize();
+		const scanner = new Scanner(db);
 
-		const db = await utils.getDataContent();
+		try {
+			await scanner.scan();
+			assert.fail('expected scan to fail');
+		} catch (err) {
+			assert.include(err.message || String(err), `Failed to scan source ${missingSource}`);
+		} finally {
+			db.close();
+			config.sources = originalSources;
+		}
 
-		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/1-small.txt`);
-		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/2-medium.txt`);
-		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/3-large.txt`);
+		const dbContent = await utils.getDataContent();
+
+		assert.equal(dbContent.localsByPath[missingFile].hash, 'abc');
 	});
 
 	it('removes deleted files which have not been synced yet', async () => {
