@@ -152,6 +152,7 @@ describe('scan', () => {
 		const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
 		const originalSources = config.sources.slice();
 		let db;
+		let dbInitialized = false;
 
 		fs.mkdirSync(tempDir, { recursive: true });
 		config.sources = originalSources.concat(tempDir);
@@ -164,6 +165,7 @@ describe('scan', () => {
 
 			db = new DB();
 			await db.initialize();
+			dbInitialized = true;
 			const scanner = new Scanner(db);
 			await scanner.scan();
 
@@ -173,7 +175,7 @@ describe('scan', () => {
 			utils.assertLocalDeleted(dbContent, `${tempDir}/2-medium.txt`);
 			utils.assertLocalDeleted(dbContent, `${tempDir}/3-large.txt`);
 		} finally {
-			if (db?.db) {
+			if (dbInitialized) {
 				db.close();
 			}
 			config.sources = originalSources;
