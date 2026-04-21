@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const Archiver = require('../lib/Archiver');
+const Backuper = require('../lib/Backuper');
 const Crypter = require('../lib/Crypter');
 const Scanner = require('../lib/Scanner');
 const appUtils = require('../lib/utils');
@@ -405,5 +406,48 @@ describe('backuper', () => {
     const db = await utils.getDataContent();
 
     assert.isUndefined(db.remotesByPath[`${FIXTURES_DIR}foo/4-small.dat`]);
+  });
+
+  it('skips failed archive compression before temp archive exists', async () => {
+    const local = utils.mockLocal(
+      `${FIXTURES_DIR}ham/first/first.tar`,
+      'archive-hash',
+      123,
+      utils.DB_TYPES.ARCHIVE,
+    );
+    const db = {
+      updateRemote: async () => {
+        throw new Error('updateRemote should not be called');
+      },
+    };
+    const backuper = new Backuper(db, {});
+    const { compress } = Archiver;
+    const { unlinkSync } = fs;
+    const unlinkCalls = [];
+
+    backuper.skipFiles = [];
+    backuper.sessionCount = 0;
+    backuper.sessionFailed = 0;
+    backuper.sessionRemoved = 0;
+    backuper.sessionSize = 0;
+
+    Archiver.compress = async () => {
+      throw new Error('compress failed');
+    };
+    fs.unlinkSync = (filePath) => {
+      unlinkCalls.push(filePath);
+    };
+
+    try {
+      await backuper.add(local);
+
+      assert.deepEqual(unlinkCalls, []);
+      assert.deepEqual(backuper.skipFiles, [local.path]);
+      assert.equal(backuper.sessionFailed, 1);
+      assert.equal(backuper.sessionCount, 1);
+    } finally {
+      Archiver.compress = compress;
+      fs.unlinkSync = unlinkSync;
+    }
   });
 });
