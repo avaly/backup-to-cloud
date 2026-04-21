@@ -20,7 +20,7 @@ const ROOT_DIR = path.resolve(__dirname, '..') + path.sep;
 const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
 const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
 const AWS_LOG = `${DATA_DIR}aws.json`;
-const DB_FILE = ROOT_DIR + path.sep + config.dbSQLite;
+const DB_FILE = `${ROOT_DIR}${config.dbSQLite}`;
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
 
 module.exports = {
@@ -43,9 +43,11 @@ module.exports = {
 			fs.unlinkSync(DB_FILE);
 		}
 		if (items && Array.isArray(items)) {
-			items.forEach((item) => {
-				execSync(`rm -rf ${item}`);
-			});
+			for (const item of items) {
+				if (item !== '*' && item !== '**' && item !== '/') {
+					execSync(`rm -rf ${item}`);
+				}
+			}
 		}
 	},
 

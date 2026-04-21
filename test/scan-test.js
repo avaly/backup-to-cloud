@@ -190,6 +190,7 @@ describe('scan', () => {
 	});
 
 	it('throws error when source is invalid', async () => {
+		let previousEnv = process.env.BACKUP_ENV;
 		await fs.promises.cp(`${FIXTURES_DIR}scan-error/config.scan.js`, `${ROOT_DIR}config.scan.js`);
 
 		try {
@@ -201,7 +202,7 @@ describe('scan', () => {
 		} catch (err) {
 			assert.include(err.message, 'Failed to scan source /non/existing/source');
 		} finally {
-			process.env.BACKUP_ENV = 'test';
+			process.env.BACKUP_ENV = previousEnv;
 
 			await fs.promises.rm(`${ROOT_DIR}config.scan.js`);
 		}
