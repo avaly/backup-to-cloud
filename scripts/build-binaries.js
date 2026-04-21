@@ -12,6 +12,7 @@ const OUTPUT_DIR = path.resolve(
   process.env.BACKUP_EXECUTABLES_DIR || path.join(ROOT_DIR, 'dist', 'executables'),
 );
 const IS_WINDOWS = process.platform === 'win32';
+const ASSET_MANIFEST = 'sea-assets.json';
 
 const BINARIES = ['backup-to-cloud', 'backup-restore', 'backup-verify', 'backup-decrypt'];
 
@@ -88,8 +89,6 @@ function createSeaConfig(binaryName, mainFile, assets) {
     useSnapshot: false,
   };
 }
-
-const ASSET_MANIFEST = 'sea-assets.json';
 
 function stageAssets() {
   for (const file of SEA_ASSET_FILES) {
