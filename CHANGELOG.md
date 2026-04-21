@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.7.1](https://github.com/avaly/backup-to-cloud/compare/v4.7.0...v4.7.1) (2026-04-21)
+
+
+### Bug Fixes
+
+* Better backup archive cleanup ([#110](https://github.com/avaly/backup-to-cloud/issues/110)) ([c2f56ea](https://github.com/avaly/backup-to-cloud/commit/c2f56eaf160a883a041b7fbe802000646b8415c0))
+* Handle crypter errors ([#109](https://github.com/avaly/backup-to-cloud/issues/109)) ([245340a](https://github.com/avaly/backup-to-cloud/commit/245340a122f9db2ae2adb3795eef752c5cfc6821))
+* Scan removes deleted local files from DB ([#104](https://github.com/avaly/backup-to-cloud/issues/104)) ([7c760dc](https://github.com/avaly/backup-to-cloud/commit/7c760dcd10aa94759f0c5145289dcbaaacac4945))
+
 ## [4.7.0](https://github.com/avaly/backup-to-cloud/compare/v4.6.0...v4.7.0) (2026-03-23)
 
 
