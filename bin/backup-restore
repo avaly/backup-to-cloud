@@ -76,11 +76,9 @@ function finish() {
 if (utils.hasFlag('help') || !utils.getOption('output')) {
 	usage();
 } else {
-	try {
-		main();
-	} catch (err) {
+	main().catch((err) => {
 		utils.log(`Error: ${err.message}`);
 		finish();
 		process.exit(1);
-	}
+	});
 }

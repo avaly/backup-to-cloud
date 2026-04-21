@@ -3,11 +3,13 @@ const fs = require('fs');
 const utils = require('./utils');
 const Scanner = require('../lib/Scanner');
 
-const FIXTURES_DIR = utils.FIXTURES_DIR;
+const { FIXTURES_DIR, ROOT_DIR } = utils;
+
+function scan(dry) {
+	return utils.run(['--only-scan', '--verbose', dry && '--dry']);
+}
 
 describe('scan', () => {
-	const scan = (dry) => utils.run(['--only-scan', '--verbose', dry && '--dry']);
-
 	beforeEach(() => {
 		utils.clean();
 	});
@@ -29,6 +31,8 @@ describe('scan', () => {
 		assert.include(output, '/foo - Archives found: 0');
 		assert.include(output, '/ham - Files found: 0');
 		assert.include(output, '/ham - Archives found: 2');
+		assert.include(output, '/empty - Files found: 0');
+		assert.include(output, '/empty - Archives found: 0');
 		assert.isFalse(fs.existsSync(utils.DB_FILE), 'db file was not created');
 	});
 
@@ -145,6 +149,23 @@ describe('scan', () => {
 		]);
 	});
 
+	it('marks deleted files when source becomes empty', async () => {
+		const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
+
+		await utils.setDataContent({
+			locals: files.map((file) => utils.mockLocal(`${FIXTURES_DIR}empty/${file}`, 'abc')),
+			remotes: files.map((file) => utils.mockRemote(`${FIXTURES_DIR}empty/${file}`)),
+		});
+
+		await scan();
+
+		const db = await utils.getDataContent();
+
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/1-small.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/2-medium.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/3-large.txt`);
+	});
+
 	it('removes deleted files which have not been synced yet', async () => {
 		await utils.setDataContent({
 			locals: [
@@ -166,5 +187,24 @@ describe('scan', () => {
 		assert.equal(db.locals.length, 9);
 		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`]);
 		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}ham/fourth/fourth.tar`]);
+	});
+
+	it('throws error when source is invalid', async () => {
+		let previousEnv = process.env.BACKUP_ENV;
+		await fs.promises.cp(`${FIXTURES_DIR}scan-error/config.scan.js`, `${ROOT_DIR}config.scan.js`);
+
+		try {
+			process.env.BACKUP_ENV = 'scan';
+
+			await scan(true);
+
+			assert.fail('Expected error was not thrown');
+		} catch (err) {
+			assert.include(err.message, 'Failed to scan source /non/existing/source');
+		} finally {
+			process.env.BACKUP_ENV = previousEnv;
+
+			await fs.promises.rm(`${ROOT_DIR}config.scan.js`);
+		}
 	});
 });

@@ -184,12 +184,13 @@ describe('restorer', () => {
 	});
 
 	it('tests a failing file', async () => {
-		const output = await restore(['--test', '3', '--output', TEMP_DIR, '/'], false, true);
+		const result = await restore(['--test', '3', '--output', TEMP_DIR, '/'], false, true);
 
-		assert.include(output, 'exit code: 1');
-		assert.include(output, 'Restorer.test FAIL: /1-fail.dat');
-		assert.include(output, 'Restorer result: FAIL');
-		assert.include(output, 'Restorer.finish: 0 restored, 1 failed');
+		assert.isTrue(result instanceof Error);
+		assert.include(result.message, 'exit code: 1');
+		assert.include(result.message, 'Restorer.test FAIL: /1-fail.dat');
+		assert.include(result.message, 'Restorer result: FAIL');
+		assert.include(result.message, 'Restorer.finish: 0 restored, 1 failed');
 
 		const awsLog = utils.getAWSLog();
 
