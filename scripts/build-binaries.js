@@ -32,7 +32,7 @@ function assertBuildSeaSupport() {
   const result = childProcess.spawnSync(process.execPath, ['--help'], {
     encoding: 'utf-8',
   });
-  const helpText = [result.stdout, result.stderr].filter(Boolean).join('\n');
+  const helpText = result.stdout || '';
 
   if (!helpText.includes('--build-sea')) {
     throw new Error(
@@ -167,7 +167,16 @@ function buildExecutable(configFile) {
   });
 
   if (result.status !== 0) {
-    throw new Error([result.stderr, result.stdout].filter(Boolean).join('\n').trim());
+    const output = [];
+    if (result.stderr && result.stderr.trim()) {
+      output.push(`stderr:\n${result.stderr.trim()}`);
+    }
+    if (result.stdout && result.stdout.trim()) {
+      output.push(`stdout:\n${result.stdout.trim()}`);
+    }
+    throw new Error(
+      output.join('\n\n') || `node --build-sea failed with exit code ${result.status}`,
+    );
   }
 }
 
