@@ -11,10 +11,10 @@ const utils = require('../lib/utils');
 const execSync = childProcess.execSync;
 
 const BIN_FILES = {
-	backup: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud'),
-	decrypt: path.resolve(__dirname, '..', 'bin', 'backup-decrypt'),
-	restore: path.resolve(__dirname, '..', 'bin', 'backup-restore'),
-	verify: path.resolve(__dirname, '..', 'bin', 'backup-verify'),
+  backup: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud'),
+  decrypt: path.resolve(__dirname, '..', 'bin', 'backup-decrypt'),
+  restore: path.resolve(__dirname, '..', 'bin', 'backup-restore'),
+  verify: path.resolve(__dirname, '..', 'bin', 'backup-verify'),
 };
 const ROOT_DIR = path.resolve(__dirname, '..') + path.sep;
 const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
@@ -24,110 +24,110 @@ const DB_FILE = `${ROOT_DIR}${config.dbSQLite}`;
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
 
 module.exports = {
-	AWS_LOG,
-	DATA_DIR,
-	DB_FILE,
-	DB_TYPES: DB.TYPES,
-	DELETED: utils.DELETED,
-	FIXTURES_DIR,
-	ROOT_DIR,
-	TEMP_DIR,
+  AWS_LOG,
+  DATA_DIR,
+  DB_FILE,
+  DB_TYPES: DB.TYPES,
+  DELETED: utils.DELETED,
+  FIXTURES_DIR,
+  ROOT_DIR,
+  TEMP_DIR,
 
-	execPromise: utils.execPromise,
+  execPromise: utils.execPromise,
 
-	clean(items) {
-		if (fs.existsSync(AWS_LOG)) {
-			fs.unlinkSync(AWS_LOG);
-		}
-		if (fs.existsSync(DB_FILE)) {
-			fs.unlinkSync(DB_FILE);
-		}
-		if (items && Array.isArray(items)) {
-			for (const item of items) {
-				if (item !== '*' && item !== '**' && item !== '/') {
-					execSync(`rm -rf ${item}`);
-				}
-			}
-		}
-	},
+  clean(items) {
+    if (fs.existsSync(AWS_LOG)) {
+      fs.unlinkSync(AWS_LOG);
+    }
+    if (fs.existsSync(DB_FILE)) {
+      fs.unlinkSync(DB_FILE);
+    }
+    if (items && Array.isArray(items)) {
+      for (const item of items) {
+        if (item !== '*' && item !== '**' && item !== '/') {
+          execSync(`rm -rf ${item}`);
+        }
+      }
+    }
+  },
 
-	getAWSLog() {
-		if (fs.existsSync(AWS_LOG)) {
-			return JSON.parse(fs.readFileSync(AWS_LOG, 'utf-8'));
-		}
-		return [];
-	},
+  getAWSLog() {
+    if (fs.existsSync(AWS_LOG)) {
+      return JSON.parse(fs.readFileSync(AWS_LOG, 'utf-8'));
+    }
+    return [];
+  },
 
-	async getDataContent() {
-		if (fs.existsSync(DB_FILE)) {
-			const db = new DB();
-			await db.initialize();
-			return db.getAll();
-		}
-		return {};
-	},
+  async getDataContent() {
+    if (fs.existsSync(DB_FILE)) {
+      const db = new DB();
+      await db.initialize();
+      return db.getAll();
+    }
+    return {};
+  },
 
-	async setDataContent(data) {
-		const db = new DB();
-		await db.initialize();
-		return db.setAll(data);
-	},
+  async setDataContent(data) {
+    const db = new DB();
+    await db.initialize();
+    return db.setAll(data);
+  },
 
-	async run(args, binFile, allowFailure = false) {
-		const bin = BIN_FILES[binFile || 'backup'];
-		const filteredArgs = args.filter((arg) => !!arg);
+  async run(args, binFile, allowFailure = false) {
+    const bin = BIN_FILES[binFile || 'backup'];
+    const filteredArgs = args.filter((arg) => !!arg);
 
-		try {
-			return await utils.execPromise(bin, filteredArgs);
-		} catch (err) {
-			if (allowFailure) {
-				return err;
-			}
-			throw err;
-		}
-	},
+    try {
+      return await utils.execPromise(bin, filteredArgs);
+    } catch (err) {
+      if (allowFailure) {
+        return err;
+      }
+      throw err;
+    }
+  },
 
-	delay(timeout) {
-		return new Promise((resolve) => {
-			setTimeout(resolve, timeout);
-		});
-	},
+  delay(timeout) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  },
 
-	mockLocal(path, hash, size, type) {
-		return {
-			path: path,
-			hash: hash || utils.DELETED,
-			type: type || DB.TYPES.FILE,
-			size: size || 123,
-		};
-	},
+  mockLocal(path, hash, size, type) {
+    return {
+      path: path,
+      hash: hash || utils.DELETED,
+      type: type || DB.TYPES.FILE,
+      size: size || 123,
+    };
+  },
 
-	mockRemote(path, hash, size, timestamp, type) {
-		return {
-			path: path,
-			hash: hash || 'abc',
-			type: type || DB.TYPES.FILE,
-			size: size || 123,
-			timestamp: timestamp || 456,
-		};
-	},
+  mockRemote(path, hash, size, timestamp, type) {
+    return {
+      path: path,
+      hash: hash || 'abc',
+      type: type || DB.TYPES.FILE,
+      size: size || 123,
+      timestamp: timestamp || 456,
+    };
+  },
 
-	assertLocalDeleted(db, path) {
-		assert.equal(db.localsByPath[path].hash, utils.DELETED);
-	},
+  assertLocalDeleted(db, path) {
+    assert.equal(db.localsByPath[path].hash, utils.DELETED);
+  },
 
-	assertFilesEqual(fileA, fileB) {
-		assert.equal(md5File.sync(fileA), md5File.sync(fileB));
-	},
+  assertFilesEqual(fileA, fileB) {
+    assert.equal(md5File.sync(fileA), md5File.sync(fileB));
+  },
 
-	assertFilesNotEqual(fileA, fileB) {
-		assert.notEqual(md5File.sync(fileA), md5File.sync(fileB));
-	},
+  assertFilesNotEqual(fileA, fileB) {
+    assert.notEqual(md5File.sync(fileA), md5File.sync(fileB));
+  },
 
-	cp(from, to) {
-		const cmd = ['cp', from, to].join(' ');
-		execSync(cmd, {
-			encoding: 'utf-8',
-		});
-	},
+  cp(from, to) {
+    const cmd = ['cp', from, to].join(' ');
+    execSync(cmd, {
+      encoding: 'utf-8',
+    });
+  },
 };

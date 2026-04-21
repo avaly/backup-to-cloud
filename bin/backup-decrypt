@@ -8,7 +8,7 @@ const package = require('../package.json');
 const utils = require('../lib/utils');
 
 function usage() {
-	console.log(`${package.name} v${package.version}
+  console.log(`${package.name} v${package.version}
 
 Usage: ${__filename} OPTIONS INPUT_FILE
 
@@ -20,25 +20,25 @@ Options:
 }
 
 async function main() {
-	const fileInput = path.resolve(process.argv.pop());
-	const fileOutput = path.resolve(utils.getOption('output'));
+  const fileInput = path.resolve(process.argv.pop());
+  const fileOutput = path.resolve(utils.getOption('output'));
 
-	if (!fs.existsSync(fileInput)) {
-		utils.log(`Input file does not exist: ${fileInput}`);
-		process.exit(1);
-	}
+  if (!fs.existsSync(fileInput)) {
+    utils.log(`Input file does not exist: ${fileInput}`);
+    process.exit(1);
+  }
 
-	try {
-		await Crypter.decrypt(fileInput, fileOutput);
-		utils.log(`Decrypted: ${fileInput} > ${fileOutput}`);
-	} catch (err) {
-		utils.log('Decrypt error', err);
-		process.exit(1);
-	}
+  try {
+    await Crypter.decrypt(fileInput, fileOutput);
+    utils.log(`Decrypted: ${fileInput} > ${fileOutput}`);
+  } catch (err) {
+    utils.log('Decrypt error', err);
+    process.exit(1);
+  }
 }
 
 if (utils.hasFlag('help')) {
-	usage();
+  usage();
 } else {
-	main();
+  main();
 }

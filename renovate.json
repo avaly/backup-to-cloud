@@ -1,20 +1,20 @@
 {
-	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"branchConcurrentLimit": 8,
-	"commitMessageAction": "Upgrade",
-	"commitMessagePrefix": "chore:",
-	"commitMessageTopic": "{{depName}}",
-	"extends": ["config:recommended"],
-	"internalChecksAsSuccess": true,
-	"labels": ["dependencies"],
-	"minimumReleaseAge": "7 days",
-	"postUpdateOptions": ["npmDedupe"],
-	"prCreation": "not-pending",
-	"prConcurrentLimit": 4,
-	"rebaseWhen": "conflicted",
-	"reviewers": ["avaly"],
-	"timezone": "Etc/UTC",
-	"vulnerabilityAlerts": {
-		"labels": ["security"]
-	}
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "branchConcurrentLimit": 8,
+  "commitMessageAction": "Upgrade",
+  "commitMessagePrefix": "chore:",
+  "commitMessageTopic": "{{depName}}",
+  "extends": ["config:recommended"],
+  "internalChecksAsSuccess": true,
+  "labels": ["dependencies"],
+  "minimumReleaseAge": "7 days",
+  "postUpdateOptions": ["npmDedupe"],
+  "prCreation": "not-pending",
+  "prConcurrentLimit": 4,
+  "rebaseWhen": "conflicted",
+  "reviewers": ["avaly"],
+  "timezone": "Etc/UTC",
+  "vulnerabilityAlerts": {
+    "labels": ["security"]
+  }
 }
