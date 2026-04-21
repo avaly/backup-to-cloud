@@ -112,13 +112,22 @@ const sea = require('node:sea');
 
 const manifest = JSON.parse(sea.getAsset('${ASSET_MANIFEST}', 'utf8'));
 const executableTimestamp = Math.trunc(fs.statSync(process.execPath).mtimeMs);
-const rootDir = path.join(
+const installBaseDir = path.join(
   os.tmpdir(),
   'backup-to-cloud-sea',
   manifest.version,
   \`\${process.platform}-\${process.arch}\`,
-  \`\${path.basename(process.execPath)}-\${executableTimestamp}\`,
 );
+const installName = \`\${path.basename(process.execPath)}-\${executableTimestamp}\`;
+const rootDir = path.join(installBaseDir, installName);
+
+if (fs.existsSync(installBaseDir)) {
+  for (const entry of fs.readdirSync(installBaseDir)) {
+    if (entry !== installName && entry.startsWith(\`\${path.basename(process.execPath)}-\`)) {
+      fs.rmSync(path.join(installBaseDir, entry), { force: true, recursive: true });
+    }
+  }
+}
 
 for (const file of manifest.files) {
   const targetFile = path.join(rootDir, file);

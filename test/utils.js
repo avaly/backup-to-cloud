@@ -8,7 +8,7 @@ const DB = require('../lib/DB');
 const config = require('../lib/config');
 const utils = require('../lib/utils');
 
-const execSync = childProcess.execSync;
+const execFileSync = childProcess.execFileSync;
 
 const BIN_FILES = {
   backup: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud'),
@@ -45,7 +45,24 @@ module.exports = {
     if (items && Array.isArray(items)) {
       for (const item of items) {
         if (item !== '*' && item !== '**' && item !== '/') {
-          execSync(`rm -rf ${item}`);
+          if (/[*?[\]{}]/.test(item)) {
+            execFileSync('find', [
+              path.dirname(item),
+              '-mindepth',
+              '1',
+              '-maxdepth',
+              '1',
+              '-name',
+              path.basename(item),
+              '-exec',
+              'rm',
+              '-rf',
+              '{}',
+              '+',
+            ]);
+          } else {
+            fs.rmSync(item, { force: true, recursive: true });
+          }
         }
       }
     }
@@ -125,8 +142,7 @@ module.exports = {
   },
 
   cp(from, to) {
-    const cmd = ['cp', from, to].join(' ');
-    execSync(cmd, {
+    execFileSync('cp', [from, to], {
       encoding: 'utf-8',
     });
   },
