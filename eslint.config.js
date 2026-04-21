@@ -32,6 +32,6 @@ module.exports = [
     },
   },
   {
-    ignores: ['coverage/**', 'data/**', 'package-lock.json'],
+    ignores: ['coverage/**', 'data/**', 'dist/**', 'package-lock.json'],
   },
 ];

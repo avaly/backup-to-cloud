@@ -2,6 +2,7 @@
 /.nyc_output/
 /coverage/
 /data/
+/dist/
 /node_modules
 /tmp/
 /config.default.js

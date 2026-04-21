@@ -4,14 +4,15 @@ const path = require('path');
 
 const Restorer = require('../lib/Restorer');
 const package = require('../package.json');
+const runtime = require('../lib/runtime');
 const utils = require('../lib/utils');
 
-const LOCK_FILE = path.join(__dirname, '.backup-restore.lock');
+const LOCK_FILE = runtime.resolveLockFile('.backup-restore.lock');
 
 function usage() {
   console.log(`${package.name} v${package.version}
 
-Usage: ${__filename} [OPTIONS] REMOTE_DIR_OR_FILE
+Usage: ${runtime.displayCommand()} [OPTIONS] REMOTE_DIR_OR_FILE
 
 Options:
 	--output OUTPUT_DIR_OR_FILE [required]
@@ -24,14 +25,14 @@ Options:
 	--help
 
 Examples:
-	${__filename} --output /foo/ /remote/dir/file1.txt
+	${runtime.displayCommand()} --output /foo/ /remote/dir/file1.txt
 		Will restore s3://BUCKET/remote/dir/file1.txt to /foo/remote/dir/file1.txt
 
-	${__filename} --output /foo/ /remote/
+	${runtime.displayCommand()} --output /foo/ /remote/
 		Will restore s3://BUCKET/remote/dir/file1.txt to /foo/remote/dir/file1.txt
 		Will restore s3://BUCKET/remote/other/file2.txt to /foo/remote/other/file2.txt
 
-	${__filename} --output /foo/ --test /remote/
+	${runtime.displayCommand()} --output /foo/ --test /remote/
 		Will restore a random file with the prefix s3://BUCKET/remote/ to /foo/remote/
 `);
 }

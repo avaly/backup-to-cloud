@@ -4,6 +4,7 @@
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "scripts": {
+    "build-binaries": "node ./scripts/build-binaries.js",
     "coverage": "rm -rf .nyc_output/ coverage/ bin/.backup-to-cloud.lock && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha",
     "lint": "eslint .",
     "prepare": "husky",
@@ -42,6 +43,7 @@
     "@commitlint/config-conventional": "20.5.0",
     "@eslint/js": "10.0.1",
     "chai": "6.2.2",
+    "esbuild": "^0.28.0",
     "eslint": "10.2.0",
     "eslint-config-prettier": "10.1.8",
     "globals": "17.4.0",

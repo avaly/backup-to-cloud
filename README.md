@@ -46,6 +46,14 @@ Ideally, it should be setup to run in a crontab entry.
   0 */12 * * * cd /path/to/this && ./bin/backup-to-cloud >> cron.log 2>&1
   ```
 
+## Build executables
+
+- Use Node.js `25.5+` for the build step because it relies on `node --build-sea`
+- Run `npm ci`
+- Run `npm run build-binaries`
+- Generated binaries are written to `dist/executables/`
+- Keep `config.<env>.js` in the current working directory or next to the executable when running a built binary
+
 ## Tools
 
 ### backup-to-cloud

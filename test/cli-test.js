@@ -11,7 +11,7 @@ describe('cli', () => {
     const result = await utils.run(['--help']);
 
     assert.include(result, 'Usage:');
-    assert.isFalse(fs.existsSync(utils.DATA_FILE), 'data file was not created');
+    assert.isFalse(fs.existsSync(utils.DB_FILE), 'data file was not created');
   });
 
   it('checks config', async () => {

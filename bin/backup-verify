@@ -2,12 +2,13 @@
 
 const Verifier = require('../lib/Verifier');
 const package = require('../package.json');
+const runtime = require('../lib/runtime');
 const utils = require('../lib/utils');
 
 function usage() {
   console.log(`${package.name} v${package.version}
 
-Usage: ${__filename} OPTIONS
+Usage: ${runtime.displayCommand()} OPTIONS
 
 Options:
 	--dry
