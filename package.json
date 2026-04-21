@@ -9,7 +9,6 @@
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
     "pretty-ci": "prettier --ignore-unknown --check \"**/*\"",
-    "start": "bin/backup-to-cloud",
     "test": "rm -f bin/.backup-to-cloud.lock && BACKUP_ENV=test mocha"
   },
   "license": "MIT",
