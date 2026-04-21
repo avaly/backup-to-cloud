@@ -25,7 +25,7 @@ Use Node.js `>=22`.
 For manual CLI checks, prefer the binaries directly, for example `bin/backup-to-cloud --check-config` or `bin/backup-verify --dry`.
 
 ## Coding Style & Naming Conventions
-This project uses CommonJS (`require`, `module.exports`). Follow `.editorconfig` and ESLint: tabs for JS indentation, LF line endings, single quotes, semicolons. Prettier is configured with `useTabs: true` and `printWidth: 100`. Use PascalCase for main class-like modules in `lib/` (`Backuper.js`, `Verifier.js`) and kebab-case for CLI entrypoints in `bin/`.
+This project uses CommonJS (`require`, `module.exports`). Follow `.editorconfig` and ESLint: 2-space indentation for JS, LF line endings, single quotes, semicolons. Prettier is configured with `useTabs: false` and `printWidth: 100`. Use PascalCase for main class-like modules in `lib/` (`Backuper.js`, `Verifier.js`) and kebab-case for CLI entrypoints in `bin/`.
 
 ## Testing Guidelines
 Tests are written with Mocha and Chai. Add new tests under `test/` with `*-test.js` names that mirror the module or command under test, for example `test/backuper-test.js`. Reuse fixtures under `test/_fixtures_/` when possible rather than creating ad hoc temp files. Run `npm test` before opening a PR; run `npm run coverage` for changes affecting scan, restore, verify, or archival flows.
