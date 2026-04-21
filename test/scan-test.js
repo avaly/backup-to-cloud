@@ -29,6 +29,8 @@ describe('scan', () => {
 		assert.include(output, '/foo - Archives found: 0');
 		assert.include(output, '/ham - Files found: 0');
 		assert.include(output, '/ham - Archives found: 2');
+		assert.include(output, '/empty - Files found: 0');
+		assert.include(output, '/empty - Archives found: 0');
 		assert.isFalse(fs.existsSync(utils.DB_FILE), 'db file was not created');
 	});
 
@@ -146,23 +148,23 @@ describe('scan', () => {
 	});
 
 	it('marks deleted files when source becomes empty', async () => {
-		const tempDir = `${FIXTURES_DIR}/scan-empty`;
+		const tempDir = `${FIXTURES_DIR}/empty`;
 		const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
 
 		fs.mkdirSync(tempDir, { recursive: true });
 
 		await utils.setDataContent({
-			locals: files.map((file) => utils.mockLocal(`${FIXTURES_DIR}scan-empty/${file}`, 'abc')),
-			remotes: files.map((file) => utils.mockRemote(`${FIXTURES_DIR}scan-empty/${file}`)),
+			locals: files.map((file) => utils.mockLocal(`${FIXTURES_DIR}empty/${file}`, 'abc')),
+			remotes: files.map((file) => utils.mockRemote(`${FIXTURES_DIR}empty/${file}`)),
 		});
 
 		await scan();
 
 		const db = await utils.getDataContent();
 
-		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/1-small.txt`);
-		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/2-medium.txt`);
-		utils.assertLocalDeleted(db, `${FIXTURES_DIR}scan-empty/3-large.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/1-small.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/2-medium.txt`);
+		utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/3-large.txt`);
 	});
 
 	it('removes deleted files which have not been synced yet', async () => {
