@@ -32,8 +32,9 @@ function assertAWS(log, index, operation, pattern, storageClass, hash) {
 }
 
 describe('backuper', () => {
-	const transfer = (dry, random) =>
-		utils.run(['--skip-scan', '--verbose', dry && '--dry', random && '--random-order']);
+	function transfer(dry, random) {
+		return utils.run(['--skip-scan', '--verbose', dry && '--dry', random && '--random-order']);
+	}
 
 	let dbFromScan;
 

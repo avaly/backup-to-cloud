@@ -19,8 +19,9 @@ function assertAWS(log, index, remotePattern, localPattern) {
 }
 
 describe('restorer', () => {
-	const restore = (args, dry, allowFailure = false) =>
-		utils.run(['--verbose', dry && '--dry'].concat(args || []), 'restore', allowFailure);
+	function restore(args, dry, allowFailure = false) {
+		return utils.run(['--verbose', dry && '--dry'].concat(args || []), 'restore', allowFailure);
+	}
 
 	beforeEach(() => {
 		utils.clean([`${TEMP_DIR}*`]);

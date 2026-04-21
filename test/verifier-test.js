@@ -6,11 +6,12 @@ const utils = require('./utils');
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 
 describe('verifier', () => {
-	const verify = (awsLSMock, dry) =>
-		utils.run(
+	function verify(awsLSMock, dry) {
+		return utils.run(
 			['--verbose', dry ? '--dry' : '', '--aws-ls-mock', `${FIXTURES_DIR}verify/${awsLSMock}`],
 			'verify',
 		);
+	}
 
 	beforeEach(() => {
 		utils.cp(`${FIXTURES_DIR}verify/db-test.sqlite`, config.dbSQLite);
