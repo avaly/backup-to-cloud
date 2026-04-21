@@ -3,11 +3,13 @@ const fs = require('fs');
 const utils = require('./utils');
 const Scanner = require('../lib/Scanner');
 
-const FIXTURES_DIR = utils.FIXTURES_DIR;
+const { FIXTURES_DIR, ROOT_DIR } = utils;
+
+function scan(dry) {
+	return utils.run(['--only-scan', '--verbose', dry && '--dry']);
+}
 
 describe('scan', () => {
-	const scan = (dry) => utils.run(['--only-scan', '--verbose', dry && '--dry']);
-
 	beforeEach(() => {
 		utils.clean();
 	});
@@ -148,10 +150,7 @@ describe('scan', () => {
 	});
 
 	it('marks deleted files when source becomes empty', async () => {
-		const tempDir = `${FIXTURES_DIR}/empty`;
 		const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
-
-		fs.mkdirSync(tempDir, { recursive: true });
 
 		await utils.setDataContent({
 			locals: files.map((file) => utils.mockLocal(`${FIXTURES_DIR}empty/${file}`, 'abc')),
@@ -188,5 +187,23 @@ describe('scan', () => {
 		assert.equal(db.locals.length, 9);
 		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`]);
 		assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}ham/fourth/fourth.tar`]);
+	});
+
+	it('throws error when source is invalid', async () => {
+		await fs.promises.cp(`${FIXTURES_DIR}scan-error/config.scan.js`, `${ROOT_DIR}config.scan.js`);
+
+		try {
+			process.env.BACKUP_ENV = 'scan';
+
+			await scan(true);
+
+			assert.fail('Expected error was not thrown');
+		} catch (err) {
+			assert.include(err.message, 'Failed to scan source /non/existing/source');
+		} finally {
+			process.env.BACKUP_ENV = 'test';
+
+			await fs.promises.rm(`${ROOT_DIR}config.scan.js`);
+		}
 	});
 });

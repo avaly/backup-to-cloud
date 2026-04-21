@@ -16,20 +16,22 @@ const BIN_FILES = {
 	restore: path.resolve(__dirname, '..', 'bin', 'backup-restore'),
 	verify: path.resolve(__dirname, '..', 'bin', 'backup-verify'),
 };
-const DATA_DIR = path.resolve(__dirname, '..', 'data') + path.sep;
-const TEMP_DIR = path.resolve(__dirname, '..', 'tmp') + path.sep;
+const ROOT_DIR = path.resolve(__dirname, '..') + path.sep;
+const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
+const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
 const AWS_LOG = `${DATA_DIR}aws.json`;
-const DB_FILE = path.resolve(__dirname, '..') + path.sep + config.dbSQLite;
-const FIXTURES_DIR = path.resolve(__dirname, '_fixtures_') + path.sep;
+const DB_FILE = ROOT_DIR + path.sep + config.dbSQLite;
+const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
 
 module.exports = {
-	AWS_LOG: AWS_LOG,
-	DATA_DIR: DATA_DIR,
-	DB_FILE: DB_FILE,
+	AWS_LOG,
+	DATA_DIR,
+	DB_FILE,
 	DB_TYPES: DB.TYPES,
 	DELETED: utils.DELETED,
-	FIXTURES_DIR: FIXTURES_DIR,
-	TEMP_DIR: TEMP_DIR,
+	FIXTURES_DIR,
+	ROOT_DIR,
+	TEMP_DIR,
 
 	execPromise: utils.execPromise,
 
