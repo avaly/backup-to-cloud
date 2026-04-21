@@ -14,7 +14,7 @@ const LOCK_FILE = path.join(__dirname, '.backup-to-cloud.lock');
 let db;
 
 function usage() {
-	console.log(`${package.name} v${package.version}
+  console.log(`${package.name} v${package.version}
 
 Usage: ${__filename} OPTIONS
 
@@ -31,69 +31,69 @@ Options:
 }
 
 async function main() {
-	if (!utils.acquireLock(LOCK_FILE)) {
-		return;
-	}
+  if (!utils.acquireLock(LOCK_FILE)) {
+    return;
+  }
 
-	utils.log(`${package.name} v${package.version}`);
+  utils.log(`${package.name} v${package.version}`);
 
-	if (utils.hasFlag('check-config')) {
-		const configChecker = new ConfigChecker();
-		try {
-			await configChecker.check();
-			utils.log('Config seems in order!');
-		} catch (err) {
-			utils.log('Config check failed:');
-			utils.log(err.message || err);
-		}
-		finish();
-		return;
-	}
+  if (utils.hasFlag('check-config')) {
+    const configChecker = new ConfigChecker();
+    try {
+      await configChecker.check();
+      utils.log('Config seems in order!');
+    } catch (err) {
+      utils.log('Config check failed:');
+      utils.log(err.message || err);
+    }
+    finish();
+    return;
+  }
 
-	utils.log('Starting...');
-	if (utils.DRY_RUN) {
-		utils.log('This is a DRY run! No changes/uploads will be made.');
-	}
+  utils.log('Starting...');
+  if (utils.DRY_RUN) {
+    utils.log('This is a DRY run! No changes/uploads will be made.');
+  }
 
-	db = new DB();
-	await db.initialize();
+  db = new DB();
+  await db.initialize();
 
-	if (!utils.hasFlag('skip-scan')) {
-		const scanner = new Scanner(db);
-		await scanner.scan();
-	}
+  if (!utils.hasFlag('skip-scan')) {
+    const scanner = new Scanner(db);
+    await scanner.scan();
+  }
 
-	if (!utils.hasFlag('only-scan')) {
-		const backuper = new Backuper(db, {
-			random: utils.hasFlag('random-order'),
-		});
+  if (!utils.hasFlag('only-scan')) {
+    const backuper = new Backuper(db, {
+      random: utils.hasFlag('random-order'),
+    });
 
-		try {
-			const result = await backuper.start();
-			utils.log('Transfer result', result);
-		} catch (err) {
-			utils.log('Transfer error', err);
-		}
-		await backuper.finish();
-	}
+    try {
+      const result = await backuper.start();
+      utils.log('Transfer result', result);
+    } catch (err) {
+      utils.log('Transfer error', err);
+    }
+    await backuper.finish();
+  }
 
-	finish();
+  finish();
 }
 
 function finish() {
-	if (db) {
-		db.close();
-		utils.log('Finished!');
-	}
-	utils.releaseLock(LOCK_FILE);
+  if (db) {
+    db.close();
+    utils.log('Finished!');
+  }
+  utils.releaseLock(LOCK_FILE);
 }
 
 if (utils.hasFlag('help')) {
-	usage();
+  usage();
 } else {
-	main().catch((err) => {
-		utils.log(`Error: ${err.message}`);
-		finish();
-		process.exit(1);
-	});
+  main().catch((err) => {
+    utils.log(`Error: ${err.message}`);
+    finish();
+    process.exit(1);
+  });
 }

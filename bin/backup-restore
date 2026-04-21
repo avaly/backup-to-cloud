@@ -9,7 +9,7 @@ const utils = require('../lib/utils');
 const LOCK_FILE = path.join(__dirname, '.backup-restore.lock');
 
 function usage() {
-	console.log(`${package.name} v${package.version}
+  console.log(`${package.name} v${package.version}
 
 Usage: ${__filename} [OPTIONS] REMOTE_DIR_OR_FILE
 
@@ -37,48 +37,48 @@ Examples:
 }
 
 async function main() {
-	if (!utils.acquireLock(LOCK_FILE)) {
-		return;
-	}
+  if (!utils.acquireLock(LOCK_FILE)) {
+    return;
+  }
 
-	utils.log(`${package.name} v${package.version}`);
-	if (utils.DRY_RUN) {
-		utils.log('This is a DRY run! No changes/uploads will be made.');
-	}
+  utils.log(`${package.name} v${package.version}`);
+  if (utils.DRY_RUN) {
+    utils.log('This is a DRY run! No changes/uploads will be made.');
+  }
 
-	const input = process.argv.pop();
-	const output = path.resolve(utils.getOption('output'));
-	let finalResult;
+  const input = process.argv.pop();
+  const output = path.resolve(utils.getOption('output'));
+  let finalResult;
 
-	const restorer = new Restorer();
+  const restorer = new Restorer();
 
-	try {
-		const result = await restorer.start(input, output);
-		utils.debug('Restorer result:', result);
-		finalResult = result;
-	} catch (err) {
-		utils.log('Restorer error:', err);
-		finalResult = 'FAIL';
-	}
+  try {
+    const result = await restorer.start(input, output);
+    utils.debug('Restorer result:', result);
+    finalResult = result;
+  } catch (err) {
+    utils.log('Restorer error:', err);
+    finalResult = 'FAIL';
+  }
 
-	restorer.finish();
-	finish();
+  restorer.finish();
+  finish();
 
-	if (finalResult && finalResult.includes('FAIL')) {
-		process.exit(1);
-	}
+  if (finalResult && finalResult.includes('FAIL')) {
+    process.exit(1);
+  }
 }
 
 function finish() {
-	utils.releaseLock(LOCK_FILE);
+  utils.releaseLock(LOCK_FILE);
 }
 
 if (utils.hasFlag('help') || !utils.getOption('output')) {
-	usage();
+  usage();
 } else {
-	main().catch((err) => {
-		utils.log(`Error: ${err.message}`);
-		finish();
-		process.exit(1);
-	});
+  main().catch((err) => {
+    utils.log(`Error: ${err.message}`);
+    finish();
+    process.exit(1);
+  });
 }
