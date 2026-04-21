@@ -151,7 +151,7 @@ describe('scan', () => {
 		const tempDir = `${FIXTURES_DIR}scan-empty`;
 		const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
 		const originalSources = config.sources.slice();
-		const db = new DB();
+		let db;
 
 		fs.mkdirSync(tempDir, { recursive: true });
 		config.sources = originalSources.concat(tempDir);
@@ -162,6 +162,7 @@ describe('scan', () => {
 				remotes: files.map((file) => utils.mockRemote(`${tempDir}/${file}`)),
 			});
 
+			db = new DB();
 			await db.initialize();
 			const scanner = new Scanner(db);
 			await scanner.scan();
@@ -172,7 +173,9 @@ describe('scan', () => {
 			utils.assertLocalDeleted(dbContent, `${tempDir}/2-medium.txt`);
 			utils.assertLocalDeleted(dbContent, `${tempDir}/3-large.txt`);
 		} finally {
-			db.close();
+			if (db?.db) {
+				db.close();
+			}
 			config.sources = originalSources;
 			fs.rmSync(tempDir, { recursive: true, force: true });
 		}
