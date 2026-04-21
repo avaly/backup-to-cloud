@@ -69,7 +69,7 @@ describe('backuper', () => {
     assert.include(output, 'Backuper.start: locals=9 / remotes=0');
     assert.include(output, 'Backuper.add file:');
     assert.include(output, 'Backuper.next sessionSize=1.02 kB maxSessionSize=1.02 kB');
-    assert.include(output, 'Transfer result MAX_SESSION_SIZE');
+    assert.include(output, 'Backup result MAX_SESSION_SIZE');
 
     const awsLog = utils.getAWSLog();
 
@@ -160,6 +160,43 @@ describe('backuper', () => {
 
     assert.isUndefined(db.remotesByPath[`${FIXTURES_DIR}foo/1-fail.dat`]);
     assert.isObject(db.remotesByPath[`${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`]);
+  });
+
+  it('skips failed encryption and continues upload of other files', async () => {
+    utils.clean();
+
+    const unreadableFile = `${FIXTURES_DIR}bar/0-unreadable.dat`;
+    fs.writeFileSync(unreadableFile, 'do not read me');
+    fs.chmodSync(unreadableFile, 0);
+
+    try {
+      await utils.setDataContent({
+        locals: [
+          utils.mockLocal(unreadableFile, 'broken-hash'),
+          utils.mockLocal(`${FIXTURES_DIR}bar/1-small.txt`, 'good-hash'),
+        ],
+      });
+
+      const output = await transfer();
+
+      assert.include(output, `Backuper.add error: ${unreadableFile}`);
+      assert.notInclude(output, 'Backup error');
+
+      const awsLog = utils.getAWSLog();
+
+      assert.isArray(awsLog);
+      assert.equal(awsLog.length, 2);
+      assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/1-small\.txt/, 'STANDARD');
+      assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
+
+      const db = await utils.getDataContent();
+
+      assert.isUndefined(db.remotesByPath[unreadableFile]);
+      assert.isObject(db.remotesByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
+    } finally {
+      fs.chmodSync(unreadableFile, 0o644);
+      fs.unlinkSync(unreadableFile);
+    }
   });
 
   it('uploads archives', async () => {

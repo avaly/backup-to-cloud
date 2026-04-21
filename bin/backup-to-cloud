@@ -70,9 +70,9 @@ async function main() {
 
     try {
       const result = await backuper.start();
-      utils.log('Transfer result', result);
+      utils.log('Backup result', result);
     } catch (err) {
-      utils.log('Transfer error', err);
+      utils.log('Backup error', err);
     }
     await backuper.finish();
   }
