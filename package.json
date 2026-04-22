@@ -32,10 +32,9 @@
     "bin/"
   ],
   "dependencies": {
+    "better-sqlite3": "12.9.0",
     "pretty-bytes": "7.1.0",
-    "slackr": "1.0.0",
-    "sqlite": "5.1.1",
-    "sqlite3": "6.0.1"
+    "slackr": "1.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "20.5.0",

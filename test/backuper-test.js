@@ -44,7 +44,7 @@ describe('backuper', () => {
 
     await utils.run(['--only-scan', '--verbose']);
 
-    dbFromScan = await utils.getDataContent();
+    dbFromScan = utils.getDataContent();
   });
 
   it('does not start if lock file exists', async () => {
@@ -109,7 +109,7 @@ describe('backuper', () => {
 
     utils.assertFilesEqual(`${TEMP_DIR}1-small-decrypted.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.remotes.length, 2);
 
@@ -137,7 +137,7 @@ describe('backuper', () => {
     assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/bar\/3-large\.txt/, 'STANDARD_IA');
     assertAWS(awsLog, 4, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.remotes.length, 3);
   });
@@ -155,7 +155,7 @@ describe('backuper', () => {
     assertAWS(awsLog, 6, 'cp', /s3:\/\/test-bucket\/2 '"\$@%&`medium\.dat/, 'STANDARD');
     assertAWS(awsLog, 7, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.remotes.length, 4);
 
@@ -171,7 +171,7 @@ describe('backuper', () => {
     fs.chmodSync(unreadableFile, 0);
 
     try {
-      await utils.setDataContent({
+      utils.setDataContent({
         locals: [
           utils.mockLocal(unreadableFile, 'broken-hash'),
           utils.mockLocal(`${FIXTURES_DIR}bar/1-small.txt`, 'good-hash'),
@@ -190,7 +190,7 @@ describe('backuper', () => {
       assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/1-small\.txt/, 'STANDARD');
       assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
-      const db = await utils.getDataContent();
+      const db = utils.getDataContent();
 
       assert.isUndefined(db.remotesByPath[unreadableFile]);
       assert.isObject(db.remotesByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
@@ -202,7 +202,7 @@ describe('backuper', () => {
 
   it('uploads archives', async () => {
     utils.clean();
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: dbFromScan.locals.filter((local) => local.type === utils.DB_TYPES.ARCHIVE),
     });
 
@@ -216,7 +216,7 @@ describe('backuper', () => {
     assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/ham\/first\/first.tar/, 'STANDARD');
     assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.remotes.length, 1);
 
@@ -235,7 +235,7 @@ describe('backuper', () => {
 
   it('does not sync the DB file when no file syncs have been made', async () => {
     utils.clean();
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: dbFromScan.locals,
       remotes: dbFromScan.locals.map((local) =>
         Object.assign(
@@ -257,7 +257,7 @@ describe('backuper', () => {
 
   it('uploads files in random order', async () => {
     utils.clean();
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: dbFromScan.locals.slice(0, 2),
     });
 
@@ -270,7 +270,7 @@ describe('backuper', () => {
     assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/(1-small|2-medium)\.txt/);
     assertAWS(awsLog, awsLog.length - 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.isAtLeast(db.remotes.length, 1);
   });
@@ -279,7 +279,7 @@ describe('backuper', () => {
     utils.clean();
 
     const now = Date.now();
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: [
         utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
         utils.mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
@@ -316,7 +316,7 @@ describe('backuper', () => {
     assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/bar\/4-large-long-ago\.txt/);
     assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.locals.length, 1);
     assert.equal(db.remotes.length, 1);
@@ -330,7 +330,7 @@ describe('backuper', () => {
     utils.clean();
 
     const now = Date.now();
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: [
         ...dbFromScan.locals,
         utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
@@ -370,7 +370,7 @@ describe('backuper', () => {
 
     assertAWS(awsLog, 5, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.locals.length, dbFromScan.locals.length + 1);
     assert.isUndefined(db.locals.find((item) => item.path.includes('1-small-recent.txt')));
@@ -385,7 +385,7 @@ describe('backuper', () => {
   it('should stop transfer after max failed', async () => {
     utils.clean();
 
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: [
         utils.mockLocal(`${FIXTURES_DIR}foo/1-fail.dat`, 'abc'),
         utils.mockLocal(`${FIXTURES_DIR}foo/3-fail.dat`, 'abc'),
@@ -403,7 +403,7 @@ describe('backuper', () => {
     assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/3-fail\.dat/, 'STANDARD_IA', 'abc');
     assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.isUndefined(db.remotesByPath[`${FIXTURES_DIR}foo/4-small.dat`]);
   });

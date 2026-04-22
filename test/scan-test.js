@@ -39,7 +39,7 @@ describe('scan', () => {
   it('scans all files for first time', async () => {
     await scan();
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.match(db.settings.lastScanTimestamp, /^\d+$/);
     assert.equal(db.locals.length, 9);
@@ -74,7 +74,7 @@ describe('scan', () => {
   it('scans again only after interval', async () => {
     await scan();
 
-    const db1 = await utils.getDataContent();
+    const db1 = utils.getDataContent();
 
     assert.match(db1.settings.lastScanTimestamp, /^\d+$/);
     const timestamp = db1.settings.lastScanTimestamp;
@@ -82,7 +82,7 @@ describe('scan', () => {
     // This run should not execute since it's within the scan interval (1s)
     await scan();
 
-    const db2 = await utils.getDataContent();
+    const db2 = utils.getDataContent();
 
     assert.equal(db2.settings.lastScanTimestamp, timestamp);
 
@@ -91,13 +91,13 @@ describe('scan', () => {
     // This new run should execute the scan again
     await scan();
 
-    const db3 = await utils.getDataContent();
+    const db3 = utils.getDataContent();
 
     assert.notEqual(db3.settings.lastScanTimestamp, timestamp);
   });
 
   it('marks deleted files', async () => {
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: [
         utils.mockLocal(`${FIXTURES_DIR}foo/old.txt`),
         utils.mockLocal(`${FIXTURES_DIR}old/from-old-source.txt`),
@@ -124,7 +124,7 @@ describe('scan', () => {
 
     await scan();
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.locals.length, 12);
 
@@ -139,7 +139,7 @@ describe('scan', () => {
 
     await scan();
 
-    const db2 = await utils.getDataContent();
+    const db2 = utils.getDataContent();
 
     utils.assertLocalDeleted(db2, `${FIXTURES_DIR}bar/1-small.txt`);
 
@@ -152,14 +152,14 @@ describe('scan', () => {
   it('marks deleted files when source becomes empty', async () => {
     const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
 
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: files.map((file) => utils.mockLocal(`${FIXTURES_DIR}empty/${file}`, 'abc')),
       remotes: files.map((file) => utils.mockRemote(`${FIXTURES_DIR}empty/${file}`)),
     });
 
     await scan();
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/1-small.txt`);
     utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/2-medium.txt`);
@@ -167,7 +167,7 @@ describe('scan', () => {
   });
 
   it('removes deleted files which have not been synced yet', async () => {
-    await utils.setDataContent({
+    utils.setDataContent({
       locals: [
         utils.mockLocal(`${FIXTURES_DIR}foo/old.txt`),
         utils.mockLocal(
@@ -182,7 +182,7 @@ describe('scan', () => {
 
     await scan();
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.locals.length, 9);
     assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`]);
