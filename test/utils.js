@@ -62,7 +62,9 @@ module.exports = {
     if (fs.existsSync(DB_FILE)) {
       const db = new DB();
       db.initialize();
-      return db.getAll();
+      const result = db.getAll();
+      db.close();
+      return result;
     }
     return {};
   },
@@ -70,7 +72,8 @@ module.exports = {
   setDataContent(data) {
     const db = new DB();
     db.initialize();
-    return db.setAll(data);
+    db.setAll(data);
+    db.close();
   },
 
   async run(args, binFile, allowFailure = false) {
