@@ -9,11 +9,27 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  id-token: write # Required for OIDC npm publishing
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4.4.1
+        id: release
         with:
           release-type: node
+      - if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v6.0.2
+        with:
+          ref: ${{ steps.release.outputs.tag_name }}
+      - if: ${{ steps.release.outputs.release_created }}
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+      - if: ${{ steps.release.outputs.release_created }}
+        run: npm ci
+      - if: ${{ steps.release.outputs.release_created }}
+        run: npm publish
