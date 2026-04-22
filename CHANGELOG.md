@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.8.0](https://github.com/avaly/backup-to-cloud/compare/v4.7.1...v4.8.0) (2026-04-22)
+
+
+### Features
+
+* Use better-sqlite3 package ([#112](https://github.com/avaly/backup-to-cloud/issues/112)) ([5e23d6f](https://github.com/avaly/backup-to-cloud/commit/5e23d6fdf731ffc9adec57e209e4e3ab5b79f9df))
+
 ## [4.7.1](https://github.com/avaly/backup-to-cloud/compare/v4.7.0...v4.7.1) (2026-04-21)
 
 
