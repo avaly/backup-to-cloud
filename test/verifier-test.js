@@ -42,7 +42,7 @@ describe('verifier', () => {
     assert.include(output, '/bar/3-large.txt');
     assert.include(output, '/foo/1-fail.dat');
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.remotes.length, 6);
   });
@@ -55,7 +55,7 @@ describe('verifier', () => {
     assert.include(output, '/bar/3-large.txt');
     assert.include(output, '/foo/1-fail.dat');
 
-    const db = await utils.getDataContent();
+    const db = utils.getDataContent();
 
     assert.equal(db.remotes.length, 4);
     assert.isUndefined(db.remotesByPath['/bar/3-large.txt']);

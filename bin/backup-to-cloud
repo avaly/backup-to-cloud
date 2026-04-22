@@ -56,11 +56,11 @@ async function main() {
   }
 
   db = new DB();
-  await db.initialize();
+  db.initialize();
 
   if (!utils.hasFlag('skip-scan')) {
     const scanner = new Scanner(db);
-    await scanner.scan();
+    scanner.scan();
   }
 
   if (!utils.hasFlag('only-scan')) {

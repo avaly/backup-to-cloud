@@ -58,18 +58,18 @@ module.exports = {
     return [];
   },
 
-  async getDataContent() {
+  getDataContent() {
     if (fs.existsSync(DB_FILE)) {
       const db = new DB();
-      await db.initialize();
+      db.initialize();
       return db.getAll();
     }
     return {};
   },
 
-  async setDataContent(data) {
+  setDataContent(data) {
     const db = new DB();
-    await db.initialize();
+    db.initialize();
     return db.setAll(data);
   },
 
