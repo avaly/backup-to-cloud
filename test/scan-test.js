@@ -1,7 +1,9 @@
-const assert = require('chai').assert;
-const fs = require('fs');
-const utils = require('./utils');
-const Scanner = require('../lib/Scanner');
+import fs from 'node:fs';
+
+import { assert } from 'chai';
+
+import Scanner from '../lib/Scanner.js';
+import utils from './utils.js';
 
 const { FIXTURES_DIR, ROOT_DIR } = utils;
 

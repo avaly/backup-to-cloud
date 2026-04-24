@@ -1,14 +1,16 @@
-const assert = require('chai').assert;
-const childProcess = require('child_process');
-const fs = require('fs');
-const md5File = require('md5-file');
-const path = require('path');
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const DB = require('../lib/DB');
-const config = require('../lib/config');
-const utils = require('../lib/utils');
+import { assert } from 'chai';
+import md5File from 'md5-file';
 
-const execSync = childProcess.execSync;
+import config from '../lib/config.js';
+import DB from '../lib/DB.js';
+import utils from '../lib/utils.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const BIN_FILES = {
   backup: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud'),
@@ -23,7 +25,7 @@ const AWS_LOG = `${DATA_DIR}aws.json`;
 const DB_FILE = `${ROOT_DIR}${config.dbSQLite}`;
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
 
-module.exports = {
+export default {
   AWS_LOG,
   DATA_DIR,
   DB_FILE,

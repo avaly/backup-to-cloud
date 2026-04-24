@@ -1,17 +1,20 @@
-const assert = require('chai').assert;
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const Archiver = require('../lib/Archiver');
-const Backuper = require('../lib/Backuper');
-const Crypter = require('../lib/Crypter');
-const Scanner = require('../lib/Scanner');
-const appUtils = require('../lib/utils');
-const utils = require('./utils');
+import { assert } from 'chai';
+
+import Archiver from '../lib/Archiver.js';
+import Backuper from '../lib/Backuper.js';
+import Crypter from '../lib/Crypter.js';
+import Scanner from '../lib/Scanner.js';
+import appUtils from '../lib/utils.js';
+import utils from './utils.js';
 
 const DATA_DIR = utils.DATA_DIR;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCK_FILE = path.resolve(__dirname, '..', 'bin', '.backup-to-cloud.lock');
 
 function assertAWS(log, index, operation, pattern, storageClass, hash) {

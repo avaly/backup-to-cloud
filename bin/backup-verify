@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
-const Verifier = require('../lib/Verifier');
-const package = require('../package.json');
-const utils = require('../lib/utils');
+import { fileURLToPath } from 'node:url';
+
+import pkg from '../lib/package.js';
+import utils from '../lib/utils.js';
+import Verifier from '../lib/Verifier.js';
+
+const __filename = fileURLToPath(import.meta.url);
 
 function usage() {
-  console.log(`${package.name} v${package.version}
+  console.log(`${pkg.name} v${pkg.version}
 
 Usage: ${__filename} OPTIONS
 
@@ -17,7 +21,7 @@ Options:
 }
 
 async function main() {
-  utils.log(`${package.name} v${package.version}`);
+  utils.log(`${pkg.name} v${pkg.version}`);
   if (utils.DRY_RUN) {
     utils.log('This is a DRY run! No changes/uploads will be made.');
   }

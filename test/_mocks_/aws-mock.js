@@ -3,12 +3,12 @@
  * Mock AWS CLI used for tests
  */
 
-const childProcess = require('child_process');
-const path = require('path');
-const fs = require('fs');
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const execSync = childProcess.execSync;
-
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.resolve(__dirname, '..', '..', 'data') + path.sep;
 const TEMP_DIR = path.resolve(__dirname, '..', '..', 'tmp') + path.sep;
 const RESTORE_FIXTURES_DIR = path.resolve(__dirname, '..', '..', 'test', '_fixtures_', 'restore');

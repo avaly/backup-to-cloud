@@ -1,6 +1,8 @@
-const assert = require('chai').assert;
-const fs = require('fs');
-const utils = require('./utils');
+import fs from 'node:fs';
+
+import { assert } from 'chai';
+
+import utils from './utils.js';
 
 describe('cli', () => {
   beforeEach(() => {

@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 
-const path = require('path');
-const fs = require('fs');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const Crypter = require('../lib/Crypter');
-const package = require('../package.json');
-const utils = require('../lib/utils');
+import Crypter from '../lib/Crypter.js';
+import pkg from '../lib/package.js';
+import utils from '../lib/utils.js';
+
+const __filename = fileURLToPath(import.meta.url);
 
 function usage() {
-  console.log(`${package.name} v${package.version}
+  console.log(`${pkg.name} v${pkg.version}
 
 Usage: ${__filename} OPTIONS INPUT_FILE
 

@@ -1,11 +1,10 @@
-const assert = require('chai').assert;
-const childProcess = require('child_process');
-const fs = require('fs');
+import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
 
-const Crypter = require('../lib/Crypter');
-const utils = require('./utils');
+import { assert } from 'chai';
 
-const execFileSync = childProcess.execFileSync;
+import Crypter from '../lib/Crypter.js';
+import utils from './utils.js';
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
