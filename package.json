@@ -5,7 +5,7 @@
   "author": "Valentin Agachi",
   "type": "module",
   "scripts": {
-    "coverage": "rm -rf coverage/ bin/.backup-to-cloud.lock && BACKUP_ENV=test c8 --reporter=text --reporter=lcov node --test --test-concurrency=1 test/*-test.js",
+    "coverage": "rm -rf coverage/ bin/.backup-to-cloud.lock && NODE_V8_COVERAGE=coverage BACKUP_ENV=test sh -c 'if node --help | grep -q -- --test-coverage; then exec node --test --test-coverage --test-concurrency=1 test/*-test.js; else exec node --test --experimental-test-coverage --test-concurrency=1 test/*-test.js; fi'",
     "lint": "eslint .",
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
@@ -41,7 +41,6 @@
     "@commitlint/cli": "20.5.0",
     "@commitlint/config-conventional": "20.5.0",
     "@eslint/js": "10.0.1",
-    "c8": "^11.0.0",
     "chai": "6.2.2",
     "eslint": "10.2.0",
     "eslint-config-prettier": "10.1.8",
