@@ -1,7 +1,6 @@
 import fs from 'node:fs';
+import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
-
-import { assert } from 'chai';
 
 import utils from './utils.js';
 
@@ -13,13 +12,13 @@ describe('cli', { concurrency: false }, () => {
   it('shows help', async () => {
     const result = await utils.run(['--help']);
 
-    assert.include(result, 'Usage:');
-    assert.isFalse(fs.existsSync(utils.DATA_FILE), 'data file was not created');
+    assert.match(result, /Usage:/);
+    assert.strictEqual(fs.existsSync(utils.DATA_FILE), false, 'data file was not created');
   });
 
   it('checks config', async () => {
     const result = await utils.run(['--check-config']);
 
-    assert.include(result, 'Config seems in order!');
+    assert.match(result, /Config seems in order!/);
   });
 });

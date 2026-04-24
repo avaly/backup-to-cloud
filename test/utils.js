@@ -1,7 +1,6 @@
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-
-import { assert } from 'chai';
 import md5File from 'md5-file';
 
 import config from '../lib/config.js';
@@ -129,15 +128,15 @@ export default {
   },
 
   assertLocalDeleted(db, path) {
-    assert.equal(db.localsByPath[path].hash, utils.DELETED);
+    assert.strictEqual(db.localsByPath[path].hash, utils.DELETED);
   },
 
   assertFilesEqual(fileA, fileB) {
-    assert.equal(md5File.sync(fileA), md5File.sync(fileB));
+    assert.strictEqual(md5File.sync(fileA), md5File.sync(fileB));
   },
 
   assertFilesNotEqual(fileA, fileB) {
-    assert.notEqual(md5File.sync(fileA), md5File.sync(fileB));
+    assert.notStrictEqual(md5File.sync(fileA), md5File.sync(fileB));
   },
 
   cp(from, to) {

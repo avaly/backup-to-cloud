@@ -1,8 +1,7 @@
 import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { describe, it } from 'node:test';
-
-import { assert } from 'chai';
 
 import Crypter from '../lib/Crypter.js';
 import utils from './utils.js';
@@ -18,7 +17,7 @@ describe('decrypt', { concurrency: false }, () => {
   it('shows help', async () => {
     const result = await utils.run(['--help'], 'decrypt');
 
-    assert.include(result, 'Usage:');
+    assert.match(result, /Usage:/);
   });
 
   it('stops if input file does not exist', async () => {
@@ -29,9 +28,9 @@ describe('decrypt', { concurrency: false }, () => {
     try {
       await utils.run(args, 'decrypt');
 
-      assert.isOk(false);
+      assert.fail('Expected decrypt command to fail');
     } catch {
-      assert.isNotOk(fs.existsSync(fileOutput));
+      assert.ok(!fs.existsSync(fileOutput));
     }
   });
 
@@ -43,12 +42,12 @@ describe('decrypt', { concurrency: false }, () => {
     const encryptedFile = await Crypter.encrypt(fileSource);
     const contentEncrypted = fs.readFileSync(encryptedFile.path, 'utf-8');
 
-    assert.notEqual(contentSource, contentEncrypted);
+    assert.notStrictEqual(contentSource, contentEncrypted);
 
     await utils.run(['--output', fileOutput, encryptedFile.path], 'decrypt');
 
     const contentDecrypted = fs.readFileSync(fileOutput, 'utf-8');
 
-    assert.equal(contentSource, contentDecrypted);
+    assert.strictEqual(contentSource, contentDecrypted);
   });
 });

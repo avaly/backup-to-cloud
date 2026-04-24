@@ -1,6 +1,5 @@
+import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
-
-import { assert } from 'chai';
 
 import config from '../lib/config.js';
 import utils from './utils.js';
@@ -22,45 +21,45 @@ describe('verifier', { concurrency: false }, () => {
   it('OK state', async () => {
     const output = await verify('ls-ok.txt');
 
-    assert.include(output, 'All remote files are present in the DB!');
-    assert.include(output, 'All DB files are present remotely!');
+    assert.match(output, /All remote files are present in the DB!/);
+    assert.match(output, /All DB files are present remotely!/);
   });
 
   it('extra remote file, do nothing', async () => {
     const output = await verify('ls-extra-remote.txt');
 
-    assert.include(output, 'Found 2 remote file(s) not in the DB:');
-    assert.include(output, '/blah/who.dat');
-    assert.include(output, '/what/is/this.txt');
-    assert.include(output, 'All DB files are present remotely!');
+    assert.match(output, /Found 2 remote file\(s\) not in the DB:/);
+    assert.match(output, /\/blah\/who\.dat/);
+    assert.match(output, /\/what\/is\/this\.txt/);
+    assert.match(output, /All DB files are present remotely!/);
   });
 
   it('extra DB file, do nothing', async () => {
     const output = await verify('ls-extra-db.txt', true);
 
-    assert.include(output, 'This is a DRY run! No changes/uploads will be made.');
-    assert.include(output, 'All remote files are present in the DB!');
-    assert.include(output, 'Found 2 DB file(s) not present remotely:');
-    assert.include(output, '/bar/3-large.txt');
-    assert.include(output, '/foo/1-fail.dat');
+    assert.match(output, /This is a DRY run! No changes\/uploads will be made\./);
+    assert.match(output, /All remote files are present in the DB!/);
+    assert.match(output, /Found 2 DB file\(s\) not present remotely:/);
+    assert.match(output, /\/bar\/3-large\.txt/);
+    assert.match(output, /\/foo\/1-fail\.dat/);
 
     const db = utils.getDataContent();
 
-    assert.equal(db.remotes.length, 6);
+    assert.strictEqual(db.remotes.length, 6);
   });
 
   it('extra DB file, remove from DB', async () => {
     const output = await verify('ls-extra-db.txt', false);
 
-    assert.include(output, 'All remote files are present in the DB!');
-    assert.include(output, 'Found 2 DB file(s) not present remotely:');
-    assert.include(output, '/bar/3-large.txt');
-    assert.include(output, '/foo/1-fail.dat');
+    assert.match(output, /All remote files are present in the DB!/);
+    assert.match(output, /Found 2 DB file\(s\) not present remotely:/);
+    assert.match(output, /\/bar\/3-large\.txt/);
+    assert.match(output, /\/foo\/1-fail\.dat/);
 
     const db = utils.getDataContent();
 
-    assert.equal(db.remotes.length, 4);
-    assert.isUndefined(db.remotesByPath['/bar/3-large.txt']);
-    assert.isUndefined(db.remotesByPath['/foo/1-fail.dat']);
+    assert.strictEqual(db.remotes.length, 4);
+    assert.strictEqual(db.remotesByPath['/bar/3-large.txt'], undefined);
+    assert.strictEqual(db.remotesByPath['/foo/1-fail.dat'], undefined);
   });
 });
