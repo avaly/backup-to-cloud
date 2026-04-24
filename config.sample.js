@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // The path to the `aws` binary to use for backup
   aws: '/usr/bin/aws',
   // Leaves folders of paths matching these patterns will:

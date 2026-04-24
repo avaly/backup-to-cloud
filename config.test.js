@@ -1,10 +1,12 @@
-const path = require('path');
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const config = require('./config.sample');
+import config from './config.sample.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = path.resolve(__dirname, 'test', '_fixtures_');
 
-module.exports = Object.assign({}, config, {
+export default Object.assign({}, config, {
   aws: path.resolve(__dirname, 'test', '_mocks_', 'aws-mock.js'),
   compressLeavesPatterns: [`${FIXTURES_DIR}${path.sep}ham`],
   dbSQLite: 'data/db-test.sqlite',

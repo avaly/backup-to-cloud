@@ -3,6 +3,7 @@
   "version": "4.8.0",
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
+  "type": "module",
   "scripts": {
     "coverage": "rm -rf .nyc_output/ coverage/ bin/.backup-to-cloud.lock && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha",
     "lint": "eslint .",
