@@ -1,7 +1,6 @@
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-
-import { assert } from 'chai';
 import md5File from 'md5-file';
 
 import config from '../lib/config.js';
@@ -20,6 +19,34 @@ const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
 const AWS_LOG = `${DATA_DIR}aws.json`;
 const DB_FILE = path.resolve(ROOT_DIR, config.dbSQLite);
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
+
+export function assertIncludes(actual, expected) {
+  assert.ok(actual.includes(expected));
+}
+
+export function assertNotIncludes(actual, expected) {
+  assert.ok(!actual.includes(expected));
+}
+
+export function assertIsArray(value) {
+  assert.ok(Array.isArray(value));
+}
+
+export function assertIsObject(value) {
+  assert.ok(value && typeof value === 'object' && !Array.isArray(value));
+}
+
+export function assertLocalDeleted(db, path) {
+  assert.strictEqual(db.localsByPath[path].hash, utils.DELETED);
+}
+
+export function assertFilesEqual(fileA, fileB) {
+  assert.strictEqual(md5File.sync(fileA), md5File.sync(fileB));
+}
+
+export function assertFilesNotEqual(fileA, fileB) {
+  assert.notStrictEqual(md5File.sync(fileA), md5File.sync(fileB));
+}
 
 export default {
   AWS_LOG,
@@ -126,18 +153,6 @@ export default {
       size: size || 123,
       timestamp: timestamp || 456,
     };
-  },
-
-  assertLocalDeleted(db, path) {
-    assert.equal(db.localsByPath[path].hash, utils.DELETED);
-  },
-
-  assertFilesEqual(fileA, fileB) {
-    assert.equal(md5File.sync(fileA), md5File.sync(fileB));
-  },
-
-  assertFilesNotEqual(fileA, fileB) {
-    assert.notEqual(md5File.sync(fileA), md5File.sync(fileB));
   },
 
   cp(from, to) {

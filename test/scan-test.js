@@ -1,10 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { beforeEach, describe, it } from 'node:test';
 
-import { assert } from 'chai';
+import assert from 'node:assert/strict';
 
 import Scanner from '../lib/Scanner.js';
-import utils from './utils.js';
+import utils, { assertIncludes, assertIsObject, assertLocalDeleted } from './utils.js';
 
 const { FIXTURES_DIR, ROOT_DIR } = utils;
 
@@ -12,7 +13,7 @@ function scan(dry) {
   return utils.run(['--only-scan', '--verbose', dry && '--dry']);
 }
 
-describe('scan', () => {
+describe('scan', { concurrency: false }, () => {
   beforeEach(() => {
     utils.clean();
   });
@@ -21,22 +22,22 @@ describe('scan', () => {
     const file = Scanner.scanFile(`${FIXTURES_DIR}bar/1-small.txt`);
 
     assert.match(file.hash, /^\/bar\/1-small\.txt 1024 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
-    assert.equal(file.size, 1024);
+    assert.strictEqual(file.size, 1024);
   });
 
   it('saves nothing for dry mode', async () => {
     const output = await scan(true);
 
-    assert.include(output, 'This is a DRY run!');
-    assert.include(output, '/bar - Files found: 3');
-    assert.include(output, '/bar - Archives found: 0');
-    assert.include(output, '/foo - Files found: 4');
-    assert.include(output, '/foo - Archives found: 0');
-    assert.include(output, '/ham - Files found: 0');
-    assert.include(output, '/ham - Archives found: 2');
-    assert.include(output, '/empty - Files found: 0');
-    assert.include(output, '/empty - Archives found: 0');
-    assert.isFalse(fs.existsSync(utils.DB_FILE), 'db file was not created');
+    assertIncludes(output, 'This is a DRY run!');
+    assertIncludes(output, '/bar - Files found: 3');
+    assertIncludes(output, '/bar - Archives found: 0');
+    assertIncludes(output, '/foo - Files found: 4');
+    assertIncludes(output, '/foo - Archives found: 0');
+    assertIncludes(output, '/ham - Files found: 0');
+    assertIncludes(output, '/ham - Archives found: 2');
+    assertIncludes(output, '/empty - Files found: 0');
+    assertIncludes(output, '/empty - Archives found: 0');
+    assert.strictEqual(fs.existsSync(utils.DB_FILE), false, 'db file was not created');
   });
 
   it('scans all files for first time', async () => {
@@ -45,33 +46,36 @@ describe('scan', () => {
     const db = utils.getDataContent();
 
     assert.match(db.settings.lastScanTimestamp, /^\d+$/);
-    assert.equal(db.locals.length, 9);
+    assert.strictEqual(db.locals.length, 9);
 
     // File sizes
-    assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/1-fail.dat`].size, 1024);
-    assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`].size, 102400);
-    assert.equal(db.localsByPath[`${FIXTURES_DIR}foo/3-fail.dat`].size, 204800);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}foo/1-fail.dat`].size, 1024);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`].size, 102400);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}foo/3-fail.dat`].size, 204800);
 
-    assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
+    assertIsObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
     // The hashes depend on the file modified time
     // so we can't rely on these for tests
-    assert.isString(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`].hash);
-    assert.equal(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`].hash.length, 64);
-    assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/2-medium.txt`]);
-    assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/3-large.txt`]);
+    assert.strictEqual(typeof db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`].hash, 'string');
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`].hash.length, 64);
+    assertIsObject(db.localsByPath[`${FIXTURES_DIR}bar/2-medium.txt`]);
+    assertIsObject(db.localsByPath[`${FIXTURES_DIR}bar/3-large.txt`]);
 
-    assert.isObject(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`]);
+    assertIsObject(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`]);
     // 2 files @ 1024 bytes
-    assert.equal(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`].size, 2048);
-    assert.isObject(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`]);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}ham/first/first.tar`].size, 2048);
+    assertIsObject(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`]);
     // 2 files @ 1024 bytes
-    assert.equal(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`].size, 2048);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}ham/first/second/second.tar`].size, 2048);
 
     // Ignored files
-    assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}bar/.svn/info`]);
-    assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}bar/Thumbs.db`]);
-    assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/.DS_Store`]);
-    assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/node_modules/blah/package.json`]);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}bar/.svn/info`], undefined);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}bar/Thumbs.db`], undefined);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}foo/.DS_Store`], undefined);
+    assert.strictEqual(
+      db.localsByPath[`${FIXTURES_DIR}foo/node_modules/blah/package.json`],
+      undefined,
+    );
   });
 
   it('scans again only after interval', async () => {
@@ -87,7 +91,7 @@ describe('scan', () => {
 
     const db2 = utils.getDataContent();
 
-    assert.equal(db2.settings.lastScanTimestamp, timestamp);
+    assert.strictEqual(db2.settings.lastScanTimestamp, timestamp);
 
     await utils.delay(1001);
 
@@ -96,7 +100,7 @@ describe('scan', () => {
 
     const db3 = utils.getDataContent();
 
-    assert.notEqual(db3.settings.lastScanTimestamp, timestamp);
+    assert.notStrictEqual(db3.settings.lastScanTimestamp, timestamp);
   });
 
   it('marks deleted files', async () => {
@@ -129,13 +133,13 @@ describe('scan', () => {
 
     const db = utils.getDataContent();
 
-    assert.equal(db.locals.length, 12);
+    assert.strictEqual(db.locals.length, 12);
 
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}foo/old.txt`);
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}old/from-old-source.txt`);
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}ham/third/third.tar`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}foo/old.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}old/from-old-source.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}ham/third/third.tar`);
 
-    assert.isObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
+    assertIsObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
 
     await utils.execPromise('mv', [`${FIXTURES_DIR}bar/1-small.txt`, `${FIXTURES_DIR}../`]);
     await utils.delay(1001);
@@ -144,7 +148,7 @@ describe('scan', () => {
 
     const db2 = utils.getDataContent();
 
-    utils.assertLocalDeleted(db2, `${FIXTURES_DIR}bar/1-small.txt`);
+    assertLocalDeleted(db2, `${FIXTURES_DIR}bar/1-small.txt`);
 
     await utils.execPromise('mv', [
       `${FIXTURES_DIR}../1-small.txt`,
@@ -164,9 +168,9 @@ describe('scan', () => {
 
     const db = utils.getDataContent();
 
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/1-small.txt`);
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/2-medium.txt`);
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/3-large.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}empty/1-small.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}empty/2-medium.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}empty/3-large.txt`);
   });
 
   it('removes deleted files which have not been synced yet', async () => {
@@ -187,9 +191,9 @@ describe('scan', () => {
 
     const db = utils.getDataContent();
 
-    assert.equal(db.locals.length, 9);
-    assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`]);
-    assert.isUndefined(db.localsByPath[`${FIXTURES_DIR}ham/fourth/fourth.tar`]);
+    assert.strictEqual(db.locals.length, 9);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`], undefined);
+    assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}ham/fourth/fourth.tar`], undefined);
   });
 
   it('throws error when source is invalid', async () => {
@@ -206,7 +210,7 @@ describe('scan', () => {
 
       assert.fail('Expected error was not thrown');
     } catch (err) {
-      assert.include(err.message, 'Failed to scan source /non/existing/source');
+      assertIncludes(err.message, 'Failed to scan source /non/existing/source');
     } finally {
       process.env.BACKUP_ENV = previousEnv;
 

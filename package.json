@@ -5,12 +5,12 @@
   "author": "Valentin Agachi",
   "type": "module",
   "scripts": {
-    "coverage": "rm -rf .nyc_output/ coverage/ bin/.backup-to-cloud.lock && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha",
     "lint": "eslint .",
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
     "pretty-ci": "prettier --ignore-unknown --check \"**/*\"",
-    "test": "rm -f bin/.backup-to-cloud.lock && BACKUP_ENV=test mocha"
+    "test": "rm -f bin/.backup-to-cloud.lock && BACKUP_ENV=test node --test --test-concurrency=1 --test-timeout=10000 test/*-test.js",
+    "test:coverage": "rm -rf coverage/ bin/.backup-to-cloud.lock && mkdir -p coverage && BACKUP_ENV=test node --test --experimental-test-coverage --test-concurrency=1 --test-timeout=10000 --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info test/*-test.js"
   },
   "license": "MIT",
   "engines": {
@@ -41,15 +41,12 @@
     "@commitlint/cli": "20.5.0",
     "@commitlint/config-conventional": "20.5.0",
     "@eslint/js": "10.0.1",
-    "chai": "6.2.2",
     "eslint": "10.2.0",
     "eslint-config-prettier": "10.1.8",
     "globals": "17.4.0",
     "husky": "9.1.7",
     "lint-staged": "16.4.0",
     "md5-file": "5.0.0",
-    "mocha": "11.7.5",
-    "nyc": "18.0.0",
     "prettier": "3.8.1"
   },
   "repository": {
