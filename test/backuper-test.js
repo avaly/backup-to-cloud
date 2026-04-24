@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { assert } from 'chai';
 
@@ -14,8 +13,7 @@ import utils from './utils.js';
 const DATA_DIR = utils.DATA_DIR;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const LOCK_FILE = path.resolve(__dirname, '..', 'bin', '.backup-to-cloud.lock');
+const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.backup-to-cloud.lock');
 
 function assertAWS(log, index, operation, pattern, storageClass, hash) {
   assert.isAbove(log.length, index);

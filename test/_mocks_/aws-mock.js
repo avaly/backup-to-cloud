@@ -6,12 +6,12 @@
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.resolve(__dirname, '..', '..', 'data') + path.sep;
-const TEMP_DIR = path.resolve(__dirname, '..', '..', 'tmp') + path.sep;
-const RESTORE_FIXTURES_DIR = path.resolve(__dirname, '..', '..', 'test', '_fixtures_', 'restore');
+import { ROOT_DIR } from '../../lib/config.js';
+
+const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
+const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
+const RESTORE_FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_', 'restore');
 const LOG_FILE = `${DATA_DIR}aws.json`;
 
 function escape(s) {

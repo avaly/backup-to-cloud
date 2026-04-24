@@ -1,28 +1,25 @@
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { assert } from 'chai';
 import md5File from 'md5-file';
 
-import config from '../lib/config.js';
+import config, { ROOT_DIR } from '../lib/config.js';
 import DB from '../lib/DB.js';
 import utils from '../lib/utils.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 const BIN_FILES = {
-  backup: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud'),
-  decrypt: path.resolve(__dirname, '..', 'bin', 'backup-decrypt'),
-  restore: path.resolve(__dirname, '..', 'bin', 'backup-restore'),
-  verify: path.resolve(__dirname, '..', 'bin', 'backup-verify'),
+  backup: path.resolve(ROOT_DIR, 'bin', 'backup-to-cloud'),
+  decrypt: path.resolve(ROOT_DIR, 'bin', 'backup-decrypt'),
+  restore: path.resolve(ROOT_DIR, 'bin', 'backup-restore'),
+  verify: path.resolve(ROOT_DIR, 'bin', 'backup-verify'),
 };
-const ROOT_DIR = path.resolve(__dirname, '..') + path.sep;
+const ROOT_PATH = ROOT_DIR + path.sep;
 const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
 const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
 const AWS_LOG = `${DATA_DIR}aws.json`;
-const DB_FILE = `${ROOT_DIR}${config.dbSQLite}`;
+const DB_FILE = `${ROOT_PATH}${config.dbSQLite}`;
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
 
 export default {
@@ -32,7 +29,7 @@ export default {
   DB_TYPES: DB.TYPES,
   DELETED: utils.DELETED,
   FIXTURES_DIR,
-  ROOT_DIR,
+  ROOT_DIR: ROOT_PATH,
   TEMP_DIR,
 
   execPromise: utils.execPromise,

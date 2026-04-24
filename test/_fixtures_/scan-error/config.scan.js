@@ -1,8 +1,7 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { ROOT_DIR } from '../../../lib/config.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const FIXTURES_DIR = path.resolve(__dirname, 'test', '_fixtures_');
+const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_');
 
 export default {
   dbSQLite: 'data/db-test.sqlite',
