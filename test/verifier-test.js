@@ -1,3 +1,5 @@
+import { beforeEach, describe, it } from 'node:test';
+
 import { assert } from 'chai';
 
 import config from '../lib/config.js';

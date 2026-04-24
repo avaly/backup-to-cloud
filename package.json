@@ -5,12 +5,12 @@
   "author": "Valentin Agachi",
   "type": "module",
   "scripts": {
-    "coverage": "rm -rf .nyc_output/ coverage/ bin/.backup-to-cloud.lock && BACKUP_ENV=test nyc --reporter=text --reporter=lcov mocha",
+    "coverage": "rm -rf .nyc_output/ coverage/ bin/.backup-to-cloud.lock && BACKUP_ENV=test nyc --reporter=text --reporter=lcov node --test --test-concurrency=1 test/*-test.js",
     "lint": "eslint .",
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
     "pretty-ci": "prettier --ignore-unknown --check \"**/*\"",
-    "test": "rm -f bin/.backup-to-cloud.lock && BACKUP_ENV=test mocha"
+    "test": "rm -f bin/.backup-to-cloud.lock && BACKUP_ENV=test node --test --test-concurrency=1 test/*-test.js"
   },
   "license": "MIT",
   "engines": {
@@ -48,7 +48,6 @@
     "husky": "9.1.7",
     "lint-staged": "16.4.0",
     "md5-file": "5.0.0",
-    "mocha": "11.7.5",
     "nyc": "18.0.0",
     "prettier": "3.8.1"
   },

@@ -24,14 +24,6 @@ export default [
     },
   },
   {
-    files: ['test/**/*.js'],
-    languageOptions: {
-      globals: {
-        ...globals.mocha,
-      },
-    },
-  },
-  {
     ignores: ['coverage/**', 'data/**', 'package-lock.json'],
   },
 ];
