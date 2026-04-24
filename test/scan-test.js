@@ -13,7 +13,7 @@ function scan(dry) {
   return utils.run(['--only-scan', '--verbose', dry && '--dry']);
 }
 
-describe('scan', () => {
+describe('scan', { concurrency: false }, () => {
   beforeEach(() => {
     utils.clean();
   });

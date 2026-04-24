@@ -5,7 +5,7 @@ import { assert } from 'chai';
 
 import utils from './utils.js';
 
-describe('cli', () => {
+describe('cli', { concurrency: false }, () => {
   beforeEach(() => {
     utils.clean();
   });

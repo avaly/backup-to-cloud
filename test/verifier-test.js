@@ -7,7 +7,7 @@ import utils from './utils.js';
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 
-describe('verifier', () => {
+describe('verifier', { concurrency: false }, () => {
   function verify(awsLSMock, dry) {
     return utils.run(
       ['--verbose', dry ? '--dry' : '', '--aws-ls-mock', `${FIXTURES_DIR}verify/${awsLSMock}`],

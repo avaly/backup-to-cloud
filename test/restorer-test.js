@@ -20,7 +20,7 @@ function assertAWS(log, index, remotePattern, localPattern) {
   }
 }
 
-describe('restorer', () => {
+describe('restorer', { concurrency: false }, () => {
   function restore(args, dry, allowFailure = false) {
     return utils.run(['--verbose', dry && '--dry'].concat(args || []), 'restore', allowFailure);
   }

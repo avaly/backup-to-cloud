@@ -11,7 +11,7 @@ import utils from './utils.js';
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
 
-describe('decrypt', () => {
+describe('decrypt', { concurrency: false }, () => {
   if (!fs.existsSync(TEMP_DIR)) {
     execFileSync('mkdir', ['-p', TEMP_DIR]);
   }

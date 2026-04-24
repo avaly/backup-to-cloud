@@ -5,7 +5,7 @@
   "author": "Valentin Agachi",
   "type": "module",
   "scripts": {
-    "coverage": "rm -rf .nyc_output/ coverage/ bin/.backup-to-cloud.lock && BACKUP_ENV=test nyc --reporter=text --reporter=lcov node --test --test-concurrency=1 test/*-test.js",
+    "coverage": "rm -rf coverage/ bin/.backup-to-cloud.lock && BACKUP_ENV=test c8 --reporter=text --reporter=lcov node --test --test-concurrency=1 test/*-test.js",
     "lint": "eslint .",
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
@@ -41,6 +41,7 @@
     "@commitlint/cli": "20.5.0",
     "@commitlint/config-conventional": "20.5.0",
     "@eslint/js": "10.0.1",
+    "c8": "^11.0.0",
     "chai": "6.2.2",
     "eslint": "10.2.0",
     "eslint-config-prettier": "10.1.8",
@@ -48,7 +49,6 @@
     "husky": "9.1.7",
     "lint-staged": "16.4.0",
     "md5-file": "5.0.0",
-    "nyc": "18.0.0",
     "prettier": "3.8.1"
   },
   "repository": {

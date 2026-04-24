@@ -34,7 +34,7 @@ function assertAWS(log, index, operation, pattern, storageClass, hash) {
   }
 }
 
-describe('backuper', () => {
+describe('backuper', { concurrency: false }, () => {
   function transfer(dry, random) {
     return utils.run(['--skip-scan', '--verbose', dry && '--dry', random && '--random-order']);
   }
