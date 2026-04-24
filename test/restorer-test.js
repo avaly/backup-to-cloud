@@ -1,12 +1,13 @@
-const assert = require('chai').assert;
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
-const utils = require('./utils');
+import { assert } from 'chai';
+
+import utils from './utils.js';
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
-const LOCK_FILE = path.resolve(__dirname, '..', 'bin', '.backup-restore.lock');
+const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.backup-restore.lock');
 
 function assertAWS(log, index, remotePattern, localPattern) {
   assert.isAbove(log.length, index);

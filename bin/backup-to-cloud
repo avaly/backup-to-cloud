@@ -1,20 +1,23 @@
 #!/usr/bin/env node
 
-const path = require('path');
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const Backuper = require('../lib/Backuper');
-const ConfigChecker = require('../lib/ConfigChecker');
-const DB = require('../lib/DB');
-const Scanner = require('../lib/Scanner');
-const package = require('../package.json');
-const utils = require('../lib/utils');
+import Backuper from '../lib/Backuper.js';
+import ConfigChecker from '../lib/ConfigChecker.js';
+import DB from '../lib/DB.js';
+import pkg from '../lib/package.js';
+import Scanner from '../lib/Scanner.js';
+import utils from '../lib/utils.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const LOCK_FILE = path.join(__dirname, '.backup-to-cloud.lock');
 
 let db;
 
 function usage() {
-  console.log(`${package.name} v${package.version}
+  console.log(`${pkg.name} v${pkg.version}
 
 Usage: ${__filename} OPTIONS
 
@@ -35,7 +38,7 @@ async function main() {
     return;
   }
 
-  utils.log(`${package.name} v${package.version}`);
+  utils.log(`${pkg.name} v${pkg.version}`);
 
   if (utils.hasFlag('check-config')) {
     const configChecker = new ConfigChecker();

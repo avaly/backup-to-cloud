@@ -1,7 +1,7 @@
-const assert = require('chai').assert;
+import { assert } from 'chai';
 
-const config = require('../lib/config');
-const utils = require('./utils');
+import config from '../lib/config.js';
+import utils from './utils.js';
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 

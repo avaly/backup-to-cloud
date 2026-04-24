@@ -1,7 +1,10 @@
-const assert = require('chai').assert;
-const fs = require('fs');
-const utils = require('./utils');
-const Scanner = require('../lib/Scanner');
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { assert } from 'chai';
+
+import Scanner from '../lib/Scanner.js';
+import utils from './utils.js';
 
 const { FIXTURES_DIR, ROOT_DIR } = utils;
 
@@ -191,7 +194,10 @@ describe('scan', () => {
 
   it('throws error when source is invalid', async () => {
     let previousEnv = process.env.BACKUP_ENV;
-    await fs.promises.cp(`${FIXTURES_DIR}scan-error/config.scan.js`, `${ROOT_DIR}config.scan.js`);
+    await fs.promises.cp(
+      `${FIXTURES_DIR}scan-error/config.scan.js`,
+      path.resolve(ROOT_DIR, 'config.scan.js'),
+    );
 
     try {
       process.env.BACKUP_ENV = 'scan';
@@ -204,7 +210,7 @@ describe('scan', () => {
     } finally {
       process.env.BACKUP_ENV = previousEnv;
 
-      await fs.promises.rm(`${ROOT_DIR}config.scan.js`);
+      await fs.promises.rm(path.resolve(ROOT_DIR, 'config.scan.js'));
     }
   });
 });

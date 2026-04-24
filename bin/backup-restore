@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 
-const path = require('path');
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const Restorer = require('../lib/Restorer');
-const package = require('../package.json');
-const utils = require('../lib/utils');
+import pkg from '../lib/package.js';
+import Restorer from '../lib/Restorer.js';
+import utils from '../lib/utils.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const LOCK_FILE = path.join(__dirname, '.backup-restore.lock');
 
 function usage() {
-  console.log(`${package.name} v${package.version}
+  console.log(`${pkg.name} v${pkg.version}
 
 Usage: ${__filename} [OPTIONS] REMOTE_DIR_OR_FILE
 
@@ -41,7 +44,7 @@ async function main() {
     return;
   }
 
-  utils.log(`${package.name} v${package.version}`);
+  utils.log(`${pkg.name} v${pkg.version}`);
   if (utils.DRY_RUN) {
     utils.log('This is a DRY run! No changes/uploads will be made.');
   }

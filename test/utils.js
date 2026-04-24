@@ -1,29 +1,27 @@
-const assert = require('chai').assert;
-const childProcess = require('child_process');
-const fs = require('fs');
-const md5File = require('md5-file');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
-const DB = require('../lib/DB');
-const config = require('../lib/config');
-const utils = require('../lib/utils');
+import { assert } from 'chai';
+import md5File from 'md5-file';
 
-const execSync = childProcess.execSync;
+import config from '../lib/config.js';
+import { ROOT_DIR } from '../lib/root.js';
+import DB from '../lib/DB.js';
+import utils from '../lib/utils.js';
 
 const BIN_FILES = {
-  backup: path.resolve(__dirname, '..', 'bin', 'backup-to-cloud'),
-  decrypt: path.resolve(__dirname, '..', 'bin', 'backup-decrypt'),
-  restore: path.resolve(__dirname, '..', 'bin', 'backup-restore'),
-  verify: path.resolve(__dirname, '..', 'bin', 'backup-verify'),
+  backup: path.resolve(ROOT_DIR, 'bin', 'backup-to-cloud'),
+  decrypt: path.resolve(ROOT_DIR, 'bin', 'backup-decrypt'),
+  restore: path.resolve(ROOT_DIR, 'bin', 'backup-restore'),
+  verify: path.resolve(ROOT_DIR, 'bin', 'backup-verify'),
 };
-const ROOT_DIR = path.resolve(__dirname, '..') + path.sep;
 const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
 const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
 const AWS_LOG = `${DATA_DIR}aws.json`;
-const DB_FILE = `${ROOT_DIR}${config.dbSQLite}`;
+const DB_FILE = path.resolve(ROOT_DIR, config.dbSQLite);
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
 
-module.exports = {
+export default {
   AWS_LOG,
   DATA_DIR,
   DB_FILE,
@@ -45,7 +43,22 @@ module.exports = {
     if (items && Array.isArray(items)) {
       for (const item of items) {
         if (item !== '*' && item !== '**' && item !== '/') {
-          execSync(`rm -rf ${item}`);
+          if (/\*+$/.test(item)) {
+            const basePath = item.replace(/\*+$/, '');
+            if (fs.existsSync(basePath)) {
+              for (const child of fs.readdirSync(basePath)) {
+                fs.rmSync(path.join(basePath, child), {
+                  force: true,
+                  recursive: true,
+                });
+              }
+            }
+          } else {
+            fs.rmSync(item, {
+              force: true,
+              recursive: true,
+            });
+          }
         }
       }
     }
@@ -128,9 +141,7 @@ module.exports = {
   },
 
   cp(from, to) {
-    const cmd = ['cp', from, to].join(' ');
-    execSync(cmd, {
-      encoding: 'utf-8',
-    });
+    fs.mkdirSync(path.dirname(to), { recursive: true });
+    fs.cpSync(from, to);
   },
 };
