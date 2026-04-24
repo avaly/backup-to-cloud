@@ -5,7 +5,7 @@
 `lib/` contains the core CommonJS modules for backup, restore, verify, scan, config, encryption, and DB access.
 `bin/` holds the executable entrypoints (`backup-to-cloud`, `backup-restore`, `backup-verify`, `backup-decrypt`).
 `test/` contains Node test runner suites plus `_fixtures_/` and `_mocks_/` data used by integration-style tests.
-Generated artifacts such as `coverage/`, `.nyc_output/`, `data/`, and `tmp/` should not be treated as source.
+Generated artifacts such as `coverage/`, `data/`, and `tmp/` should not be treated as source.
 
 ## High-level architecture
 
@@ -33,7 +33,7 @@ This project uses CommonJS (`require`, `module.exports`). Follow `.editorconfig`
 
 ## Testing Guidelines
 
-Tests are written with the Node test runner and the native `assert` module. Add new tests under `test/` with `*-test.js` names that mirror the module or command under test, for example `test/backuper-test.js`. Reuse fixtures under `test/_fixtures_/` when possible rather than creating ad hoc temp files. Run `npm test` before opening a PR; run `npm run coverage` for changes affecting scan, restore, verify, or archival flows.
+Tests are written with the Node test runner and the native `assert` module. Add new tests under `test/` with `*-test.js` names that mirror the module or command under test, for example `test/backuper-test.js`. Reuse fixtures under `test/_fixtures_/` when possible rather than creating ad hoc temp files. Run `npm test` before opening a PR.
 
 ## Commit & Pull Request Guidelines
 

@@ -33,7 +33,7 @@ export function assertIsArray(value) {
 }
 
 export function assertIsObject(value) {
-  assert.ok(value && typeof value === 'object');
+  assert.ok(value && typeof value === 'object' && !Array.isArray(value));
 }
 
 export function assertLocalDeleted(db, path) {
