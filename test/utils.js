@@ -1,4 +1,3 @@
-import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -15,11 +14,10 @@ const BIN_FILES = {
   restore: path.resolve(ROOT_DIR, 'bin', 'backup-restore'),
   verify: path.resolve(ROOT_DIR, 'bin', 'backup-verify'),
 };
-const ROOT_PATH = ROOT_DIR + path.sep;
 const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
 const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
 const AWS_LOG = `${DATA_DIR}aws.json`;
-const DB_FILE = `${ROOT_PATH}${config.dbSQLite}`;
+const DB_FILE = path.resolve(ROOT_DIR, config.dbSQLite);
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
 
 export default {
@@ -29,7 +27,7 @@ export default {
   DB_TYPES: DB.TYPES,
   DELETED: utils.DELETED,
   FIXTURES_DIR,
-  ROOT_DIR: ROOT_PATH,
+  ROOT_DIR,
   TEMP_DIR,
 
   execPromise: utils.execPromise,
@@ -44,7 +42,10 @@ export default {
     if (items && Array.isArray(items)) {
       for (const item of items) {
         if (item !== '*' && item !== '**' && item !== '/') {
-          execSync(`rm -rf ${item}`);
+          fs.rmSync(item.replace(/\*$/, ''), {
+            force: true,
+            recursive: true,
+          });
         }
       }
     }
@@ -127,9 +128,7 @@ export default {
   },
 
   cp(from, to) {
-    const cmd = ['cp', from, to].join(' ');
-    execSync(cmd, {
-      encoding: 'utf-8',
-    });
+    fs.mkdirSync(path.dirname(to), { recursive: true });
+    fs.cpSync(from, to);
   },
 };

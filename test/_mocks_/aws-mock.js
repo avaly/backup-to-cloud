@@ -3,7 +3,6 @@
  * Mock AWS CLI used for tests
  */
 
-import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -14,15 +13,9 @@ const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
 const RESTORE_FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_', 'restore');
 const LOG_FILE = `${DATA_DIR}aws.json`;
 
-function escape(s) {
-  return s.replace(/([\s'"`$&])/g, '\\$1');
-}
-
 function cp(from, to) {
-  const cmd = ['cp', escape(from), escape(to)].join(' ');
-  execSync(cmd, {
-    encoding: 'utf-8',
-  });
+  fs.mkdirSync(path.dirname(to), { recursive: true });
+  fs.cpSync(from, to);
 }
 
 function main() {
@@ -42,7 +35,7 @@ function main() {
 
   if (args[0] === 's3' && args[1] === 'cp') {
     if (!fs.existsSync(TEMP_DIR)) {
-      execSync(`mkdir -p ${TEMP_DIR}`);
+      fs.mkdirSync(TEMP_DIR, { recursive: true });
     }
 
     // s3 cp /local/bar s3://bucket/foo
@@ -71,7 +64,7 @@ function main() {
 
       const fileDir = path.dirname(args[3]);
       if (!fs.existsSync(fileDir)) {
-        execSync(`mkdir -p ${fileDir}`);
+        fs.mkdirSync(fileDir, { recursive: true });
       }
 
       cp(fileFixture, args[3]);
