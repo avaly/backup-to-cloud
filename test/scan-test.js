@@ -5,17 +5,9 @@ import { beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import Scanner from '../lib/Scanner.js';
-import utils from './utils.js';
+import utils, { assertIncludes, assertIsObject, assertLocalDeleted } from './utils.js';
 
 const { FIXTURES_DIR, ROOT_DIR } = utils;
-
-function assertIncludes(actual, expected) {
-  assert.ok(actual.includes(expected));
-}
-
-function assertIsObject(value) {
-  assert.ok(value && typeof value === 'object');
-}
 
 function scan(dry) {
   return utils.run(['--only-scan', '--verbose', dry && '--dry']);
@@ -143,9 +135,9 @@ describe('scan', { concurrency: false }, () => {
 
     assert.strictEqual(db.locals.length, 12);
 
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}foo/old.txt`);
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}old/from-old-source.txt`);
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}ham/third/third.tar`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}foo/old.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}old/from-old-source.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}ham/third/third.tar`);
 
     assertIsObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
 
@@ -156,7 +148,7 @@ describe('scan', { concurrency: false }, () => {
 
     const db2 = utils.getDataContent();
 
-    utils.assertLocalDeleted(db2, `${FIXTURES_DIR}bar/1-small.txt`);
+    assertLocalDeleted(db2, `${FIXTURES_DIR}bar/1-small.txt`);
 
     await utils.execPromise('mv', [
       `${FIXTURES_DIR}../1-small.txt`,
@@ -176,9 +168,9 @@ describe('scan', { concurrency: false }, () => {
 
     const db = utils.getDataContent();
 
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/1-small.txt`);
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/2-medium.txt`);
-    utils.assertLocalDeleted(db, `${FIXTURES_DIR}empty/3-large.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}empty/1-small.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}empty/2-medium.txt`);
+    assertLocalDeleted(db, `${FIXTURES_DIR}empty/3-large.txt`);
   });
 
   it('removes deleted files which have not been synced yet', async () => {

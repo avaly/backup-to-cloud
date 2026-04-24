@@ -5,12 +5,12 @@
   "author": "Valentin Agachi",
   "type": "module",
   "scripts": {
-    "coverage": "rm -rf coverage/ bin/.backup-to-cloud.lock && NODE_V8_COVERAGE=coverage BACKUP_ENV=test sh -c 'if node --help | grep -q -- --test-coverage; then exec node --test --test-coverage --test-concurrency=1 test/*-test.js; else exec node --test --experimental-test-coverage --test-concurrency=1 test/*-test.js; fi'",
     "lint": "eslint .",
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
     "pretty-ci": "prettier --ignore-unknown --check \"**/*\"",
-    "test": "rm -f bin/.backup-to-cloud.lock && BACKUP_ENV=test node --test --test-concurrency=1 test/*-test.js"
+    "test": "rm -f bin/.backup-to-cloud.lock && BACKUP_ENV=test node --test --test-concurrency=1 test/*-test.js",
+    "test:coverage": "rm -rf coverage/ bin/.backup-to-cloud.lock && mkdir -p coverage && BACKUP_ENV=test node --test --experimental-test-coverage --test-concurrency=1 --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info test/*-test.js"
   },
   "license": "MIT",
   "engines": {

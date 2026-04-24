@@ -20,6 +20,34 @@ const AWS_LOG = `${DATA_DIR}aws.json`;
 const DB_FILE = path.resolve(ROOT_DIR, config.dbSQLite);
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
 
+export function assertIncludes(actual, expected) {
+  assert.ok(actual.includes(expected));
+}
+
+export function assertNotIncludes(actual, expected) {
+  assert.ok(!actual.includes(expected));
+}
+
+export function assertIsArray(value) {
+  assert.ok(Array.isArray(value));
+}
+
+export function assertIsObject(value) {
+  assert.ok(value && typeof value === 'object');
+}
+
+export function assertLocalDeleted(db, path) {
+  assert.strictEqual(db.localsByPath[path].hash, utils.DELETED);
+}
+
+export function assertFilesEqual(fileA, fileB) {
+  assert.strictEqual(md5File.sync(fileA), md5File.sync(fileB));
+}
+
+export function assertFilesNotEqual(fileA, fileB) {
+  assert.notStrictEqual(md5File.sync(fileA), md5File.sync(fileB));
+}
+
 export default {
   AWS_LOG,
   DATA_DIR,
@@ -125,18 +153,6 @@ export default {
       size: size || 123,
       timestamp: timestamp || 456,
     };
-  },
-
-  assertLocalDeleted(db, path) {
-    assert.strictEqual(db.localsByPath[path].hash, utils.DELETED);
-  },
-
-  assertFilesEqual(fileA, fileB) {
-    assert.strictEqual(md5File.sync(fileA), md5File.sync(fileB));
-  },
-
-  assertFilesNotEqual(fileA, fileB) {
-    assert.notStrictEqual(md5File.sync(fileA), md5File.sync(fileB));
   },
 
   cp(from, to) {

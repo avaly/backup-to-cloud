@@ -4,23 +4,16 @@ import { beforeEach, describe, it } from 'node:test';
 
 import assert from 'node:assert/strict';
 
-import utils from './utils.js';
+import utils, {
+  assertFilesEqual,
+  assertIncludes,
+  assertIsArray,
+  assertNotIncludes,
+} from './utils.js';
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
 const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.backup-restore.lock');
-
-function assertIncludes(actual, expected) {
-  assert.ok(actual.includes(expected));
-}
-
-function assertNotIncludes(actual, expected) {
-  assert.ok(!actual.includes(expected));
-}
-
-function assertIsArray(value) {
-  assert.ok(Array.isArray(value));
-}
 
 function assertAWS(log, index, remotePattern, localPattern) {
   assert.ok(log.length > index);
@@ -104,9 +97,9 @@ describe('restorer', { concurrency: false }, () => {
     assertAWS(awsLog, 2, /s3:\/\/test-bucket\/bar\/2-medium\.txt/);
     assertAWS(awsLog, 3, /s3:\/\/test-bucket\/bar\/3-large\.txt/);
 
-    utils.assertFilesEqual(`${TEMP_DIR}bar/1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
-    utils.assertFilesEqual(`${TEMP_DIR}bar/2-medium.txt`, `${FIXTURES_DIR}bar/2-medium.txt`);
-    utils.assertFilesEqual(`${TEMP_DIR}bar/3-large.txt`, `${FIXTURES_DIR}bar/3-large.txt`);
+    assertFilesEqual(`${TEMP_DIR}bar/1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
+    assertFilesEqual(`${TEMP_DIR}bar/2-medium.txt`, `${FIXTURES_DIR}bar/2-medium.txt`);
+    assertFilesEqual(`${TEMP_DIR}bar/3-large.txt`, `${FIXTURES_DIR}bar/3-large.txt`);
   });
 
   it('restores all', async () => {
@@ -133,23 +126,14 @@ describe('restorer', { concurrency: false }, () => {
     assertAWS(awsLog, 6, /s3:\/\/test-bucket\/3-dummy\.pdf/);
     assertAWS(awsLog, 7, /s3:\/\/test-bucket\/ham\/first\/first.tar/);
 
-    utils.assertFilesEqual(`${TEMP_DIR}bar/1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
-    utils.assertFilesEqual(`${TEMP_DIR}bar/2-medium.txt`, `${FIXTURES_DIR}bar/2-medium.txt`);
-    utils.assertFilesEqual(`${TEMP_DIR}bar/3-large.txt`, `${FIXTURES_DIR}bar/3-large.txt`);
+    assertFilesEqual(`${TEMP_DIR}bar/1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
+    assertFilesEqual(`${TEMP_DIR}bar/2-medium.txt`, `${FIXTURES_DIR}bar/2-medium.txt`);
+    assertFilesEqual(`${TEMP_DIR}bar/3-large.txt`, `${FIXTURES_DIR}bar/3-large.txt`);
     assert.strictEqual(fs.existsSync(`${TEMP_DIR}1-fail.dat`), false);
-    utils.assertFilesEqual(
-      `${TEMP_DIR}2 '"$@%&\`medium.dat`,
-      `${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`,
-    );
-    utils.assertFilesEqual(`${TEMP_DIR}3-dummy.pdf`, `${FIXTURES_DIR}originals/3-dummy.pdf`);
-    utils.assertFilesEqual(
-      `${TEMP_DIR}ham/first/1-first.txt`,
-      `${FIXTURES_DIR}ham/first/1-first.txt`,
-    );
-    utils.assertFilesEqual(
-      `${TEMP_DIR}ham/first/2-first.txt`,
-      `${FIXTURES_DIR}ham/first/2-first.txt`,
-    );
+    assertFilesEqual(`${TEMP_DIR}2 '"$@%&\`medium.dat`, `${FIXTURES_DIR}foo/2 '"$@%&\`medium.dat`);
+    assertFilesEqual(`${TEMP_DIR}3-dummy.pdf`, `${FIXTURES_DIR}originals/3-dummy.pdf`);
+    assertFilesEqual(`${TEMP_DIR}ham/first/1-first.txt`, `${FIXTURES_DIR}ham/first/1-first.txt`);
+    assertFilesEqual(`${TEMP_DIR}ham/first/2-first.txt`, `${FIXTURES_DIR}ham/first/2-first.txt`);
   });
 
   it('filters by max size in dry mode', async () => {

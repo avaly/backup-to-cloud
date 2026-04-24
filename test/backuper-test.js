@@ -9,28 +9,20 @@ import Backuper from '../lib/Backuper.js';
 import Crypter from '../lib/Crypter.js';
 import Scanner from '../lib/Scanner.js';
 import appUtils from '../lib/utils.js';
-import utils from './utils.js';
+import utils, {
+  assertFilesEqual,
+  assertFilesNotEqual,
+  assertIncludes,
+  assertIsArray,
+  assertIsObject,
+  assertLocalDeleted,
+  assertNotIncludes,
+} from './utils.js';
 
 const DATA_DIR = utils.DATA_DIR;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
 const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.backup-to-cloud.lock');
-
-function assertIncludes(actual, expected) {
-  assert.ok(actual.includes(expected));
-}
-
-function assertNotIncludes(actual, expected) {
-  assert.ok(!actual.includes(expected));
-}
-
-function assertIsArray(value) {
-  assert.ok(Array.isArray(value));
-}
-
-function assertIsObject(value) {
-  assert.ok(value && typeof value === 'object');
-}
 
 function assertAWS(log, index, operation, pattern, storageClass, hash) {
   assert.ok(log.length > index);
@@ -118,14 +110,14 @@ describe('backuper', { concurrency: false }, () => {
     assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/bar\/2-medium\.txt/, 'STANDARD');
     assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
-    utils.assertFilesEqual(`${TEMP_DIR}db-test.sqlite`, `${DATA_DIR}db-test.sqlite`);
+    assertFilesEqual(`${TEMP_DIR}db-test.sqlite`, `${DATA_DIR}db-test.sqlite`);
 
     // Verify encryption
-    utils.assertFilesNotEqual(`${TEMP_DIR}1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
+    assertFilesNotEqual(`${TEMP_DIR}1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
 
     await Crypter.decrypt(`${TEMP_DIR}1-small.txt`, `${TEMP_DIR}1-small-decrypted.txt`);
 
-    utils.assertFilesEqual(`${TEMP_DIR}1-small-decrypted.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
+    assertFilesEqual(`${TEMP_DIR}1-small-decrypted.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
 
     const db = utils.getDataContent();
 
@@ -138,7 +130,7 @@ describe('backuper', { concurrency: false }, () => {
     assert.notStrictEqual(db.remotesByPath[firstFile].size, db.localsByPath[firstFile].size);
     assert.ok(
       db.remotesByPath[firstFile].timestamp > Date.now() - 60 * 1000,
-      'timestamp of upload should be withing last 60 seconds',
+      'timestamp of upload should be within last 60 seconds',
     );
   });
 
@@ -244,8 +236,8 @@ describe('backuper', { concurrency: false }, () => {
     await Crypter.decrypt(`${TEMP_DIR}first.tar`, `${TEMP_DIR}first-decrypted.tar`);
     await Archiver.decompress(`${TEMP_DIR}first-decrypted.tar`, `${TEMP_DIR}first`);
 
-    utils.assertFilesEqual(`${TEMP_DIR}first/1-first.txt`, `${FIXTURES_DIR}ham/first/1-first.txt`);
-    utils.assertFilesEqual(`${TEMP_DIR}first/2-first.txt`, `${FIXTURES_DIR}ham/first/2-first.txt`);
+    assertFilesEqual(`${TEMP_DIR}first/1-first.txt`, `${FIXTURES_DIR}ham/first/1-first.txt`);
+    assertFilesEqual(`${TEMP_DIR}first/2-first.txt`, `${FIXTURES_DIR}ham/first/2-first.txt`);
     assert.strictEqual(fs.existsSync(`${TEMP_DIR}first/second/1-second.txt`), false);
     assert.strictEqual(fs.existsSync(`${TEMP_DIR}first/second/2-second.txt`), false);
   });
@@ -339,7 +331,7 @@ describe('backuper', { concurrency: false }, () => {
     assert.strictEqual(db.remotes.length, 1);
 
     const file = `${FIXTURES_DIR}bar/3-large-recent.txt`;
-    utils.assertLocalDeleted(db, file);
+    assertLocalDeleted(db, file);
     assertIsObject(db.remotesByPath[file]);
   });
 
