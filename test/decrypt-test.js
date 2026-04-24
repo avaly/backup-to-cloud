@@ -1,6 +1,5 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
-
 import { describe, it } from 'node:test';
 
 import { assert } from 'chai';
