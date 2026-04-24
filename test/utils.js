@@ -4,7 +4,8 @@ import path from 'node:path';
 import { assert } from 'chai';
 import md5File from 'md5-file';
 
-import config, { ROOT_DIR } from '../lib/config.js';
+import config from '../lib/config.js';
+import { ROOT_DIR } from '../lib/root.js';
 import DB from '../lib/DB.js';
 import utils from '../lib/utils.js';
 
@@ -42,10 +43,22 @@ export default {
     if (items && Array.isArray(items)) {
       for (const item of items) {
         if (item !== '*' && item !== '**' && item !== '/') {
-          fs.rmSync(item.replace(/\*+$/, ''), {
-            force: true,
-            recursive: true,
-          });
+          if (/\*+$/.test(item)) {
+            const basePath = item.replace(/\*+$/, '');
+            if (fs.existsSync(basePath)) {
+              for (const child of fs.readdirSync(basePath)) {
+                fs.rmSync(path.join(basePath, child), {
+                  force: true,
+                  recursive: true,
+                });
+              }
+            }
+          } else {
+            fs.rmSync(item, {
+              force: true,
+              recursive: true,
+            });
+          }
         }
       }
     }

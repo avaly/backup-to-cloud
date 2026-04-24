@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import config from './config.sample.js';
-import { ROOT_DIR } from './lib/config.js';
+import { ROOT_DIR } from './lib/root.js';
 
 const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_');
 

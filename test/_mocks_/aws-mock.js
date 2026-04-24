@@ -6,7 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { ROOT_DIR } from '../../lib/config.js';
+import { ROOT_DIR } from '../../lib/root.js';
 
 const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
 const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
