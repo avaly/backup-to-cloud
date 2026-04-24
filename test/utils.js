@@ -42,7 +42,7 @@ export default {
     if (items && Array.isArray(items)) {
       for (const item of items) {
         if (item !== '*' && item !== '**' && item !== '/') {
-          fs.rmSync(item.replace(/\*$/, ''), {
+          fs.rmSync(item.replace(/\*+$/, ''), {
             force: true,
             recursive: true,
           });
