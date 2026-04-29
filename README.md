@@ -82,7 +82,7 @@ Decrypt a downloaded encrypted file:
 ./bin/backup-to-cloud decrypt --output OUTPUT_FILE INPUT_FILE
 ```
 
-## `verify`
+### `verify`
 
 Verify that the DB and remote files are in sync:
 
