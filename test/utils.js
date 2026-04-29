@@ -112,7 +112,8 @@ export default {
   },
 
   async run(args, command, allowFailure = false) {
-    const filteredArgs = [command || 'backup'].concat(args || []).filter((arg) => !!arg);
+    const commandArgs = command === null ? [] : [command ?? 'backup'];
+    const filteredArgs = commandArgs.concat(args || []).filter((arg) => !!arg);
 
     try {
       return await utils.execPromise(BIN_FILE, filteredArgs);
