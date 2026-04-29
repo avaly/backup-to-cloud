@@ -13,7 +13,7 @@ describe('cli', { concurrency: false }, () => {
     const result = await utils.run(['--help']);
 
     assert.match(result, /Usage:/);
-    assert.strictEqual(fs.existsSync(utils.DATA_FILE), false, 'data file was not created');
+    assert.strictEqual(fs.existsSync(utils.DB_FILE), false, 'db file was not created');
   });
 
   it('checks config', async () => {

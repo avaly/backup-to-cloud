@@ -1,32 +1,50 @@
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { describe, it } from 'node:test';
+import { before, describe, it } from 'node:test';
 
 import Crypter from '../lib/Crypter.js';
-import utils from './utils.js';
+import utils, { assertIncludes, assertIsArray } from './utils.js';
 
-const FIXTURES_DIR = utils.FIXTURES_DIR;
-const TEMP_DIR = utils.TEMP_DIR;
+const { FIXTURES_DIR, TEMP_DIR } = utils;
 
 describe('decrypt', { concurrency: false }, () => {
+  function decrypt(args, dry, allowFailure = false) {
+    return utils.run(['--verbose', dry && '--dry'].concat(args || []), 'decrypt', allowFailure);
+  }
+
   if (!fs.existsSync(TEMP_DIR)) {
     execFileSync('mkdir', ['-p', TEMP_DIR]);
   }
 
+  before(() => {
+    utils.clean();
+  });
+
   it('shows help', async () => {
-    const result = await utils.run(['--help'], 'decrypt');
+    const result = await decrypt(['--help']);
 
     assert.match(result, /Usage:/);
+  });
+
+  it('shows help with no output flag', async () => {
+    const result = await decrypt([], false, true);
+
+    assert.strictEqual(result instanceof Error, true);
+    assertIncludes(result.message, 'exit code: 1');
+    assertIncludes(result.message, 'Usage:');
+
+    const awsLog = utils.getAWSLog();
+
+    assertIsArray(awsLog);
+    assert.strictEqual(awsLog.length, 0);
   });
 
   it('stops if input file does not exist', async () => {
     const fileOutput = `${TEMP_DIR}should-not-be-created.txt`;
 
-    const args = ['--output', fileOutput, `${TEMP_DIR}this-should-not-exist.txt`];
-
     try {
-      await utils.run(args, 'decrypt');
+      await decrypt(['--output', fileOutput, `${TEMP_DIR}this-should-not-exist.txt`]);
 
       assert.fail('Expected decrypt command to fail');
     } catch {
@@ -44,7 +62,7 @@ describe('decrypt', { concurrency: false }, () => {
 
     assert.notStrictEqual(contentSource, contentEncrypted);
 
-    await utils.run(['--output', fileOutput, encryptedFile.path], 'decrypt');
+    await decrypt(['--output', fileOutput, encryptedFile.path]);
 
     const contentDecrypted = fs.readFileSync(fileOutput, 'utf-8');
 

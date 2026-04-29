@@ -8,12 +8,7 @@ import { ROOT_DIR } from '../lib/root.js';
 import DB from '../lib/DB.js';
 import utils from '../lib/utils.js';
 
-const BIN_FILES = {
-  backup: path.resolve(ROOT_DIR, 'bin', 'backup-to-cloud'),
-  decrypt: path.resolve(ROOT_DIR, 'bin', 'backup-decrypt'),
-  restore: path.resolve(ROOT_DIR, 'bin', 'backup-restore'),
-  verify: path.resolve(ROOT_DIR, 'bin', 'backup-verify'),
-};
+const BIN_FILE = path.resolve(ROOT_DIR, 'bin', 'backup-to-cloud');
 const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
 const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
 const AWS_LOG = `${DATA_DIR}aws.json`;
@@ -116,12 +111,12 @@ export default {
     db.close();
   },
 
-  async run(args, binFile, allowFailure = false) {
-    const bin = BIN_FILES[binFile || 'backup'];
-    const filteredArgs = args.filter((arg) => !!arg);
+  async run(args, command, allowFailure = false) {
+    const commandArgs = command === null ? [] : [command ?? 'backup'];
+    const filteredArgs = commandArgs.concat(args || []).filter((arg) => !!arg);
 
     try {
-      return await utils.execPromise(bin, filteredArgs);
+      return await utils.execPromise(BIN_FILE, filteredArgs);
     } catch (err) {
       if (allowFailure) {
         return err;

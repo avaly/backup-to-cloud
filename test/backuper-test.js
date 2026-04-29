@@ -22,7 +22,7 @@ import utils, {
 const DATA_DIR = utils.DATA_DIR;
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
-const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.backup-to-cloud.lock');
+const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.backup.lock');
 
 function assertAWS(log, index, operation, pattern, storageClass, hash) {
   assert.ok(log.length > index);

@@ -9,8 +9,8 @@
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
     "pretty-ci": "prettier --ignore-unknown --check \"**/*\"",
-    "test": "rm -f bin/.backup-to-cloud.lock && BACKUP_ENV=test node --test --test-concurrency=1 --test-timeout=10000 test/*-test.js",
-    "test:coverage": "rm -rf coverage/ bin/.backup-to-cloud.lock && mkdir -p coverage && BACKUP_ENV=test node --test --experimental-test-coverage --test-concurrency=1 --test-timeout=10000 --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info test/*-test.js"
+    "test": "rm -f bin/.backup.lock && BACKUP_ENV=test node --test --test-concurrency=1 --test-timeout=10000 test/*-test.js",
+    "test:coverage": "rm -rf coverage/ bin/.backup.lock && mkdir -p coverage && BACKUP_ENV=test node --test --experimental-test-coverage --test-concurrency=1 --test-timeout=10000 --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info test/*-test.js"
   },
   "license": "MIT",
   "engines": {
@@ -21,10 +21,7 @@
     "linux"
   ],
   "bin": {
-    "backup-decrypt": "./bin/backup-decrypt",
-    "backup-restore": "./bin/backup-restore",
-    "backup-to-cloud": "./bin/backup-to-cloud",
-    "backup-verify": "./bin/backup-verify"
+    "backup-to-cloud": "./bin/backup-to-cloud"
   },
   "files": [
     "LICENSE",
@@ -34,6 +31,7 @@
   ],
   "dependencies": {
     "better-sqlite3": "12.9.0",
+    "commander": "14.0.1",
     "pretty-bytes": "7.1.0",
     "slackr": "1.0.0"
   },

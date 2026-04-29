@@ -1,102 +1,238 @@
 #!/usr/bin/env node
 
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { Command } from 'commander';
+
 import Backuper from '../lib/Backuper.js';
 import ConfigChecker from '../lib/ConfigChecker.js';
+import Crypter from '../lib/Crypter.js';
 import DB from '../lib/DB.js';
-import pkg from '../lib/package.js';
+import Restorer from '../lib/Restorer.js';
 import Scanner from '../lib/Scanner.js';
-import utils from '../lib/utils.js';
+import Verifier from '../lib/Verifier.js';
+import pkg from '../lib/package.js';
+import utils, { initializeProcess, isDry, isTest } from '../lib/utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const LOCK_FILE = path.join(__dirname, '.backup-to-cloud.lock');
+const NAME = path.basename(__filename);
 
-let db;
-
-function usage() {
-  console.log(`${pkg.name} v${pkg.version}
-
-Usage: ${__filename} OPTIONS
-
-Options:
-	--check-config
-	--only-scan
-	--skip-scan
-	--random-order
-	--ignore-lock
-	--verbose
-	--dry
-	--help
-`);
+function initRuntime(options = {}) {
+  initializeProcess({
+    dryRun: Boolean(options.dry),
+    ignoreLock: Boolean(options.ignoreLock),
+    verbose: Boolean(options.verbose),
+  });
 }
 
-async function main() {
-  if (!utils.acquireLock(LOCK_FILE)) {
+function addSharedOptions(command, hasLock = false) {
+  if (hasLock) {
+    command.option('--ignore-lock', 'ignore existing lock file');
+  }
+  return command
+    .option('--verbose', 'enable verbose logging')
+    .option('--dry', 'run without changing files or remote state');
+}
+
+async function withLock(lockName, action) {
+  const lockFile = path.join(__dirname, `.${lockName}.lock`);
+
+  if (!utils.acquireLock(lockFile)) {
     return;
   }
+
+  try {
+    await action();
+  } finally {
+    utils.releaseLock(lockFile);
+  }
+}
+
+async function runBackup(options) {
+  initRuntime(options);
+
+  await withLock('backup', async () => {
+    let db;
+
+    try {
+      utils.log(`${pkg.name} v${pkg.version}`);
+
+      if (options.checkConfig) {
+        const configChecker = new ConfigChecker();
+        try {
+          await configChecker.check();
+          utils.log('Config seems in order!');
+        } catch (err) {
+          utils.log('Config check failed:');
+          utils.log(err.message || err);
+        }
+        return;
+      }
+
+      utils.log('Starting...');
+      if (isDry()) {
+        utils.log('This is a DRY run! No changes/uploads will be made.');
+      }
+
+      db = new DB();
+      db.initialize();
+
+      if (!options.skipScan) {
+        const scanner = new Scanner(db);
+        scanner.scan();
+      }
+
+      if (!options.onlyScan) {
+        const backuper = new Backuper(db, {
+          random: options.randomOrder,
+        });
+
+        try {
+          const result = await backuper.start();
+          utils.log('Backup result', result);
+        } catch (err) {
+          utils.log('Backup error', err);
+        }
+
+        await backuper.finish();
+      }
+    } finally {
+      if (db) {
+        db.close();
+        utils.log('Finished!');
+      }
+    }
+  });
+}
+
+async function runDecrypt(inputFile, options) {
+  initRuntime(options);
+
+  const fileInput = path.resolve(inputFile);
+  const fileOutput = path.resolve(options.output);
+
+  if (!fs.existsSync(fileInput)) {
+    utils.log(`Input file does not exist: ${fileInput}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  try {
+    await Crypter.decrypt(fileInput, fileOutput);
+    utils.log(`Decrypted: ${fileInput} > ${fileOutput}`);
+  } catch (err) {
+    utils.log('Decrypt error', err);
+    process.exitCode = 1;
+  }
+}
+
+async function runRestore(remotePath, options) {
+  initRuntime(options);
+
+  await withLock('restore', async () => {
+    utils.log(`${pkg.name} v${pkg.version}`);
+    if (isDry()) {
+      utils.log('This is a DRY run! No changes/uploads will be made.');
+    }
+
+    const restorer = new Restorer();
+    let finalResult;
+
+    try {
+      const result = await restorer.start(remotePath, path.resolve(options.output));
+      utils.debug('Restorer result:', result);
+      finalResult = result;
+    } catch (err) {
+      utils.log('Restorer error:', err);
+      finalResult = 'FAIL';
+    }
+
+    restorer.finish();
+
+    if (finalResult && finalResult.includes('FAIL')) {
+      process.exitCode = 1;
+    }
+  });
+}
+
+async function runVerify(options) {
+  initRuntime(options);
 
   utils.log(`${pkg.name} v${pkg.version}`);
-
-  if (utils.hasFlag('check-config')) {
-    const configChecker = new ConfigChecker();
-    try {
-      await configChecker.check();
-      utils.log('Config seems in order!');
-    } catch (err) {
-      utils.log('Config check failed:');
-      utils.log(err.message || err);
-    }
-    finish();
-    return;
-  }
-
-  utils.log('Starting...');
-  if (utils.DRY_RUN) {
+  if (isDry()) {
     utils.log('This is a DRY run! No changes/uploads will be made.');
   }
 
-  db = new DB();
-  db.initialize();
+  const verifier = new Verifier();
 
-  if (!utils.hasFlag('skip-scan')) {
-    const scanner = new Scanner(db);
-    scanner.scan();
+  try {
+    await verifier.start(isTest() ? options.awsLsMock || null : null);
+  } catch (err) {
+    utils.log('Verifier error:', err);
+    await verifier.stop();
+    process.exitCode = 1;
   }
-
-  if (!utils.hasFlag('only-scan')) {
-    const backuper = new Backuper(db, {
-      random: utils.hasFlag('random-order'),
-    });
-
-    try {
-      const result = await backuper.start();
-      utils.log('Backup result', result);
-    } catch (err) {
-      utils.log('Backup error', err);
-    }
-    await backuper.finish();
-  }
-
-  finish();
 }
 
-function finish() {
-  if (db) {
-    db.close();
-    utils.log('Finished!');
-  }
-  utils.releaseLock(LOCK_FILE);
-}
+const program = new Command();
 
-if (utils.hasFlag('help')) {
-  usage();
-} else {
-  main().catch((err) => {
-    utils.log(`Error: ${err.message}`);
-    finish();
-    process.exit(1);
-  });
-}
+program.name(NAME).description(pkg.description).version(pkg.version).showHelpAfterError();
+
+addSharedOptions(
+  program
+    .command('backup')
+    .description('scan sources and upload encrypted files to S3')
+    .option('--check-config', 'validate configuration and exit')
+    .option('--only-scan', 'scan sources without uploading files')
+    .option('--skip-scan', 'skip source scan and only run upload/removal pass')
+    .option('--random-order', 'process files in random order')
+    .action(runBackup),
+  true,
+);
+
+addSharedOptions(
+  program
+    .command('decrypt')
+    .description('decrypt a downloaded encrypted file')
+    .requiredOption('--output <path>', 'output file path (required)')
+    .argument('<inputFile>', 'encrypted input file (required)')
+    .action(runDecrypt),
+);
+
+addSharedOptions(
+  program
+    .command('restore')
+    .description('restore and decrypt a remote file or prefix')
+    .requiredOption('--output <path>', 'output directory or file path (required)')
+    .option('--max-size <bytes>', 'restore only files up to this size in bytes')
+    .option('--test <index>', 'restore only one file by index in test mode')
+    .option('--yes', 'skip confirmation prompt')
+    .argument('<remotePath>', 'remote file or prefix to restore (required)')
+    .action(runRestore),
+  true,
+);
+
+addSharedOptions(
+  program
+    .command('verify')
+    .description('verify remote S3 contents against the local DB')
+    .option('--aws-ls-mock <path>', 'test-only path for mocked aws s3 ls output')
+    .action(runVerify),
+);
+
+program.addHelpText(
+  'after',
+  `
+
+Examples:
+  ${NAME} backup --dry
+  ${NAME} restore --output ./restore /
+  ${NAME} verify --dry
+  ${NAME} decrypt --output ./file.txt ./file.txt.gpg
+`,
+);
+
+await program.parseAsync(process.argv);

@@ -31,62 +31,63 @@ Ideally, it should be setup to run in a crontab entry.
 - `npm ci`
 - `cp config.sample.js config.default.js`
 - Modify your new config file
-- Check your config file: `bin/backup-to-cloud --check-config`
-- Try it out first with: `bin/backup-to-cloud --dry`
+- Check your config file: `bin/backup-to-cloud backup --check-config`
+- Try it out first with: `bin/backup-to-cloud backup --dry`
 - Set up a crontab entry for it, for example:
   - run every hour with verbose logging:
 
   ```
-  0 * * * * cd /path/to/this && ./bin/backup-to-cloud --verbose >> cron.log 2>&1
+  0 * * * * cd /path/to/this && ./bin/backup-to-cloud backup --verbose >> cron.log 2>&1
   ```
 
   - run every 12 hours:
 
   ```
-  0 */12 * * * cd /path/to/this && ./bin/backup-to-cloud >> cron.log 2>&1
+  0 */12 * * * cd /path/to/this && ./bin/backup-to-cloud backup >> cron.log 2>&1
   ```
 
-## Tools
+## Commands
 
-### backup-to-cloud
+### `backup`
 
 ```
 ./bin/backup-to-cloud --help
-./bin/backup-to-cloud --check-config
-./bin/backup-to-cloud --dry
-./bin/backup-to-cloud
+./bin/backup-to-cloud backup --help
+./bin/backup-to-cloud backup --check-config
+./bin/backup-to-cloud backup --dry
+./bin/backup-to-cloud backup
 ```
 
-### backup-restore
+### `restore`
 
 Restore a file or folder and decrypt:
 
 ```
-./bin/backup-restore --help
-./bin/backup-restore --output OUTPUT_DIR_OR_FILE REMOTE_DIR_OR_FILE
+./bin/backup-to-cloud restore --help
+./bin/backup-to-cloud restore --output OUTPUT_DIR_OR_FILE REMOTE_DIR_OR_FILE
 ```
 
 Schedule a restore test:
 
 ```
-0 1 * * * cd /path/to/this && ./bin/backup-restore --max-size 1000000 --output TEMPORARY_DIR --test / >> restore-test.log 2>&1
+0 1 * * * cd /path/to/this && ./bin/backup-to-cloud restore --max-size 1000000 --output TEMPORARY_DIR --test 0 / >> restore-test.log 2>&1
 ```
 
-### backup-decrypt
+### `decrypt`
 
 Decrypt a downloaded encrypted file:
 
 ```
-./bin/backup-decrypt --help
-./bin/backup-decrypt --output OUTPUT_FILE INPUT_FILE
+./bin/backup-to-cloud decrypt --help
+./bin/backup-to-cloud decrypt --output OUTPUT_FILE INPUT_FILE
 ```
 
-## backup-verify
+### `verify`
 
 Verify that the DB and remote files are in sync:
 
 ```
-./bin/backup-verify --help
-./bin/backup-verify --dry
-./bin/backup-verify
+./bin/backup-to-cloud verify --help
+./bin/backup-to-cloud verify --dry
+./bin/backup-to-cloud verify
 ```

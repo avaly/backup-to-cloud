@@ -2,19 +2,20 @@
 
 ## Project Structure & Module Organization
 
-`lib/` contains the core CommonJS modules for backup, restore, verify, scan, config, encryption, and DB access.
-`bin/` holds the executable entrypoints (`backup-to-cloud`, `backup-restore`, `backup-verify`, `backup-decrypt`).
+`lib/` contains the core ESM modules for backup, restore, verify, scan, config, encryption, and DB access.
+`bin/` holds the single executable entrypoint `backup-to-cloud`, which exposes `backup`, `restore`, `verify`, and `decrypt` subcommands via `commander`.
 `test/` contains Node test runner suites plus `_fixtures_/` and `_mocks_/` data used by integration-style tests.
 Generated artifacts such as `coverage/`, `data/`, and `tmp/` should not be treated as source.
 
 ## High-level architecture
 
-- `bin/backup-to-cloud` is main flow: acquire lock, load env-specific config, initialize SQLite, run `Scanner` unless skipped, then run `Backuper`, then upload DB snapshot if session changed anything.
+- `bin/backup-to-cloud backup` is main flow: acquire lock, load env-specific config, initialize SQLite, run `Scanner` unless skipped, then run `Backuper`, then upload DB snapshot if session changed anything.
 - `lib/DB.js` stores three tables: `settings`, `locals`, and `remotes`. `locals` is latest scan of source files; `remotes` is last known uploaded state, including encrypted size and upload timestamp.
 - `lib/Scanner.js` scans configured sources with `find`, hashes each file from remote path + size + mtime, and records synthetic `.tar` entries for directories matched by `compressLeavesPatterns`. Missing files are first marked with `DELETED`, then pruned once they no longer exist remotely.
 - `lib/Backuper.js` compares `locals` against `remotes`, encrypts files with GPG, uploads them to S3 with file hash in object metadata, removes remote files for locally deleted entries, and enforces per-session size/failure/removal limits.
-- `bin/backup-restore` / `lib/Restorer.js` restore by downloading remote SQLite DB first, filtering restore candidates from DB state, then downloading, decrypting, and optionally untarring each object.
-- `bin/backup-verify` / `lib/Verifier.js` compares current S3 listing against DB `remotes` and can delete stale DB rows when not in dry mode.
+- `bin/backup-to-cloud restore` / `lib/Restorer.js` restore by downloading remote SQLite DB first, filtering restore candidates from DB state, then downloading, decrypting, and optionally untarring each object.
+- `bin/backup-to-cloud verify` / `lib/Verifier.js` compares current S3 listing against DB `remotes` and can delete stale DB rows when not in dry mode.
+- `bin/backup-to-cloud decrypt` uses `lib/Crypter.js` to decrypt a downloaded encrypted object to a local file.
 
 ## Build, Test, and Development Commands
 
@@ -25,11 +26,11 @@ Use Node.js `>=22`.
 - `npm run lint`: check all JS and CLI files with ESLint.
 - `npm run pretty`: format the repo with Prettier.
 
-For manual CLI checks, prefer the binaries directly, for example `bin/backup-to-cloud --check-config` or `bin/backup-verify --dry`.
+For manual CLI checks, prefer the binary directly with subcommands, for example `bin/backup-to-cloud backup --check-config` or `bin/backup-to-cloud verify --dry`.
 
 ## Coding Style & Naming Conventions
 
-This project uses CommonJS (`require`, `module.exports`). Follow `.editorconfig` and ESLint: 2-space indentation for JS, LF line endings, single quotes, semicolons. Prettier is configured with `useTabs: false` and `printWidth: 100`. Use PascalCase for main class-like modules in `lib/` (`Backuper.js`, `Verifier.js`) and kebab-case for CLI entrypoints in `bin/`.
+This project uses ESM (`import`, `export`) with explicit `.js` specifiers. Follow `.editorconfig` and ESLint: 2-space indentation for JS, LF line endings, single quotes, semicolons. Prettier is configured with `useTabs: false` and `printWidth: 100`. Use PascalCase for main class-like modules in `lib/` (`Backuper.js`, `Verifier.js`) and kebab-case for the CLI entrypoint in `bin/`.
 
 ## Testing Guidelines
 
@@ -41,4 +42,4 @@ Commits are validated by Husky and `commitlint`. Follow Conventional Commits wit
 
 ## Configuration & Safety Notes
 
-Start from `config.sample.js`; keep secrets out of git. Local runs depend on external tools such as `awscli`, `gpg`, `find`, and `tar`, so mention any environment assumptions when changing backup behavior.
+Start from `config.sample.js`; keep secrets out of git. Local runs depend on external tools such as `awscli`, `gpg`, `find`, and `tar`, so mention any environment assumptions when changing backup behavior. CLI flag parsing is centralized in `bin/backup-to-cloud`; runtime flag state for `dry` and `verbose` is initialized there and consumed lazily via `lib/utils.js` accessors.
