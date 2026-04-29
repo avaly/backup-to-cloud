@@ -13,7 +13,7 @@ import utils, {
 
 const FIXTURES_DIR = utils.FIXTURES_DIR;
 const TEMP_DIR = utils.TEMP_DIR;
-const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.backup-restore.lock');
+const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.restore.lock');
 
 function assertAWS(log, index, remotePattern, localPattern) {
   assert.ok(log.length > index);
@@ -69,9 +69,11 @@ describe('restorer', { concurrency: false }, () => {
   });
 
   it('shows help with no output flag', async () => {
-    const output = await restore([]);
+    const result = await restore([], false, true);
 
-    assertIncludes(output, 'Usage:');
+    assert.strictEqual(result instanceof Error, true);
+    assertIncludes(result.message, 'exit code: 1');
+    assertIncludes(result.message, 'Usage:');
 
     const awsLog = utils.getAWSLog();
 
