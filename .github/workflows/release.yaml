@@ -24,7 +24,7 @@ jobs:
         with:
           ref: ${{ steps.release.outputs.tag_name }}
       - if: ${{ steps.release.outputs.release_created }}
-        uses: actions/setup-node@v6.3.0
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
