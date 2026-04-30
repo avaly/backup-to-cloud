@@ -54,7 +54,6 @@ Create a default config file from the sample:
 
 ```
 ./bin/backup-to-cloud init
-./bin/backup-to-cloud init --directory ./tmp/config
 ```
 
 ### `backup`
