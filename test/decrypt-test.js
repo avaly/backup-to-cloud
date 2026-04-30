@@ -4,13 +4,19 @@ import fs from 'node:fs';
 import { before, describe, it } from 'node:test';
 
 import Crypter from '../lib/Crypter.js';
-import utils, { assertIncludes, assertIsArray } from './utils.js';
-
-const { FIXTURES_DIR, TEMP_DIR } = utils;
+import {
+  assertIncludes,
+  assertIsArray,
+  clean,
+  FIXTURES_DIR,
+  getAWSLog,
+  run,
+  TEMP_DIR,
+} from './utils.js';
 
 describe('decrypt', { concurrency: false }, () => {
   function decrypt(args, dry, allowFailure = false) {
-    return utils.run(['--verbose', dry && '--dry'].concat(args || []), 'decrypt', allowFailure);
+    return run(['--verbose', dry && '--dry'].concat(args || []), 'decrypt', allowFailure);
   }
 
   if (!fs.existsSync(TEMP_DIR)) {
@@ -18,7 +24,7 @@ describe('decrypt', { concurrency: false }, () => {
   }
 
   before(() => {
-    utils.clean();
+    clean();
   });
 
   it('shows help', async () => {
@@ -34,7 +40,7 @@ describe('decrypt', { concurrency: false }, () => {
     assertIncludes(result.message, 'exit code: 1');
     assertIncludes(result.message, 'Usage:');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 0);
