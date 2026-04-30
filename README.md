@@ -29,7 +29,7 @@ Ideally, it should be setup to run in a crontab entry.
 
 - `aws configure`
 - `npm ci`
-- `cp config.sample.js config.default.js`
+- `bin/backup-to-cloud init`
 - Modify your new config file
 - Check your config file: `bin/backup-to-cloud backup --check-config`
 - Try it out first with: `bin/backup-to-cloud backup --dry`
@@ -47,6 +47,15 @@ Ideally, it should be setup to run in a crontab entry.
   ```
 
 ## Commands
+
+### `init`
+
+Create a default config file from the sample:
+
+```
+./bin/backup-to-cloud init
+./bin/backup-to-cloud init --directory ./tmp/config
+```
 
 ### `backup`
 

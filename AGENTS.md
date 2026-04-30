@@ -5,7 +5,6 @@
 `lib/` contains the core ESM modules for backup, restore, verify, scan, config, encryption, and DB access.
 `bin/` holds the single executable entrypoint `backup-to-cloud`, which exposes `backup`, `restore`, `verify`, and `decrypt` subcommands via `commander`.
 `test/` contains Node test runner suites plus `_fixtures_/` and `_mocks_/` data used by integration-style tests.
-Generated artifacts such as `coverage/`, `data/`, and `tmp/` should not be treated as source.
 
 ## High-level architecture
 
