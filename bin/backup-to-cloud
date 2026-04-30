@@ -187,7 +187,7 @@ async function runVerify(options) {
 
 const program = new Command();
 
-program.name(pkg.name).description(pkg.description).version(pkg.version).showHelpAfterError();
+program.name(NAME).description(pkg.description).version(pkg.version).showHelpAfterError();
 
 addSharedOptions(
   program
