@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "better-sqlite3": "12.9.0",
-    "commander": "14.0.1",
+    "commander": "14.0.3",
     "pretty-bytes": "7.1.0",
     "slackr": "1.0.0"
   },
