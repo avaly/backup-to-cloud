@@ -2,22 +2,22 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
 
-import utils from './utils.js';
+import { clean, DB_FILE, run } from './utils.js';
 
 describe('cli', { concurrency: false }, () => {
   beforeEach(() => {
-    utils.clean();
+    clean();
   });
 
   it('shows help', async () => {
-    const result = await utils.run(['--help']);
+    const result = await run(['--help']);
 
     assert.match(result, /Usage:/);
-    assert.strictEqual(fs.existsSync(utils.DB_FILE), false, 'db file was not created');
+    assert.strictEqual(fs.existsSync(DB_FILE), false, 'db file was not created');
   });
 
   it('checks config', async () => {
-    const result = await utils.run(['--check-config']);
+    const result = await run(['--check-config']);
 
     assert.match(result, /Config seems in order!/);
   });

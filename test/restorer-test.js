@@ -4,16 +4,20 @@ import { beforeEach, describe, it } from 'node:test';
 
 import assert from 'node:assert/strict';
 
-import utils, {
+import {
   assertFilesEqual,
   assertIncludes,
   assertIsArray,
   assertNotIncludes,
+  clean,
+  FIXTURES_DIR,
+  getAWSLog,
+  ROOT_DIR,
+  run,
+  TEMP_DIR,
 } from './utils.js';
 
-const FIXTURES_DIR = utils.FIXTURES_DIR;
-const TEMP_DIR = utils.TEMP_DIR;
-const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.restore.lock');
+const LOCK_FILE = path.resolve(ROOT_DIR, 'bin', '.restore.lock');
 
 function assertAWS(log, index, remotePattern, localPattern) {
   assert.ok(log.length > index);
@@ -27,11 +31,11 @@ function assertAWS(log, index, remotePattern, localPattern) {
 
 describe('restorer', { concurrency: false }, () => {
   function restore(args, dry, allowFailure = false) {
-    return utils.run(['--verbose', dry && '--dry'].concat(args || []), 'restore', allowFailure);
+    return run(['--verbose', dry && '--dry'].concat(args || []), 'restore', allowFailure);
   }
 
   beforeEach(() => {
-    utils.clean([`${TEMP_DIR}*`]);
+    clean([`${TEMP_DIR}*`]);
   });
 
   it('does not start if lock file exists', async () => {
@@ -42,7 +46,7 @@ describe('restorer', { concurrency: false }, () => {
       assertIncludes(output, 'Another instance is already running');
       assertNotIncludes(output, 'Restorer.start');
 
-      const awsLog = utils.getAWSLog();
+      const awsLog = getAWSLog();
 
       assertIsArray(awsLog);
       assert.strictEqual(awsLog.length, 0);
@@ -61,7 +65,7 @@ describe('restorer', { concurrency: false }, () => {
       'Restorer.filter: 7 matching files with a total file size of 427 kB in DB',
     );
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 1);
@@ -75,7 +79,7 @@ describe('restorer', { concurrency: false }, () => {
     assertIncludes(result.message, 'exit code: 1');
     assertIncludes(result.message, 'Usage:');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 0);
@@ -90,7 +94,7 @@ describe('restorer', { concurrency: false }, () => {
     );
     assertIncludes(output, 'Restorer.finish: 3 restored, 0 failed');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 4);
@@ -115,7 +119,7 @@ describe('restorer', { concurrency: false }, () => {
     assertIncludes(output, 'Failed to restore:');
     assertIncludes(output, '/foo/1-fail.dat');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 8);
@@ -147,7 +151,7 @@ describe('restorer', { concurrency: false }, () => {
       'Restorer.filter: 3 matching files with a total file size of 4.1 kB in DB',
     );
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 1);
@@ -161,7 +165,7 @@ describe('restorer', { concurrency: false }, () => {
     assertIncludes(output, 'Restorer result: PASS');
     assertIncludes(output, 'Restorer.finish: 1 restored, 0 failed');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 2);
@@ -176,7 +180,7 @@ describe('restorer', { concurrency: false }, () => {
     assertIncludes(output, 'Restorer result: PASS');
     assertIncludes(output, 'Restorer.finish: 1 restored, 0 failed');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 2);
@@ -193,7 +197,7 @@ describe('restorer', { concurrency: false }, () => {
     assertIncludes(result.message, 'Restorer result: FAIL');
     assertIncludes(result.message, 'Restorer.finish: 0 restored, 1 failed');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 2);
@@ -212,7 +216,7 @@ describe('restorer', { concurrency: false }, () => {
     assertNotIncludes(output, 'Restorer.test OK: /bar/3-large.txt');
     assertIncludes(output, 'Restorer.finish: 1 restored, 0 failed');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 2);

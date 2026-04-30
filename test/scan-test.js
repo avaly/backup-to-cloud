@@ -5,17 +5,32 @@ import { beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import Scanner from '../lib/Scanner.js';
-import utils, { assertIncludes, assertIsObject, assertLocalDeleted } from './utils.js';
-
-const { FIXTURES_DIR, ROOT_DIR } = utils;
+import {
+  assertIncludes,
+  assertIsObject,
+  assertLocalDeleted,
+  clean,
+  DB_FILE,
+  DB_TYPES,
+  delay,
+  DELETED,
+  execPromise,
+  FIXTURES_DIR,
+  getDataContent,
+  mockLocal,
+  mockRemote,
+  ROOT_DIR,
+  run,
+  setDataContent,
+} from './utils.js';
 
 function scan(dry) {
-  return utils.run(['--only-scan', '--verbose', dry && '--dry']);
+  return run(['--only-scan', '--verbose', dry && '--dry']);
 }
 
 describe('scan', { concurrency: false }, () => {
   beforeEach(() => {
-    utils.clean();
+    clean();
   });
 
   it('prepares file hash', () => {
@@ -37,13 +52,13 @@ describe('scan', { concurrency: false }, () => {
     assertIncludes(output, '/ham - Archives found: 2');
     assertIncludes(output, '/empty - Files found: 0');
     assertIncludes(output, '/empty - Archives found: 0');
-    assert.strictEqual(fs.existsSync(utils.DB_FILE), false, 'db file was not created');
+    assert.strictEqual(fs.existsSync(DB_FILE), false, 'db file was not created');
   });
 
   it('scans all files for first time', async () => {
     await scan();
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.match(db.settings.lastScanTimestamp, /^\d+$/);
     assert.strictEqual(db.locals.length, 9);
@@ -81,7 +96,7 @@ describe('scan', { concurrency: false }, () => {
   it('scans again only after interval', async () => {
     await scan();
 
-    const db1 = utils.getDataContent();
+    const db1 = getDataContent();
 
     assert.match(db1.settings.lastScanTimestamp, /^\d+$/);
     const timestamp = db1.settings.lastScanTimestamp;
@@ -89,49 +104,38 @@ describe('scan', { concurrency: false }, () => {
     // This run should not execute since it's within the scan interval (1s)
     await scan();
 
-    const db2 = utils.getDataContent();
+    const db2 = getDataContent();
 
     assert.strictEqual(db2.settings.lastScanTimestamp, timestamp);
 
-    await utils.delay(1001);
+    await delay(1001);
 
     // This new run should execute the scan again
     await scan();
 
-    const db3 = utils.getDataContent();
+    const db3 = getDataContent();
 
     assert.notStrictEqual(db3.settings.lastScanTimestamp, timestamp);
   });
 
   it('marks deleted files', async () => {
-    utils.setDataContent({
+    setDataContent({
       locals: [
-        utils.mockLocal(`${FIXTURES_DIR}foo/old.txt`),
-        utils.mockLocal(`${FIXTURES_DIR}old/from-old-source.txt`),
-        utils.mockLocal(
-          `${FIXTURES_DIR}ham/third/third.tar`,
-          utils.DELETED,
-          123,
-          utils.DB_TYPES.ARCHIVE,
-        ),
+        mockLocal(`${FIXTURES_DIR}foo/old.txt`),
+        mockLocal(`${FIXTURES_DIR}old/from-old-source.txt`),
+        mockLocal(`${FIXTURES_DIR}ham/third/third.tar`, DELETED, 123, DB_TYPES.ARCHIVE),
       ],
       remotes: [
-        utils.mockRemote(`${FIXTURES_DIR}bar/1-small.txt`),
-        utils.mockRemote(`${FIXTURES_DIR}foo/old.txt`),
-        utils.mockRemote(`${FIXTURES_DIR}old/from-old-source.txt`),
-        utils.mockRemote(
-          `${FIXTURES_DIR}ham/third/third.tar`,
-          'abc',
-          123,
-          456,
-          utils.DB_TYPES.ARCHIVE,
-        ),
+        mockRemote(`${FIXTURES_DIR}bar/1-small.txt`),
+        mockRemote(`${FIXTURES_DIR}foo/old.txt`),
+        mockRemote(`${FIXTURES_DIR}old/from-old-source.txt`),
+        mockRemote(`${FIXTURES_DIR}ham/third/third.tar`, 'abc', 123, 456, DB_TYPES.ARCHIVE),
       ],
     });
 
     await scan();
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.locals.length, 12);
 
@@ -141,32 +145,29 @@ describe('scan', { concurrency: false }, () => {
 
     assertIsObject(db.localsByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
 
-    await utils.execPromise('mv', [`${FIXTURES_DIR}bar/1-small.txt`, `${FIXTURES_DIR}../`]);
-    await utils.delay(1001);
+    await execPromise('mv', [`${FIXTURES_DIR}bar/1-small.txt`, `${FIXTURES_DIR}../`]);
+    await delay(1001);
 
     await scan();
 
-    const db2 = utils.getDataContent();
+    const db2 = getDataContent();
 
     assertLocalDeleted(db2, `${FIXTURES_DIR}bar/1-small.txt`);
 
-    await utils.execPromise('mv', [
-      `${FIXTURES_DIR}../1-small.txt`,
-      `${FIXTURES_DIR}bar/1-small.txt`,
-    ]);
+    await execPromise('mv', [`${FIXTURES_DIR}../1-small.txt`, `${FIXTURES_DIR}bar/1-small.txt`]);
   });
 
   it('marks deleted files when source becomes empty', async () => {
     const files = ['1-small.txt', '2-medium.txt', '3-large.txt'];
 
-    utils.setDataContent({
-      locals: files.map((file) => utils.mockLocal(`${FIXTURES_DIR}empty/${file}`, 'abc')),
-      remotes: files.map((file) => utils.mockRemote(`${FIXTURES_DIR}empty/${file}`)),
+    setDataContent({
+      locals: files.map((file) => mockLocal(`${FIXTURES_DIR}empty/${file}`, 'abc')),
+      remotes: files.map((file) => mockRemote(`${FIXTURES_DIR}empty/${file}`)),
     });
 
     await scan();
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assertLocalDeleted(db, `${FIXTURES_DIR}empty/1-small.txt`);
     assertLocalDeleted(db, `${FIXTURES_DIR}empty/2-medium.txt`);
@@ -174,22 +175,17 @@ describe('scan', { concurrency: false }, () => {
   });
 
   it('removes deleted files which have not been synced yet', async () => {
-    utils.setDataContent({
+    setDataContent({
       locals: [
-        utils.mockLocal(`${FIXTURES_DIR}foo/old.txt`),
-        utils.mockLocal(
-          `${FIXTURES_DIR}ham/fourth/fourth.tar`,
-          utils.DELETED,
-          123,
-          utils.DB_TYPES.ARCHIVE,
-        ),
+        mockLocal(`${FIXTURES_DIR}foo/old.txt`),
+        mockLocal(`${FIXTURES_DIR}ham/fourth/fourth.tar`, DELETED, 123, DB_TYPES.ARCHIVE),
       ],
       remotes: [],
     });
 
     await scan();
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.locals.length, 9);
     assert.strictEqual(db.localsByPath[`${FIXTURES_DIR}foo/old.txt`], undefined);

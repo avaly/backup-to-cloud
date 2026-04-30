@@ -8,8 +8,8 @@ import Archiver from '../lib/Archiver.js';
 import Backuper from '../lib/Backuper.js';
 import Crypter from '../lib/Crypter.js';
 import Scanner from '../lib/Scanner.js';
-import appUtils from '../lib/utils.js';
-import utils, {
+import { hash } from '../lib/utils.js';
+import {
   assertFilesEqual,
   assertFilesNotEqual,
   assertIncludes,
@@ -17,12 +17,21 @@ import utils, {
   assertIsObject,
   assertLocalDeleted,
   assertNotIncludes,
+  clean,
+  DATA_DIR,
+  DB_TYPES,
+  FIXTURES_DIR,
+  getAWSLog,
+  getDataContent,
+  mockLocal,
+  mockRemote,
+  ROOT_DIR,
+  run,
+  setDataContent,
+  TEMP_DIR,
 } from './utils.js';
 
-const DATA_DIR = utils.DATA_DIR;
-const FIXTURES_DIR = utils.FIXTURES_DIR;
-const TEMP_DIR = utils.TEMP_DIR;
-const LOCK_FILE = path.resolve(utils.ROOT_DIR, 'bin', '.backup.lock');
+const LOCK_FILE = path.resolve(ROOT_DIR, 'bin', '.backup.lock');
 
 function assertAWS(log, index, operation, pattern, storageClass, hash) {
   assert.ok(log.length > index);
@@ -44,17 +53,17 @@ function assertAWS(log, index, operation, pattern, storageClass, hash) {
 
 describe('backuper', { concurrency: false }, () => {
   function transfer(dry, random) {
-    return utils.run(['--skip-scan', '--verbose', dry && '--dry', random && '--random-order']);
+    return run(['--skip-scan', '--verbose', dry && '--dry', random && '--random-order']);
   }
 
   let dbFromScan;
 
   before(async () => {
-    utils.clean();
+    clean();
 
-    await utils.run(['--only-scan', '--verbose']);
+    await run(['--only-scan', '--verbose']);
 
-    dbFromScan = utils.getDataContent();
+    dbFromScan = getDataContent();
   });
 
   it('does not start if lock file exists', async () => {
@@ -65,7 +74,7 @@ describe('backuper', { concurrency: false }, () => {
       assertIncludes(output, 'Another instance is already running');
       assertNotIncludes(output, 'Starting...');
 
-      const awsLog = utils.getAWSLog();
+      const awsLog = getAWSLog();
 
       assertIsArray(awsLog);
       assert.strictEqual(awsLog.length, 0);
@@ -82,7 +91,7 @@ describe('backuper', { concurrency: false }, () => {
     assertIncludes(output, 'Backuper.next sessionSize=1.02 kB maxSessionSize=1.02 kB');
     assertIncludes(output, 'Backup result MAX_SESSION_SIZE');
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 0);
@@ -90,7 +99,7 @@ describe('backuper', { concurrency: false }, () => {
 
   it('encrypts and transfers files', async () => {
     await transfer();
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
     assertIsArray(awsLog);
     // Only the first 2 files fit into the session size
     // Since 1-small.txt encrypted is less than the session size
@@ -105,7 +114,7 @@ describe('backuper', { concurrency: false }, () => {
       'cp',
       /s3:\/\/test-bucket\/bar\/1-small\.txt/,
       'STANDARD',
-      appUtils.hash(file.hash),
+      hash(file.hash),
     );
     assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/bar\/2-medium\.txt/, 'STANDARD');
     assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
@@ -119,14 +128,14 @@ describe('backuper', { concurrency: false }, () => {
 
     assertFilesEqual(`${TEMP_DIR}1-small-decrypted.txt`, `${FIXTURES_DIR}bar/1-small.txt`);
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.remotes.length, 2);
 
     const firstFile = `${FIXTURES_DIR}bar/1-small.txt`;
     assertIsObject(db.remotesByPath[firstFile]);
     assert.strictEqual(db.remotesByPath[firstFile].hash, db.localsByPath[firstFile].hash);
-    assert.strictEqual(db.remotesByPath[firstFile].type, utils.DB_TYPES.FILE);
+    assert.strictEqual(db.remotesByPath[firstFile].type, DB_TYPES.FILE);
     assert.notStrictEqual(db.remotesByPath[firstFile].size, db.localsByPath[firstFile].size);
     assert.ok(
       db.remotesByPath[firstFile].timestamp > Date.now() - 60 * 1000,
@@ -137,7 +146,7 @@ describe('backuper', { concurrency: false }, () => {
   it('transfers next file', async () => {
     await transfer();
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     // Only one new file + the db (+ the other 3) fit into the session size
@@ -146,7 +155,7 @@ describe('backuper', { concurrency: false }, () => {
     assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/bar\/3-large\.txt/, 'STANDARD_IA');
     assertAWS(awsLog, 4, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.remotes.length, 3);
   });
@@ -154,7 +163,7 @@ describe('backuper', { concurrency: false }, () => {
   it('skips failed file and continues upload of other files', async () => {
     await transfer();
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     // 1-fail.dat should fail by aws-mock,
@@ -164,7 +173,7 @@ describe('backuper', { concurrency: false }, () => {
     assertAWS(awsLog, 6, 'cp', /s3:\/\/test-bucket\/2 '"\$@%&`medium\.dat/, 'STANDARD');
     assertAWS(awsLog, 7, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.remotes.length, 4);
 
@@ -173,17 +182,17 @@ describe('backuper', { concurrency: false }, () => {
   });
 
   it('skips failed encryption and continues upload of other files', async () => {
-    utils.clean();
+    clean();
 
     const unreadableFile = `${FIXTURES_DIR}bar/0-unreadable.dat`;
     fs.writeFileSync(unreadableFile, 'do not read me');
     fs.chmodSync(unreadableFile, 0);
 
     try {
-      utils.setDataContent({
+      setDataContent({
         locals: [
-          utils.mockLocal(unreadableFile, 'broken-hash'),
-          utils.mockLocal(`${FIXTURES_DIR}bar/1-small.txt`, 'good-hash'),
+          mockLocal(unreadableFile, 'broken-hash'),
+          mockLocal(`${FIXTURES_DIR}bar/1-small.txt`, 'good-hash'),
         ],
       });
 
@@ -192,14 +201,14 @@ describe('backuper', { concurrency: false }, () => {
       assertIncludes(output, `Backuper.add error: ${unreadableFile}`);
       assertNotIncludes(output, 'Backup error');
 
-      const awsLog = utils.getAWSLog();
+      const awsLog = getAWSLog();
 
       assertIsArray(awsLog);
       assert.strictEqual(awsLog.length, 2);
       assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/1-small\.txt/, 'STANDARD');
       assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
-      const db = utils.getDataContent();
+      const db = getDataContent();
 
       assert.strictEqual(db.remotesByPath[unreadableFile], undefined);
       assertIsObject(db.remotesByPath[`${FIXTURES_DIR}bar/1-small.txt`]);
@@ -210,14 +219,14 @@ describe('backuper', { concurrency: false }, () => {
   });
 
   it('uploads archives', async () => {
-    utils.clean();
-    utils.setDataContent({
-      locals: dbFromScan.locals.filter((local) => local.type === utils.DB_TYPES.ARCHIVE),
+    clean();
+    setDataContent({
+      locals: dbFromScan.locals.filter((local) => local.type === DB_TYPES.ARCHIVE),
     });
 
     await transfer();
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 2);
@@ -225,13 +234,13 @@ describe('backuper', { concurrency: false }, () => {
     assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/ham\/first\/first.tar/, 'STANDARD');
     assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.remotes.length, 1);
 
     const archiveName = `${FIXTURES_DIR}ham/first/first.tar`;
     assertIsObject(db.remotesByPath[archiveName]);
-    assert.strictEqual(db.remotesByPath[archiveName].type, utils.DB_TYPES.ARCHIVE);
+    assert.strictEqual(db.remotesByPath[archiveName].type, DB_TYPES.ARCHIVE);
 
     await Crypter.decrypt(`${TEMP_DIR}first.tar`, `${TEMP_DIR}first-decrypted.tar`);
     await Archiver.decompress(`${TEMP_DIR}first-decrypted.tar`, `${TEMP_DIR}first`);
@@ -243,8 +252,8 @@ describe('backuper', { concurrency: false }, () => {
   });
 
   it('does not sync the DB file when no file syncs have been made', async () => {
-    utils.clean();
-    utils.setDataContent({
+    clean();
+    setDataContent({
       locals: dbFromScan.locals,
       remotes: dbFromScan.locals.map((local) =>
         Object.assign(
@@ -258,53 +267,53 @@ describe('backuper', { concurrency: false }, () => {
 
     await transfer();
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 0);
   });
 
   it('uploads files in random order', async () => {
-    utils.clean();
-    utils.setDataContent({
+    clean();
+    setDataContent({
       locals: dbFromScan.locals.slice(0, 2),
     });
 
     await transfer(false, true);
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.ok(awsLog.length >= 2);
     assertAWS(awsLog, 0, 'cp', /s3:\/\/test-bucket\/bar\/(1-small|2-medium)\.txt/);
     assertAWS(awsLog, awsLog.length - 1, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.ok(db.remotes.length >= 1);
   });
 
   it('removes deleted files', async () => {
-    utils.clean();
+    clean();
 
     const now = Date.now();
-    utils.setDataContent({
+    setDataContent({
       locals: [
-        utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
-        utils.mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
-        utils.mockLocal(`${FIXTURES_DIR}bar/3-large-recent.txt`),
-        utils.mockLocal(`${FIXTURES_DIR}bar/4-large-long-ago.txt`),
+        mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
+        mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
+        mockLocal(`${FIXTURES_DIR}bar/3-large-recent.txt`),
+        mockLocal(`${FIXTURES_DIR}bar/4-large-long-ago.txt`),
       ],
       remotes: [
-        utils.mockRemote(`${FIXTURES_DIR}bar/1-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
-        utils.mockRemote(
+        mockRemote(`${FIXTURES_DIR}bar/1-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
+        mockRemote(
           `${FIXTURES_DIR}bar/2-small-long-ago.txt`,
           'abc',
           1024,
           now - 31 * 24 * 3600 * 1000,
         ),
-        utils.mockRemote(`${FIXTURES_DIR}bar/3-large-recent.txt`, 'abc', 135000, now - 10 * 1000),
-        utils.mockRemote(
+        mockRemote(`${FIXTURES_DIR}bar/3-large-recent.txt`, 'abc', 135000, now - 10 * 1000),
+        mockRemote(
           `${FIXTURES_DIR}bar/4-large-long-ago.txt`,
           'abc',
           135000,
@@ -315,7 +324,7 @@ describe('backuper', { concurrency: false }, () => {
 
     await transfer();
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 4);
@@ -325,7 +334,7 @@ describe('backuper', { concurrency: false }, () => {
     assertAWS(awsLog, 2, 'rm', /s3:\/\/test-bucket\/bar\/4-large-long-ago\.txt/);
     assertAWS(awsLog, 3, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.locals.length, 1);
     assert.strictEqual(db.remotes.length, 1);
@@ -336,33 +345,33 @@ describe('backuper', { concurrency: false }, () => {
   });
 
   it('transfers files and removes deleted files up to maxSessionRemovals limit', async () => {
-    utils.clean();
+    clean();
 
     const now = Date.now();
-    utils.setDataContent({
+    setDataContent({
       locals: [
         ...dbFromScan.locals,
-        utils.mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
-        utils.mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
-        utils.mockLocal(`${FIXTURES_DIR}bar/3-small-recent.txt`),
-        utils.mockLocal(`${FIXTURES_DIR}bar/4-small-recent.txt`),
+        mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
+        mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
+        mockLocal(`${FIXTURES_DIR}bar/3-small-recent.txt`),
+        mockLocal(`${FIXTURES_DIR}bar/4-small-recent.txt`),
       ],
       remotes: [
-        utils.mockRemote(`${FIXTURES_DIR}bar/1-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
-        utils.mockRemote(
+        mockRemote(`${FIXTURES_DIR}bar/1-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
+        mockRemote(
           `${FIXTURES_DIR}bar/2-small-long-ago.txt`,
           'abc',
           1024,
           now - 31 * 24 * 3600 * 1000,
         ),
-        utils.mockRemote(`${FIXTURES_DIR}bar/3-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
-        utils.mockRemote(`${FIXTURES_DIR}bar/4-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
+        mockRemote(`${FIXTURES_DIR}bar/3-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
+        mockRemote(`${FIXTURES_DIR}bar/4-small-recent.txt`, 'abc', 1024, now - 10 * 1000),
       ],
     });
 
     await transfer();
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     // Only the first 2 files fit into the session size
@@ -379,7 +388,7 @@ describe('backuper', { concurrency: false }, () => {
 
     assertAWS(awsLog, 5, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/, 'STANDARD');
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.locals.length, dbFromScan.locals.length + 1);
     assert.strictEqual(
@@ -401,19 +410,19 @@ describe('backuper', { concurrency: false }, () => {
   });
 
   it('should stop transfer after max failed', async () => {
-    utils.clean();
+    clean();
 
-    utils.setDataContent({
+    setDataContent({
       locals: [
-        utils.mockLocal(`${FIXTURES_DIR}foo/1-fail.dat`, 'abc'),
-        utils.mockLocal(`${FIXTURES_DIR}foo/3-fail.dat`, 'abc'),
-        utils.mockLocal(`${FIXTURES_DIR}foo/4-small.dat`, 'abc'),
+        mockLocal(`${FIXTURES_DIR}foo/1-fail.dat`, 'abc'),
+        mockLocal(`${FIXTURES_DIR}foo/3-fail.dat`, 'abc'),
+        mockLocal(`${FIXTURES_DIR}foo/4-small.dat`, 'abc'),
       ],
     });
 
     await transfer();
 
-    const awsLog = utils.getAWSLog();
+    const awsLog = getAWSLog();
 
     assertIsArray(awsLog);
     assert.strictEqual(awsLog.length, 3);
@@ -421,17 +430,17 @@ describe('backuper', { concurrency: false }, () => {
     assertAWS(awsLog, 1, 'cp', /s3:\/\/test-bucket\/3-fail\.dat/, 'STANDARD_IA', 'abc');
     assertAWS(awsLog, 2, 'cp', /s3:\/\/test-bucket\/db-test\.sqlite/);
 
-    const db = utils.getDataContent();
+    const db = getDataContent();
 
     assert.strictEqual(db.remotesByPath[`${FIXTURES_DIR}foo/4-small.dat`], undefined);
   });
 
   it('skips failed archive compression before temp archive exists', async () => {
-    const local = utils.mockLocal(
+    const local = mockLocal(
       `${FIXTURES_DIR}ham/first/first.tar`,
       'archive-hash',
       123,
-      utils.DB_TYPES.ARCHIVE,
+      DB_TYPES.ARCHIVE,
     );
     const db = {
       updateRemote: async () => {
