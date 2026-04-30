@@ -2,7 +2,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { Command } from 'commander';
 
@@ -23,6 +23,7 @@ import {
   log,
   releaseLock,
 } from '../lib/utils.js';
+import { ROOT_DIR } from '../lib/root.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -137,6 +138,47 @@ async function runDecrypt(inputFile, options) {
   }
 }
 
+async function runInit(options) {
+  const targetDirectory = path.resolve(options.directory || ROOT_DIR);
+  const sourcePath = path.join(ROOT_DIR, 'config.sample.js');
+  const targetPath = path.join(targetDirectory, 'config.default.js');
+
+  if (!fs.existsSync(sourcePath)) {
+    log(`Sample config file is missing: ${sourcePath}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  if (fs.existsSync(targetPath) && !options.force) {
+    log(`Config file already exists: ${targetPath}`);
+    log('Use --force to overwrite it.');
+    process.exitCode = 1;
+    return;
+  }
+
+  if (isDry()) {
+    log('This is a DRY run! No changes will be made.');
+    return;
+  }
+
+  fs.copyFileSync(sourcePath, targetPath);
+
+  try {
+    const configModule = await import(pathToFileURL(targetPath).href);
+    const config = configModule.default || configModule;
+
+    const configChecker = new ConfigChecker(config);
+    configChecker.variables();
+  } catch (err) {
+    log('Config validation failed after initialization:');
+    log(err.message || err);
+    process.exitCode = 1;
+    return;
+  }
+
+  log('Created config.default.js');
+}
+
 async function runRestore(remotePath, options) {
   initRuntime(options);
 
@@ -192,7 +234,7 @@ program.name(NAME).description(pkg.description).version(pkg.version).showHelpAft
 addSharedOptions(
   program
     .command('backup')
-    .description('scan sources and upload encrypted files to S3')
+    .description('Scan sources and upload encrypted files to S3')
     .option('--check-config', 'validate configuration and exit')
     .option('--only-scan', 'scan sources without uploading files')
     .option('--skip-scan', 'skip source scan and only run upload/removal pass')
@@ -204,7 +246,7 @@ addSharedOptions(
 addSharedOptions(
   program
     .command('decrypt')
-    .description('decrypt a downloaded encrypted file')
+    .description('Decrypt a downloaded encrypted file')
     .requiredOption('--output <path>', 'output file path (required)')
     .argument('<inputFile>', 'encrypted input file (required)')
     .action(runDecrypt),
@@ -212,8 +254,17 @@ addSharedOptions(
 
 addSharedOptions(
   program
+    .command('init')
+    .description('Copy the sample config file to config.default.js')
+    .option('--directory <path>', 'directory where to create config.default.js')
+    .option('--force', 'overwrite config.default.js if it already exists')
+    .action(runInit),
+);
+
+addSharedOptions(
+  program
     .command('restore')
-    .description('restore and decrypt a remote file or prefix')
+    .description('Restore and decrypt a remote file or prefix')
     .requiredOption('--output <path>', 'output directory or file path (required)')
     .option('--max-size <bytes>', 'restore only files up to this size in bytes')
     .option('--test <index>', 'restore only one file by index in test mode')
@@ -226,7 +277,7 @@ addSharedOptions(
 addSharedOptions(
   program
     .command('verify')
-    .description('verify remote S3 contents against the local DB')
+    .description('Verify remote S3 contents against the local DB')
     .option('--aws-ls-mock <path>', 'test-only path for mocked aws s3 ls output')
     .action(runVerify),
 );
@@ -236,6 +287,7 @@ program.addHelpText(
   `
 
 Examples:
+  ${NAME} init
   ${NAME} backup --dry
   ${NAME} restore --output ./restore /
   ${NAME} verify --dry
