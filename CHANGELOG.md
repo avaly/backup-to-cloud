@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/avaly/backup-to-cloud/compare/v4.8.0...v5.0.0) (2026-05-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* Previous individual CLI scripts are now combined into a single CLI with subcommands.
+* Config files need to be in ESM format
+
+### Features
+
+* Add check-config command ([#127](https://github.com/avaly/backup-to-cloud/issues/127)) ([9c92cc4](https://github.com/avaly/backup-to-cloud/commit/9c92cc4864814b6c79ce4fd72f7d1313621002c2))
+* Add init command ([#126](https://github.com/avaly/backup-to-cloud/issues/126)) ([89ada70](https://github.com/avaly/backup-to-cloud/commit/89ada70e8edd97ced5479bc5d9a82c5490724bac))
+* Add scan command ([#128](https://github.com/avaly/backup-to-cloud/issues/128)) ([82c3284](https://github.com/avaly/backup-to-cloud/commit/82c32843095e101b5b6758dfce974b6bbabad410))
+* Expose a single CLI with subcommands ([#121](https://github.com/avaly/backup-to-cloud/issues/121)) ([79a8e07](https://github.com/avaly/backup-to-cloud/commit/79a8e071b962609ee9b1899c48a2e0636ec562dd))
+
+
+### Code Refactoring
+
+* convert repository to full ESM ([#116](https://github.com/avaly/backup-to-cloud/issues/116)) ([c40b3e1](https://github.com/avaly/backup-to-cloud/commit/c40b3e16fcea701a443af1ee6e99de4cfd571b8f))
+
 ## [4.8.0](https://github.com/avaly/backup-to-cloud/compare/v4.7.1...v4.8.0) (2026-04-22)
 
 
