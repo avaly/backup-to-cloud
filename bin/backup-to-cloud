@@ -66,7 +66,6 @@ async function runBackup(options) {
 
   await withLock('backup', async () => {
     let db;
-
     try {
       log('Starting...');
       if (isDry()) {
@@ -76,25 +75,18 @@ async function runBackup(options) {
       db = new DB();
       db.initialize();
 
-      if (!options.skipScan) {
-        const scanner = new Scanner(db);
-        scanner.scan();
+      const backuper = new Backuper(db, {
+        random: options.randomOrder,
+      });
+
+      try {
+        const result = await backuper.start();
+        log('Backup result', result);
+      } catch (err) {
+        log('Backup error', err);
       }
 
-      if (!options.onlyScan) {
-        const backuper = new Backuper(db, {
-          random: options.randomOrder,
-        });
-
-        try {
-          const result = await backuper.start();
-          log('Backup result', result);
-        } catch (err) {
-          log('Backup error', err);
-        }
-
-        await backuper.finish();
-      }
+      await backuper.finish();
     } finally {
       if (db) {
         db.close();
@@ -209,6 +201,31 @@ async function runRestore(remotePath, options) {
   });
 }
 
+async function runScan(options) {
+  initRuntime(options);
+
+  await withLock('scan', async () => {
+    let db;
+    try {
+      log('Starting scan...');
+      if (isDry()) {
+        log('This is a DRY run! No changes will be made.');
+      }
+
+      db = new DB();
+      db.initialize();
+
+      const scanner = new Scanner(db);
+      scanner.scan();
+    } finally {
+      if (db) {
+        db.close();
+        log('Finished!');
+      }
+    }
+  });
+}
+
 async function runVerify(options) {
   initRuntime(options);
 
@@ -235,8 +252,6 @@ addSharedOptions(
   program
     .command('backup')
     .description('Scan sources and upload encrypted files to S3')
-    .option('--only-scan', 'scan sources without uploading files')
-    .option('--skip-scan', 'skip source scan and only run upload/removal pass')
     .option('--random-order', 'process files in random order')
     .action(runBackup),
   true,
@@ -281,6 +296,11 @@ addSharedOptions(
 );
 
 addSharedOptions(
+  program.command('scan').description('Scan sources and update the local DB').action(runScan),
+  true,
+);
+
+addSharedOptions(
   program
     .command('verify')
     .description('Verify remote S3 contents against the local DB')
@@ -295,6 +315,7 @@ program.addHelpText(
 Examples:
   ${NAME} init
   ${NAME} check-config
+  ${NAME} scan --dry
   ${NAME} backup --dry
   ${NAME} restore --output ./restore /
   ${NAME} verify --dry

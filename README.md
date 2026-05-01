@@ -32,18 +32,25 @@ Ideally, it should be setup to run in a crontab entry.
 - `bin/backup-to-cloud init`
 - Modify your new config file
 - Check your config file: `bin/backup-to-cloud check-config`
+- Try a scan first with: `bin/backup-to-cloud scan --dry`
 - Try it out first with: `bin/backup-to-cloud backup --dry`
-- Set up a crontab entry for it, for example:
+- Set up some crontab entries for it, for example:
   - run every hour with verbose logging:
 
   ```
-  0 * * * * cd /path/to/this && ./bin/backup-to-cloud backup --verbose >> cron.log 2>&1
+  0 * * * * cd /path/to/this && ./bin/backup-to-cloud backup --verbose >> cron-backup.log 2>&1
   ```
 
-  - run every 12 hours:
+  - run backup every 12 hours:
 
   ```
-  0 */12 * * * cd /path/to/this && ./bin/backup-to-cloud backup >> cron.log 2>&1
+  0 */12 * * * cd /path/to/this && ./bin/backup-to-cloud backup >> cron-backup.log 2>&1
+  ```
+
+  - run scan every day:
+
+  ```
+  0 7 * * * cd /path/to/this && ./bin/backup-to-cloud scan >> cron-scan.log 2>&1
   ```
 
 ## Commands
@@ -59,10 +66,19 @@ Create a default config file from the sample:
 ### `backup`
 
 ```
-./bin/backup-to-cloud --help
 ./bin/backup-to-cloud backup --help
 ./bin/backup-to-cloud backup --dry
 ./bin/backup-to-cloud backup
+```
+
+### `scan`
+
+Scan sources and update the local DB without uploading files:
+
+```
+./bin/backup-to-cloud scan --help
+./bin/backup-to-cloud scan --dry
+./bin/backup-to-cloud scan
 ```
 
 ### `check-config`

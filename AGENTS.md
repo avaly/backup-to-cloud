@@ -3,12 +3,13 @@
 ## Project Structure & Module Organization
 
 `lib/` contains the core ESM modules for backup, restore, verify, scan, config, encryption, and DB access.
-`bin/` holds the single executable entrypoint `backup-to-cloud`, which exposes `backup`, `check-config`, `decrypt`, `init`, `restore` and `verify` subcommands via `commander`.
+`bin/` holds the single executable entrypoint `backup-to-cloud`, which exposes `backup`, `check-config`, `decrypt`, `init`, `restore`, `scan` and `verify` subcommands via `commander`.
 `test/` contains Node test runner suites plus `_fixtures_/` and `_mocks_/` data used by integration-style tests.
 
 ## High-level architecture
 
-- `bin/backup-to-cloud backup` is main flow: acquire lock, load env-specific config, initialize SQLite, run `Scanner` unless skipped, then run `Backuper`, then upload DB snapshot if session changed anything.
+- `bin/backup-to-cloud backup` is main flow: acquire lock, load env-specific config, initialize SQLite, run `Scanner`, then run `Backuper`, then upload DB snapshot if session changed anything.
+- `bin/backup-to-cloud scan` acquires its own lock, loads env-specific config, initializes SQLite, and runs `Scanner` without uploading files.
 - `lib/DB.js` stores three tables: `settings`, `locals`, and `remotes`. `locals` is latest scan of source files; `remotes` is last known uploaded state, including encrypted size and upload timestamp.
 - `lib/Scanner.js` scans configured sources with `find`, hashes each file from remote path + size + mtime, and records synthetic `.tar` entries for directories matched by `compressLeavesPatterns`. Missing files are first marked with `DELETED`, then pruned once they no longer exist remotely.
 - `lib/Backuper.js` compares `locals` against `remotes`, encrypts files with GPG, uploads them to S3 with file hash in object metadata, removes remote files for locally deleted entries, and enforces per-session size/failure/removal limits.

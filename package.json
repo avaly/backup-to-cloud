@@ -9,8 +9,8 @@
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
     "pretty-ci": "prettier --ignore-unknown --check \"**/*\"",
-    "test": "rm -f bin/.backup.lock && BACKUP_ENV=test node --test --test-concurrency=1 --test-timeout=10000 test/*-test.js",
-    "test:coverage": "rm -rf coverage/ bin/.backup.lock && mkdir -p coverage && BACKUP_ENV=test node --test --experimental-test-coverage --test-concurrency=1 --test-timeout=10000 --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info test/*-test.js"
+    "test": "rm -f bin/*.lock && BACKUP_ENV=test node --test --test-concurrency=1 --test-timeout=10000 test/*-test.js",
+    "test:coverage": "rm -rf coverage/ && rm -f bin/*.lock && mkdir -p coverage && BACKUP_ENV=test node --test --experimental-test-coverage --test-concurrency=1 --test-timeout=10000 --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info test/*-test.js"
   },
   "license": "MIT",
   "engines": {
