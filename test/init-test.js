@@ -3,14 +3,22 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
-import { assertFilesEqual, BIN_FILE, execPromise, ROOT_DIR, run, TEMP_DIR } from './utils.js';
+import {
+  assertFilesEqual,
+  BIN_FILE,
+  clean,
+  execPromise,
+  ROOT_DIR,
+  run,
+  TEMP_DIR,
+} from './utils.js';
 
-const WORKSPACES = [];
+const CLEANUP = [];
 
 function createWorkspace() {
   const workspace = fs.mkdtempSync(path.join(TEMP_DIR, 'init-'));
 
-  WORKSPACES.push(workspace);
+  CLEANUP.push(workspace);
 
   fs.copyFileSync(
     path.join(ROOT_DIR, 'config.sample.js'),
@@ -21,9 +29,7 @@ function createWorkspace() {
 }
 
 afterEach(() => {
-  for (const workspace of WORKSPACES.splice(0)) {
-    fs.rmSync(workspace, { force: true, recursive: true });
-  }
+  clean(CLEANUP);
 });
 
 describe('init', { concurrency: false }, () => {

@@ -35,6 +35,8 @@ function initRuntime(options = {}) {
     ignoreLock: Boolean(options.ignoreLock),
     verbose: Boolean(options.verbose),
   });
+
+  log(`${pkg.name} v${pkg.version}`);
 }
 
 function addSharedOptions(command, hasLock = false) {
@@ -67,20 +69,6 @@ async function runBackup(options) {
     let db;
 
     try {
-      log(`${pkg.name} v${pkg.version}`);
-
-      if (options.checkConfig) {
-        const configChecker = new ConfigChecker();
-        try {
-          await configChecker.check();
-          log('Config seems in order!');
-        } catch (err) {
-          log('Config check failed:');
-          log(err.message || err);
-        }
-        return;
-      }
-
       log('Starting...');
       if (isDry()) {
         log('This is a DRY run! No changes/uploads will be made.');
@@ -115,6 +103,21 @@ async function runBackup(options) {
       }
     }
   });
+}
+
+async function runCheckConfig(options) {
+  initRuntime(options);
+
+  const configChecker = new ConfigChecker();
+
+  try {
+    await configChecker.check();
+    log('Config seems in order!');
+  } catch (err) {
+    log('Config check failed:');
+    log(err.message || err);
+    process.exitCode = 1;
+  }
 }
 
 async function runDecrypt(inputFile, options) {
@@ -183,7 +186,6 @@ async function runRestore(remotePath, options) {
   initRuntime(options);
 
   await withLock('restore', async () => {
-    log(`${pkg.name} v${pkg.version}`);
     if (isDry()) {
       log('This is a DRY run! No changes/uploads will be made.');
     }
@@ -211,7 +213,6 @@ async function runRestore(remotePath, options) {
 async function runVerify(options) {
   initRuntime(options);
 
-  log(`${pkg.name} v${pkg.version}`);
   if (isDry()) {
     log('This is a DRY run! No changes/uploads will be made.');
   }
@@ -235,12 +236,18 @@ addSharedOptions(
   program
     .command('backup')
     .description('Scan sources and upload encrypted files to S3')
-    .option('--check-config', 'validate configuration and exit')
     .option('--only-scan', 'scan sources without uploading files')
     .option('--skip-scan', 'skip source scan and only run upload/removal pass')
     .option('--random-order', 'process files in random order')
     .action(runBackup),
   true,
+);
+
+addSharedOptions(
+  program
+    .command('check-config')
+    .description('Validate configuration and required external binaries')
+    .action(runCheckConfig),
 );
 
 addSharedOptions(
@@ -288,6 +295,7 @@ program.addHelpText(
 
 Examples:
   ${NAME} init
+  ${NAME} check-config
   ${NAME} backup --dry
   ${NAME} restore --output ./restore /
   ${NAME} verify --dry

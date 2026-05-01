@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import md5File from 'md5-file';
@@ -136,6 +137,27 @@ export async function run(args, command, allowFailure = false) {
     }
     throw err;
   }
+}
+
+export function runWithStatus(args, command, options = {}) {
+  const commandArgs = command === null ? [] : [command ?? 'backup'];
+  const filteredArgs = commandArgs.concat(args || []).filter((arg) => !!arg);
+  const result = spawnSync(BIN_FILE, filteredArgs, {
+    cwd: options.cwd || ROOT_DIR,
+    encoding: 'utf-8',
+    env: {
+      ...process.env,
+      ...(options.env || {}),
+    },
+  });
+
+  return {
+    error: result.error,
+    signal: result.signal,
+    status: result.status,
+    stderr: result.stderr,
+    stdout: result.stdout,
+  };
 }
 
 export function setDataContent(data) {

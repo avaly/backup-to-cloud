@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 
 `lib/` contains the core ESM modules for backup, restore, verify, scan, config, encryption, and DB access.
-`bin/` holds the single executable entrypoint `backup-to-cloud`, which exposes `backup`, `restore`, `verify`, and `decrypt` subcommands via `commander`.
+`bin/` holds the single executable entrypoint `backup-to-cloud`, which exposes `backup`, `check-config`, `decrypt`, `init`, `restore` and `verify` subcommands via `commander`.
 `test/` contains Node test runner suites plus `_fixtures_/` and `_mocks_/` data used by integration-style tests.
 
 ## High-level architecture
@@ -14,7 +14,8 @@
 - `lib/Backuper.js` compares `locals` against `remotes`, encrypts files with GPG, uploads them to S3 with file hash in object metadata, removes remote files for locally deleted entries, and enforces per-session size/failure/removal limits.
 - `bin/backup-to-cloud restore` / `lib/Restorer.js` restore by downloading remote SQLite DB first, filtering restore candidates from DB state, then downloading, decrypting, and optionally untarring each object.
 - `bin/backup-to-cloud verify` / `lib/Verifier.js` compares current S3 listing against DB `remotes` and can delete stale DB rows when not in dry mode.
-- `bin/backup-to-cloud decrypt` uses `lib/Crypter.js` to decrypt a downloaded encrypted object to a local file.
+- `bin/backup-to-cloud decrypt` / `lib/Crypter.js` to decrypt a downloaded encrypted object to a local file.
+- `bin/backup-to-cloud check-config` / `lib/ConfigChecker.js` to check the config file for valid options.
 
 ## Build, Test, and Development Commands
 
@@ -25,7 +26,7 @@ Use Node.js `>=22`.
 - `npm run lint`: check all JS and CLI files with ESLint.
 - `npm run pretty`: format the repo with Prettier.
 
-For manual CLI checks, prefer the binary directly with subcommands, for example `bin/backup-to-cloud backup --check-config` or `bin/backup-to-cloud verify --dry`.
+For manual CLI checks, prefer the binary directly with subcommands, for example `bin/backup-to-cloud check-config` or `bin/backup-to-cloud verify --dry`.
 
 ## Coding Style & Naming Conventions
 

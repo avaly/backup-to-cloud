@@ -31,7 +31,7 @@ Ideally, it should be setup to run in a crontab entry.
 - `npm ci`
 - `bin/backup-to-cloud init`
 - Modify your new config file
-- Check your config file: `bin/backup-to-cloud backup --check-config`
+- Check your config file: `bin/backup-to-cloud check-config`
 - Try it out first with: `bin/backup-to-cloud backup --dry`
 - Set up a crontab entry for it, for example:
   - run every hour with verbose logging:
@@ -61,9 +61,16 @@ Create a default config file from the sample:
 ```
 ./bin/backup-to-cloud --help
 ./bin/backup-to-cloud backup --help
-./bin/backup-to-cloud backup --check-config
 ./bin/backup-to-cloud backup --dry
 ./bin/backup-to-cloud backup
+```
+
+### `check-config`
+
+Validate your config file and required binaries:
+
+```
+./bin/backup-to-cloud check-config
 ```
 
 ### `restore`
