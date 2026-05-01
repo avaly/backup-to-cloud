@@ -26,6 +26,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: [release]
+    if: ${{ needs.release.outputs.release_created }}
     steps:
       - if: ${{ needs.release.outputs.release_created }}
         uses: actions/checkout@v6.0.2
