@@ -229,19 +229,21 @@ async function runScan(options) {
 async function runVerify(options) {
   initRuntime(options);
 
-  if (isDry()) {
-    log('This is a DRY run! No changes/uploads will be made.');
-  }
+  await withLock('verify', async () => {
+    if (isDry()) {
+      log('This is a DRY run! No changes/uploads will be made.');
+    }
 
-  const verifier = new Verifier();
+    const verifier = new Verifier();
 
-  try {
-    await verifier.start(isTest() ? options.awsLsMock || null : null);
-  } catch (err) {
-    log('Verifier error:', err);
-    await verifier.stop();
-    process.exitCode = 1;
-  }
+    try {
+      await verifier.start(isTest() ? options.awsLsMock || null : null);
+    } catch (err) {
+      log('Verifier error:', err);
+      await verifier.stop();
+      process.exitCode = 1;
+    }
+  });
 }
 
 const program = new Command();
@@ -306,6 +308,7 @@ addSharedOptions(
     .description('Verify remote S3 contents against the local DB')
     .option('--aws-ls-mock <path>', 'test-only path for mocked aws s3 ls output')
     .action(runVerify),
+  true,
 );
 
 program.addHelpText(
