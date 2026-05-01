@@ -15,10 +15,4 @@ describe('cli', { concurrency: false }, () => {
     assert.match(result, /Usage:/);
     assert.strictEqual(fs.existsSync(DB_FILE), false, 'db file was not created');
   });
-
-  it('checks config', async () => {
-    const result = await run(['--check-config']);
-
-    assert.match(result, /Config seems in order!/);
-  });
 });

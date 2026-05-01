@@ -6,14 +6,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { ROOT_DIR } from '../../lib/root.js';
-
-const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
-const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
-const RESTORE_FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_', 'restore');
+const DATA_DIR = path.resolve(process.cwd(), 'data') + path.sep;
+const TEMP_DIR = path.resolve(process.cwd(), 'tmp') + path.sep;
+const RESTORE_FIXTURES_DIR = path.resolve(process.cwd(), 'test', '_fixtures_', 'restore');
 const LOG_FILE = `${DATA_DIR}aws.json`;
 
-function cp(from, to) {
+function copy(from, to) {
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.cpSync(from, to);
 }
@@ -48,7 +46,7 @@ function main() {
       }
 
       const filePath = TEMP_DIR + fileName;
-      cp(args[2], filePath);
+      copy(args[2], filePath);
       console.log(`aws-mock: Copied temp file to ${filePath}`);
     }
 
@@ -67,7 +65,7 @@ function main() {
         fs.mkdirSync(fileDir, { recursive: true });
       }
 
-      cp(fileFixture, args[3]);
+      copy(fileFixture, args[3]);
       console.log(`aws-mock: Copied fixture file ${fileFixture} to ${args[3]}`);
     }
   }

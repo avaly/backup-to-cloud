@@ -3,17 +3,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
-import { assertFilesEqual, BIN_FILE, execPromise, ROOT_DIR, run, TEMP_DIR } from './utils.js';
+import { assertFilesEqual, BIN_FILE, clean, execPromise, run, TEMP_DIR } from './utils.js';
 
-const WORKSPACES = [];
+const CLEANUP = [];
 
 function createWorkspace() {
   const workspace = fs.mkdtempSync(path.join(TEMP_DIR, 'init-'));
 
-  WORKSPACES.push(workspace);
+  CLEANUP.push(workspace);
 
   fs.copyFileSync(
-    path.join(ROOT_DIR, 'config.sample.js'),
+    path.join(process.cwd(), 'config.sample.js'),
     path.join(workspace, 'config.sample.js'),
   );
 
@@ -21,9 +21,7 @@ function createWorkspace() {
 }
 
 afterEach(() => {
-  for (const workspace of WORKSPACES.splice(0)) {
-    fs.rmSync(workspace, { force: true, recursive: true });
-  }
+  clean(CLEANUP.splice(0));
 });
 
 describe('init', { concurrency: false }, () => {
@@ -43,7 +41,7 @@ describe('init', { concurrency: false }, () => {
   });
 
   it('creates config.default.js from the sample config', async () => {
-    const output = await execPromise(BIN_FILE, ['init', '--directory', workspace], ROOT_DIR);
+    const output = await execPromise(BIN_FILE, ['init', '--directory', workspace]);
 
     assert.match(output, /Created config\.default\.js/);
     assert.strictEqual(fs.existsSync(targetFile), true);
@@ -54,7 +52,7 @@ describe('init', { concurrency: false }, () => {
     fs.writeFileSync(targetFile, 'export default {}\n');
 
     await assert.rejects(
-      () => execPromise(BIN_FILE, ['init', '--directory', workspace], ROOT_DIR),
+      () => execPromise(BIN_FILE, ['init', '--directory', workspace]),
       /Config file already exists: .+config\.default\.js/,
     );
     assert.match(fs.readFileSync(targetFile, 'utf8'), /export default \{\}/);
@@ -63,11 +61,7 @@ describe('init', { concurrency: false }, () => {
   it('overwrites config.default.js with --force', async () => {
     fs.writeFileSync(targetFile, 'export default {}\n');
 
-    const output = await execPromise(
-      BIN_FILE,
-      ['init', '--directory', workspace, '--force'],
-      ROOT_DIR,
-    );
+    const output = await execPromise(BIN_FILE, ['init', '--directory', workspace, '--force']);
 
     assert.match(output, /Created config\.default\.js/);
     assertFilesEqual(path.join(workspace, 'config.sample.js'), targetFile);
