@@ -5,18 +5,17 @@ import path from 'node:path';
 import md5File from 'md5-file';
 
 import config from '../lib/config.js';
-import { ROOT_DIR } from '../lib/root.js';
 import DB, { DB_TYPES } from '../lib/DB.js';
 import { DELETED, execPromise } from '../lib/utils.js';
 
-export const DATA_DIR = path.resolve(ROOT_DIR, 'data') + path.sep;
+export const DATA_DIR = path.resolve(process.cwd(), 'data') + path.sep;
 export const AWS_LOG = `${DATA_DIR}aws.json`;
-export const BIN_FILE = path.resolve(ROOT_DIR, 'bin', 'backup-to-cloud');
-export const DB_FILE = path.resolve(ROOT_DIR, config.dbSQLite);
-export const FIXTURES_DIR = path.resolve(ROOT_DIR, 'test', '_fixtures_') + path.sep;
-export const TEMP_DIR = path.resolve(ROOT_DIR, 'tmp') + path.sep;
+export const BIN_FILE = path.resolve(process.cwd(), 'bin', 'backup-to-cloud');
+export const DB_FILE = path.resolve(process.cwd(), config.dbSQLite);
+export const FIXTURES_DIR = path.resolve(process.cwd(), 'test', '_fixtures_') + path.sep;
+export const TEMP_DIR = path.resolve(process.cwd(), 'tmp') + path.sep;
 
-export { DELETED, DB_TYPES, ROOT_DIR, execPromise };
+export { DELETED, DB_TYPES, execPromise };
 
 export function assertFilesEqual(fileA, fileB) {
   assert.strictEqual(md5File.sync(fileA), md5File.sync(fileB));
@@ -143,7 +142,7 @@ export function runWithStatus(args, command, options = {}) {
   const commandArgs = command === null ? [] : [command ?? 'backup'];
   const filteredArgs = commandArgs.concat(args || []).filter((arg) => !!arg);
   const result = spawnSync(BIN_FILE, filteredArgs, {
-    cwd: options.cwd || ROOT_DIR,
+    cwd: options.cwd || process.cwd(),
     encoding: 'utf-8',
     env: {
       ...process.env,

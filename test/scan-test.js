@@ -19,7 +19,6 @@ import {
   getDataContent,
   mockLocal,
   mockRemote,
-  ROOT_DIR,
   run,
   setDataContent,
 } from './utils.js';
@@ -196,7 +195,7 @@ describe('scan', { concurrency: false }, () => {
     let previousEnv = process.env.BACKUP_ENV;
     await fs.promises.cp(
       `${FIXTURES_DIR}scan-error/config.scan.js`,
-      path.resolve(ROOT_DIR, 'config.scan.js'),
+      path.resolve(process.cwd(), 'config.scan.js'),
     );
 
     try {
@@ -210,7 +209,7 @@ describe('scan', { concurrency: false }, () => {
     } finally {
       process.env.BACKUP_ENV = previousEnv;
 
-      await fs.promises.rm(path.resolve(ROOT_DIR, 'config.scan.js'));
+      await fs.promises.rm(path.resolve(process.cwd(), 'config.scan.js'));
     }
   });
 });

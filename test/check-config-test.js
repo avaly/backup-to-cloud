@@ -24,7 +24,7 @@ function createConfig(workspace, envName, content) {
 }
 
 after(() => {
-  clean(CLEANUP);
+  clean(CLEANUP.splice(0));
 });
 
 describe('check-config', { concurrency: false }, () => {

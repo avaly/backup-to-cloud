@@ -25,13 +25,12 @@ import {
   getDataContent,
   mockLocal,
   mockRemote,
-  ROOT_DIR,
   run,
   setDataContent,
   TEMP_DIR,
 } from './utils.js';
 
-const LOCK_FILE = path.resolve(ROOT_DIR, 'bin', '.backup.lock');
+const LOCK_FILE = path.resolve(process.cwd(), 'bin', '.backup.lock');
 
 function assertAWS(log, index, operation, pattern, storageClass, hash) {
   assert.ok(log.length > index);

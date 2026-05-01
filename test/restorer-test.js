@@ -12,12 +12,11 @@ import {
   clean,
   FIXTURES_DIR,
   getAWSLog,
-  ROOT_DIR,
   run,
   TEMP_DIR,
 } from './utils.js';
 
-const LOCK_FILE = path.resolve(ROOT_DIR, 'bin', '.restore.lock');
+const LOCK_FILE = path.resolve(process.cwd(), 'bin', '.restore.lock');
 
 function assertAWS(log, index, remotePattern, localPattern) {
   assert.ok(log.length > index);
