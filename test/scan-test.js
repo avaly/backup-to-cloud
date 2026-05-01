@@ -24,12 +24,20 @@ import {
 } from './utils.js';
 
 function scan(dry) {
-  return run(['--only-scan', '--verbose', dry && '--dry']);
+  return run(['--verbose', dry && '--dry'], 'scan');
 }
 
 describe('scan', { concurrency: false }, () => {
   beforeEach(() => {
     clean();
+  });
+
+  it('shows scan help', async () => {
+    const result = await run(['--help'], 'scan');
+
+    assert.match(result, /Usage:/);
+    assert.match(result, /Scan sources and update the local DB/);
+    assert.strictEqual(fs.existsSync(DB_FILE), false, 'db file was not created');
   });
 
   it('prepares file hash', () => {

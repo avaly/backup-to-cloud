@@ -32,6 +32,15 @@ import {
 
 const LOCK_FILE = path.resolve(process.cwd(), 'bin', '.backup.lock');
 
+function recentScanSettings() {
+  return [
+    {
+      name: 'lastScanTimestamp',
+      value: String(Date.now()),
+    },
+  ];
+}
+
 function assertAWS(log, index, operation, pattern, storageClass, hash) {
   assert.ok(log.length > index);
   assert.strictEqual(log[index][1], operation);
@@ -52,7 +61,7 @@ function assertAWS(log, index, operation, pattern, storageClass, hash) {
 
 describe('backuper', { concurrency: false }, () => {
   function transfer(dry, random) {
-    return run(['--skip-scan', '--verbose', dry && '--dry', random && '--random-order']);
+    return run(['--verbose', dry && '--dry', random && '--random-order']);
   }
 
   let dbFromScan;
@@ -60,7 +69,7 @@ describe('backuper', { concurrency: false }, () => {
   before(async () => {
     clean();
 
-    await run(['--only-scan', '--verbose']);
+    await run(['--verbose'], 'scan');
 
     dbFromScan = getDataContent();
   });
@@ -189,6 +198,7 @@ describe('backuper', { concurrency: false }, () => {
 
     try {
       setDataContent({
+        settings: recentScanSettings(),
         locals: [
           mockLocal(unreadableFile, 'broken-hash'),
           mockLocal(`${FIXTURES_DIR}bar/1-small.txt`, 'good-hash'),
@@ -220,6 +230,7 @@ describe('backuper', { concurrency: false }, () => {
   it('uploads archives', async () => {
     clean();
     setDataContent({
+      settings: recentScanSettings(),
       locals: dbFromScan.locals.filter((local) => local.type === DB_TYPES.ARCHIVE),
     });
 
@@ -253,6 +264,7 @@ describe('backuper', { concurrency: false }, () => {
   it('does not sync the DB file when no file syncs have been made', async () => {
     clean();
     setDataContent({
+      settings: recentScanSettings(),
       locals: dbFromScan.locals,
       remotes: dbFromScan.locals.map((local) =>
         Object.assign(
@@ -275,6 +287,7 @@ describe('backuper', { concurrency: false }, () => {
   it('uploads files in random order', async () => {
     clean();
     setDataContent({
+      settings: recentScanSettings(),
       locals: dbFromScan.locals.slice(0, 2),
     });
 
@@ -297,6 +310,7 @@ describe('backuper', { concurrency: false }, () => {
 
     const now = Date.now();
     setDataContent({
+      settings: recentScanSettings(),
       locals: [
         mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
         mockLocal(`${FIXTURES_DIR}bar/2-small-long-ago.txt`),
@@ -348,6 +362,7 @@ describe('backuper', { concurrency: false }, () => {
 
     const now = Date.now();
     setDataContent({
+      settings: recentScanSettings(),
       locals: [
         ...dbFromScan.locals,
         mockLocal(`${FIXTURES_DIR}bar/1-small-recent.txt`),
@@ -412,6 +427,7 @@ describe('backuper', { concurrency: false }, () => {
     clean();
 
     setDataContent({
+      settings: recentScanSettings(),
       locals: [
         mockLocal(`${FIXTURES_DIR}foo/1-fail.dat`, 'abc'),
         mockLocal(`${FIXTURES_DIR}foo/3-fail.dat`, 'abc'),
