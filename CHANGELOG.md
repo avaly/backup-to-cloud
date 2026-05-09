@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/avaly/backup-to-cloud/compare/v5.0.0...v6.0.0) (2026-05-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* Install new binaries from [Github Releases](https://github.com/avaly/backup-to-cloud/releases)
+
+### Features
+
+* Publish native binaries ([#134](https://github.com/avaly/backup-to-cloud/issues/134)) ([9deaa41](https://github.com/avaly/backup-to-cloud/commit/9deaa41d0f08edf8125d8613bf3639f8e8652320))
+
+
+### Bug Fixes
+
+* Safer verify command ([2d0077b](https://github.com/avaly/backup-to-cloud/commit/2d0077bc661b088528ef0098489080130ed34b47))
+
 ## [5.0.0](https://github.com/avaly/backup-to-cloud/compare/v4.8.0...v5.0.0) (2026-05-01)
 
 
