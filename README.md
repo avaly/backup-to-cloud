@@ -1,8 +1,6 @@
 # backup-to-cloud
 
 [![Github Actions](https://github.com/avaly/backup-to-cloud/actions/workflows/tests.yaml/badge.svg)](https://github.com/avaly/backup-to-cloud/actions)
-[![NPM version](https://img.shields.io/npm/v/backup-to-cloud.svg?style=flat)](https://www.npmjs.com/package/backup-to-cloud)
-[![Install size](https://packagephobia.now.sh/badge?p=backup-to-cloud)](https://packagephobia.now.sh/result?p=backup-to-cloud)
 
 A simple backup tool which uploads encrypted files to S3, in batches.
 
@@ -19,38 +17,43 @@ Ideally, it should be setup to run in a crontab entry.
 ## Requirements
 
 - OS: Linux, MacOS (untested)
-- node.js v22+
 - [`awscli`](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html) 1.8.6+ (for support of `STANDARD_IA` storage class)
 - `find`
 - `gpg`
 - `tar`
 
+The binary depends on these external tools available in `PATH`.
+
 ## Install
 
-- `aws configure`
-- `npm ci`
-- `bin/backup-to-cloud init`
+Install from GitHub Releases.
+
+- Download the archive matching your platform from the [Releases page](https://github.com/avaly/backup-to-cloud/releases)
+- Extract the binary on your system, e.g. `/usr/local/bin/backup-to-cloud`
+- Make sure it is executable
+- Run `aws configure`
+- Run `backup-to-cloud init`
 - Modify your new config file
-- Check your config file: `bin/backup-to-cloud check-config`
-- Try a scan first with: `bin/backup-to-cloud scan --dry`
-- Try it out first with: `bin/backup-to-cloud backup --dry`
+- Check your config file: `backup-to-cloud check-config`
+- Try a scan first with: `backup-to-cloud scan --dry`
+- Try it out first with: `backup-to-cloud backup --dry`
 - Set up some crontab entries for it, for example:
   - run every hour with verbose logging:
 
   ```
-  0 * * * * cd /path/to/this && ./bin/backup-to-cloud backup --verbose >> cron-backup.log 2>&1
+  0 * * * * cd /path/to/backup-config && backup-to-cloud backup --verbose >> cron-backup.log 2>&1
   ```
 
   - run backup every 12 hours:
 
   ```
-  0 */12 * * * cd /path/to/this && ./bin/backup-to-cloud backup >> cron-backup.log 2>&1
+  0 */12 * * * cd /path/to/backup-config && backup-to-cloud backup >> cron-backup.log 2>&1
   ```
 
   - run scan every day:
 
   ```
-  0 7 * * * cd /path/to/this && ./bin/backup-to-cloud scan >> cron-scan.log 2>&1
+  0 7 * * * cd /path/to/backup-config && backup-to-cloud scan >> cron-scan.log 2>&1
   ```
 
 ## Commands
@@ -60,15 +63,15 @@ Ideally, it should be setup to run in a crontab entry.
 Create a default config file from the sample:
 
 ```
-./bin/backup-to-cloud init
+backup-to-cloud init
 ```
 
 ### `backup`
 
 ```
-./bin/backup-to-cloud backup --help
-./bin/backup-to-cloud backup --dry
-./bin/backup-to-cloud backup
+backup-to-cloud backup --help
+backup-to-cloud backup --dry
+backup-to-cloud backup
 ```
 
 ### `scan`
@@ -76,9 +79,8 @@ Create a default config file from the sample:
 Scan sources and update the local DB without uploading files:
 
 ```
-./bin/backup-to-cloud scan --help
-./bin/backup-to-cloud scan --dry
-./bin/backup-to-cloud scan
+backup-to-cloud scan --dry
+backup-to-cloud scan
 ```
 
 ### `check-config`
@@ -86,7 +88,7 @@ Scan sources and update the local DB without uploading files:
 Validate your config file and required binaries:
 
 ```
-./bin/backup-to-cloud check-config
+backup-to-cloud check-config
 ```
 
 ### `restore`
@@ -94,14 +96,13 @@ Validate your config file and required binaries:
 Restore a file or folder and decrypt:
 
 ```
-./bin/backup-to-cloud restore --help
-./bin/backup-to-cloud restore --output OUTPUT_DIR_OR_FILE REMOTE_DIR_OR_FILE
+backup-to-cloud restore --output OUTPUT_DIR_OR_FILE REMOTE_DIR_OR_FILE
 ```
 
 Schedule a restore test:
 
 ```
-0 1 * * * cd /path/to/this && ./bin/backup-to-cloud restore --max-size 1000000 --output TEMPORARY_DIR --test 0 / >> restore-test.log 2>&1
+0 1 * * * cd /path/to/backup-config && backup-to-cloud restore --max-size 1000000 --output TEMPORARY_DIR --test 0 / >> restore-test.log 2>&1
 ```
 
 ### `decrypt`
@@ -109,8 +110,7 @@ Schedule a restore test:
 Decrypt a downloaded encrypted file:
 
 ```
-./bin/backup-to-cloud decrypt --help
-./bin/backup-to-cloud decrypt --output OUTPUT_FILE INPUT_FILE
+backup-to-cloud decrypt --output OUTPUT_FILE INPUT_FILE
 ```
 
 ### `verify`
@@ -118,7 +118,5 @@ Decrypt a downloaded encrypted file:
 Verify that the DB and remote files are in sync:
 
 ```
-./bin/backup-to-cloud verify --help
-./bin/backup-to-cloud verify --dry
-./bin/backup-to-cloud verify
+backup-to-cloud verify
 ```

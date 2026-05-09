@@ -1,16 +1,19 @@
 {
   "name": "backup-to-cloud",
+  "private": true,
   "version": "5.0.0",
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "type": "module",
   "scripts": {
+    "build:sea": "node scripts/build-sea.js && node --build-sea dist/sea/sea-config.json",
     "lint": "eslint .",
     "prepare": "husky",
     "pretty": "prettier --ignore-unknown --write \"**/*\"",
     "pretty-ci": "prettier --ignore-unknown --check \"**/*\"",
-    "test": "rm -f bin/*.lock && BACKUP_ENV=test node --test --test-concurrency=1 --test-timeout=10000 test/*-test.js",
-    "test:coverage": "rm -rf coverage/ && rm -f bin/*.lock && mkdir -p coverage && BACKUP_ENV=test node --test --experimental-test-coverage --test-concurrency=1 --test-timeout=10000 --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info test/*-test.js"
+    "test:sea": "npm run build:sea && BACKUP_ENV=test node test/sea/sea.test.js",
+    "test": "rm -f tmp/test/locks/*.lock && BACKUP_ENV=test node --test --test-concurrency=1 --test-timeout=10000 test/*-test.js",
+    "test:coverage": "rm -rf coverage/ && rm -f tmp/test/locks/*.lock && mkdir -p coverage && BACKUP_ENV=test node --test --experimental-test-coverage --test-concurrency=1 --test-timeout=10000 --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info test/*-test.js"
   },
   "license": "MIT",
   "engines": {
@@ -23,12 +26,6 @@
   "bin": {
     "backup-to-cloud": "bin/backup-to-cloud"
   },
-  "files": [
-    "LICENSE",
-    "config.sample.js",
-    "lib/",
-    "bin/"
-  ],
   "dependencies": {
     "better-sqlite3": "12.9.0",
     "commander": "14.0.3",
@@ -39,6 +36,7 @@
     "@commitlint/cli": "20.5.0",
     "@commitlint/config-conventional": "20.5.0",
     "@eslint/js": "10.0.1",
+    "esbuild": "0.28.0",
     "eslint": "10.2.1",
     "eslint-config-prettier": "10.1.8",
     "globals": "17.4.0",

@@ -4,6 +4,7 @@ import { beforeEach, describe, it } from 'node:test';
 
 import assert from 'node:assert/strict';
 
+import { getLockFilePath } from '../lib/runtime.js';
 import {
   assertFilesEqual,
   assertIncludes,
@@ -16,7 +17,7 @@ import {
   TEMP_DIR,
 } from './utils.js';
 
-const LOCK_FILE = path.resolve(process.cwd(), 'bin', '.restore.lock');
+const LOCK_FILE = getLockFilePath('restore');
 
 function assertAWS(log, index, remotePattern, localPattern) {
   assert.ok(log.length > index);
@@ -38,6 +39,7 @@ describe('restorer', { concurrency: false }, () => {
   });
 
   it('does not start if lock file exists', async () => {
+    fs.mkdirSync(path.dirname(LOCK_FILE), { recursive: true });
     fs.writeFileSync(LOCK_FILE, '');
     try {
       const output = await restore(['--output', '.', '/'], false);
