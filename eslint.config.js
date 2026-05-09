@@ -4,7 +4,6 @@ import eslintConfigPrettier from 'eslint-config-prettier/flat';
 
 export default [
   js.configs.recommended,
-  eslintConfigPrettier,
   {
     files: ['**/*.js', 'bin/backup-*'],
     languageOptions: {
@@ -19,10 +18,10 @@ export default [
       'linebreak-style': ['error', 'unix'],
       'no-console': ['off'],
       'no-else-return': ['error'],
-      quotes: ['error', 'single'],
       semi: ['error', 'always'],
     },
   },
+  eslintConfigPrettier,
   {
     ignores: ['coverage/**', 'data/**', 'package-lock.json'],
   },

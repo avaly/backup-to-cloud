@@ -4,6 +4,7 @@
 
 `lib/` contains the core ESM modules for backup, restore, verify, scan, config, encryption, and DB access.
 `bin/` holds the single executable entrypoint `backup-to-cloud`, which exposes `backup`, `check-config`, `decrypt`, `init`, `restore`, `scan` and `verify` subcommands via `commander`.
+`scripts/` contains SEA build/test helpers for the binary release flow.
 `test/` contains Node test runner suites plus `_fixtures_/` and `_mocks_/` data used by integration-style tests.
 
 ## High-level architecture
@@ -24,10 +25,18 @@ Use Node.js `>=22`.
 
 - `npm ci`: install exact dependencies.
 - `npm test`: run the Node test suite.
+- `npm run build:sea`: build the Node SEA executable into `dist/sea/backup-to-cloud`.
+- `npm run test:sea`: build the SEA executable and smoke-test the built binary.
 - `npm run lint`: check all JS and CLI files with ESLint.
 - `npm run pretty`: format the repo with Prettier.
 
 For manual CLI checks, prefer the binary directly with subcommands, for example `bin/backup-to-cloud check-config` or `bin/backup-to-cloud verify --dry`.
+
+Binary release notes:
+
+- Distribution is binary-first from GitHub Releases; `package.json` is marked private to prevent accidental publishing.
+- SEA output is built for the host platform/architecture only.
+- Release workflow builds and uploads `linux-x64`, `linux-arm64`, `darwin-x64`, and `darwin-arm64` archives plus SHA-256 checksum files.
 
 ## Coding Style & Naming Conventions
 
@@ -37,6 +46,8 @@ This project uses ESM (`import`, `export`) with explicit `.js` specifiers. Follo
 
 Tests are written with the Node test runner and the native `assert` module. Add new tests under `test/` with `*-test.js` names that mirror the module or command under test, for example `test/backuper-test.js`. Reuse fixtures under `test/_fixtures_/` when possible rather than creating ad hoc temp files. Run `npm test` before opening a PR.
 
+For SEA-specific changes, also run `npm run test:sea` on Node.js 26.
+
 ## Commit & Pull Request Guidelines
 
 Commits are validated by Husky and `commitlint`. Follow Conventional Commits with sentence-case subjects, e.g. `fix: Scan removes deleted local files from DB` or `chore: Modernize syntax`. Pre-commit runs `lint-staged`, which formats and auto-fixes staged JS/JSON files.
@@ -44,3 +55,9 @@ Commits are validated by Husky and `commitlint`. Follow Conventional Commits wit
 ## Configuration & Safety Notes
 
 Start from `config.sample.js`; keep secrets out of git. Local runs depend on external tools such as `awscli`, `gpg`, `find`, and `tar`, so mention any environment assumptions when changing backup behavior. CLI flag parsing is centralized in `bin/backup-to-cloud`; runtime flag state for `dry` and `verbose` is initialized there and consumed lazily via `lib/utils.js` accessors.
+
+SEA-specific safety notes:
+
+- In SEA mode, filesystem config loading must go through `createRequire()` rather than dynamic `import()`.
+- `lib/package.js` must tolerate missing `package.json` beside the bundled executable.
+- Any future native addon embedded into the SEA should follow the same extract-to-temp pattern used for `better_sqlite3.node`.

@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import Archiver from '../lib/Archiver.js';
 import Backuper from '../lib/Backuper.js';
 import Crypter from '../lib/Crypter.js';
+import { getLockFilePath } from '../lib/runtime.js';
 import Scanner from '../lib/Scanner.js';
 import { hash } from '../lib/utils.js';
 import {
@@ -30,7 +31,7 @@ import {
   TEMP_DIR,
 } from './utils.js';
 
-const LOCK_FILE = path.resolve(process.cwd(), 'bin', '.backup.lock');
+const LOCK_FILE = getLockFilePath('backup');
 
 function recentScanSettings() {
   return [
@@ -75,6 +76,7 @@ describe('backuper', { concurrency: false }, () => {
   });
 
   it('does not start if lock file exists', async () => {
+    fs.mkdirSync(path.dirname(LOCK_FILE), { recursive: true });
     fs.writeFileSync(LOCK_FILE, '');
     try {
       const output = await transfer(false);

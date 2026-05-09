@@ -16,7 +16,7 @@ jobs:
         node:
           - 22
           - 24
-          - 25
+          - 26
     name: Node.js ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v6.0.2
@@ -29,10 +29,12 @@ jobs:
       - run: npm run pretty-ci
       - run: npm run lint
       - run: npm test
+      - run: npm run test:sea
+        if: matrix.node == 26
       - run: npm run test:coverage
-        if: matrix.node == 24
+        if: matrix.node == 26
       - name: Upload coverage to Codecov
-        if: matrix.node == 24
+        if: matrix.node == 26
         uses: codecov/codecov-action@v6.0.0
         with:
           directory: ./coverage/

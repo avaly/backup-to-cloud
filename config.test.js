@@ -25,5 +25,5 @@ export default Object.assign({}, config, {
   ],
   storageClassIAMinimumSize: 128 * 1024,
   s3bucket: 'test-bucket',
-  tempDir: path.resolve(process.cwd(), 'tmp', 'tmp'),
+  tempDir: path.resolve(process.cwd(), 'tmp', 'test'),
 });
