@@ -8,6 +8,7 @@
   "internalChecksAsSuccess": true,
   "labels": ["dependencies"],
   "minimumReleaseAge": "7 days",
+  "pinDigests": true,
   "postUpdateOptions": ["npmDedupe"],
   "prCreation": "not-pending",
   "prConcurrentLimit": 4,
