@@ -20,8 +20,8 @@ describe('archiver', () => {
   });
 
   it('compresses files starting with a dash', async () => {
-    const sourceDir = track(fs.mkdtempSync(path.join(TEMP_DIR, 'backup-to-cloud-archiver-src-')));
-    const outputDir = track(fs.mkdtempSync(path.join(TEMP_DIR, 'backup-to-cloud-archiver-out-')));
+    const sourceDir = track(fs.mkdtempSync(path.join(TEMP_DIR, 'archiver-src-')));
+    const outputDir = track(fs.mkdtempSync(path.join(TEMP_DIR, 'archiver-out-')));
     const dashFile = path.join(sourceDir, '-leading.txt');
     const plainFile = path.join(sourceDir, 'plain.txt');
 
