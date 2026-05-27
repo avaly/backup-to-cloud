@@ -56,6 +56,13 @@ Install from GitHub Releases.
   0 7 * * * cd /path/to/backup-config && backup-to-cloud scan >> cron-scan.log 2>&1
   ```
 
+You can also install a specific release locally with the helper script in this repo.
+
+```bash
+bash scripts/install-release.sh --version 6.0.0
+bash scripts/install-release.sh --version v6.0.0 --dir /usr/local/bin
+```
+
 ## Commands
 
 ### `init`
