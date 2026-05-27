@@ -1,4 +1,3 @@
-import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { before, describe, it } from 'node:test';
@@ -17,10 +16,6 @@ import {
 describe('decrypt', { concurrency: false }, () => {
   function decrypt(args, dry, allowFailure = false) {
     return run(['--verbose', dry && '--dry'].concat(args || []), 'decrypt', allowFailure);
-  }
-
-  if (!fs.existsSync(TEMP_DIR)) {
-    execFileSync('mkdir', ['-p', TEMP_DIR]);
   }
 
   before(() => {

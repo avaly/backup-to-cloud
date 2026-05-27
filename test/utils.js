@@ -59,10 +59,12 @@ export function clean(items) {
           const basePath = item.replace(/\*+$/, '');
           if (fs.existsSync(basePath)) {
             for (const child of fs.readdirSync(basePath)) {
-              fs.rmSync(path.join(basePath, child), {
-                force: true,
-                recursive: true,
-              });
+              if (child !== '.gitignore') {
+                fs.rmSync(path.join(basePath, child), {
+                  force: true,
+                  recursive: true,
+                });
+              }
             }
           }
         } else {

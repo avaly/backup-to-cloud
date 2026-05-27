@@ -23,6 +23,6 @@ export default [
   },
   eslintConfigPrettier,
   {
-    ignores: ['coverage/**', 'data/**', 'package-lock.json'],
+    ignores: ['coverage/**', 'data/**', 'dist/**'],
   },
 ];
