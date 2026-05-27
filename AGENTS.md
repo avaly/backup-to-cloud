@@ -23,12 +23,12 @@
 
 Use Node.js `>=22`.
 
-- `npm ci`: install exact dependencies.
-- `npm test`: run the Node test suite.
-- `npm run build:sea`: build the Node SEA executable into `dist/sea/backup-to-cloud`.
-- `npm run test:sea`: build the SEA executable and smoke-test the built binary.
-- `npm run lint`: check all JS and CLI files with ESLint.
-- `npm run pretty`: format the repo with Prettier.
+- `pnpm install --frozen-lockfile`: install exact dependencies.
+- `pnpm test`: run the Node test suite.
+- `pnpm build:sea`: build the Node SEA executable into `dist/sea/backup-to-cloud`.
+- `pnpm test:sea`: build the SEA executable and smoke-test the built binary.
+- `pnpm lint`: check all JS and CLI files with ESLint.
+- `pnpm pretty`: format the repo with Prettier.
 
 For manual CLI checks, prefer the binary directly with subcommands, for example `bin/backup-to-cloud check-config` or `bin/backup-to-cloud verify --dry`.
 
@@ -44,9 +44,9 @@ This project uses ESM (`import`, `export`) with explicit `.js` specifiers. Follo
 
 ## Testing Guidelines
 
-Tests are written with the Node test runner and the native `assert` module. Add new tests under `test/` with `*-test.js` names that mirror the module or command under test, for example `test/backuper-test.js`. Reuse fixtures under `test/_fixtures_/` when possible rather than creating ad hoc temp files. Run `npm test` before opening a PR.
+Tests are written with the Node test runner and the native `assert` module. Add new tests under `test/` with `*-test.js` names that mirror the module or command under test, for example `test/backuper-test.js`. Reuse fixtures under `test/_fixtures_/` when possible rather than creating ad hoc temp files. Run `pnpm test` before opening a PR.
 
-For SEA-specific changes, also run `npm run test:sea` on Node.js 26.
+For SEA-specific changes, also run `pnpm test:sea` on Node.js 26.
 
 ## Commit & Pull Request Guidelines
 
