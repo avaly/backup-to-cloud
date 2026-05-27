@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.1](https://github.com/avaly/backup-to-cloud/compare/v6.0.0...v6.0.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* Escape file names in archiver ([#144](https://github.com/avaly/backup-to-cloud/issues/144)) ([bc0122c](https://github.com/avaly/backup-to-cloud/commit/bc0122c750024aa15df9f2b29e3353efbf214114))
+
 ## [6.0.0](https://github.com/avaly/backup-to-cloud/compare/v5.0.0...v6.0.0) (2026-05-09)
 
 
