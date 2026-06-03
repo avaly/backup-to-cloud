@@ -47,6 +47,20 @@ describe('scan', { concurrency: false }, () => {
     assert.strictEqual(file.size, 1024);
   });
 
+  it('finds files in source paths with shell special characters', () => {
+    const source = path.resolve(process.cwd(), 'tmp', `scan '"$\` source`);
+    const file = path.join(source, 'file.txt');
+
+    fs.mkdirSync(source, { recursive: true });
+    fs.writeFileSync(file, 'test');
+
+    try {
+      assert.deepStrictEqual(Scanner.findFiles(source), [file]);
+    } finally {
+      fs.rmSync(source, { force: true, recursive: true });
+    }
+  });
+
   it('saves nothing for dry mode', async () => {
     const output = await scan(true);
 
