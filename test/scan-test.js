@@ -47,6 +47,13 @@ describe('scan', { concurrency: false }, () => {
     assert.strictEqual(file.size, 1024);
   });
 
+  it('finds files in source paths with shell special characters', () => {
+    const files = Scanner.findFiles(`${FIXTURES_DIR}scan/source '"$\``);
+
+    assert.strictEqual(files.length, 1);
+    assert.strictEqual(files[0], `${FIXTURES_DIR}scan/source '"$\`/1-test.txt`);
+  });
+
   it('saves nothing for dry mode', async () => {
     const output = await scan(true);
 
