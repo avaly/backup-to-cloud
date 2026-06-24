@@ -2,7 +2,7 @@
   "name": "backup-to-cloud",
   "private": true,
   "packageManager": "pnpm@11.7.0",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
   "type": "module",
