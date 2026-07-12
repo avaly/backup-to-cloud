@@ -28,7 +28,7 @@
     "backup-to-cloud": "bin/backup-to-cloud"
   },
   "dependencies": {
-    "better-sqlite3": "12.10.0",
+    "better-sqlite3": "12.11.1",
     "commander": "15.0.0",
     "pretty-bytes": "7.1.0",
     "slackr": "1.0.0"
