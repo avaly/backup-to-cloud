@@ -40,7 +40,7 @@
     "esbuild": "0.28.1",
     "eslint": "10.5.0",
     "eslint-config-prettier": "10.1.8",
-    "globals": "17.4.0",
+    "globals": "17.11.0",
     "husky": "9.1.7",
     "lint-staged": "17.0.4",
     "md5-file": "5.0.0",
