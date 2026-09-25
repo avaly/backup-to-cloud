@@ -21,7 +21,7 @@
 
 ## Build, Test, and Development Commands
 
-Use Node.js `>=22`.
+Use Node.js `>=24`.
 
 - `pnpm install --frozen-lockfile`: install exact dependencies.
 - `pnpm test`: run the Node test suite.
@@ -60,4 +60,3 @@ SEA-specific safety notes:
 
 - In SEA mode, filesystem config loading must go through `createRequire()` rather than dynamic `import()`.
 - `lib/package.js` must tolerate missing `package.json` beside the bundled executable.
-- Any future native addon embedded into the SEA should follow the same extract-to-temp pattern used for `better_sqlite3.node`.
