@@ -8,6 +8,7 @@ const cwd = process.cwd();
 const binaryPath = path.resolve(cwd, 'dist', 'sea', 'backup-to-cloud');
 const dataDir = path.resolve(cwd, 'data');
 const lockDir = path.resolve(cwd, 'tmp', 'test', 'locks');
+const dbPath = path.resolve(cwd, 'data', 'db-test.sqlite');
 const dryDbPath = path.resolve(cwd, 'data', 'db-test.sqlite.dry');
 const awsLogPath = path.resolve(cwd, 'data', 'aws.json');
 
@@ -31,6 +32,7 @@ function runBinary(args, options = {}) {
 }
 
 function cleanupRepoArtifacts() {
+  fs.rmSync(dbPath, { force: true });
   fs.rmSync(dryDbPath, { force: true });
   fs.rmSync(awsLogPath, { force: true });
   fs.rmSync(lockDir, { force: true, recursive: true });
@@ -121,6 +123,21 @@ function scanDrySmoke() {
   assert.ok(fs.existsSync(dryDbPath), 'SEA scan --dry did not create the dry-run SQLite DB');
 }
 
+function scanSmokeUpdatesDb() {
+  cleanupRepoArtifacts();
+
+  const result = runBinary(['scan'], {
+    env: {
+      BACKUP_ENV: 'test',
+    },
+  });
+
+  assertSuccess(result, 'SEA scan');
+  assert.match(result.stdout, /Starting scan\.\.\./);
+  assert.ok(fs.existsSync(dbPath), 'SEA scan did not create the SQLite DB');
+  assert.ok(fs.statSync(dbPath).size > 0, 'SEA scan created an empty SQLite DB');
+}
+
 function verifyDrySmoke() {
   cleanupRepoArtifacts();
 
@@ -150,6 +167,7 @@ assert.ok(fs.existsSync(binaryPath), `SEA binary is missing: ${binaryPath}`);
 checkConfigSmoke();
 initSmoke();
 scanDrySmoke();
+scanSmokeUpdatesDb();
 verifyDrySmoke();
 
 console.log('SEA smoke tests passed');

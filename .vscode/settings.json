@@ -1,6 +1,6 @@
 {
   "chat.tools.terminal.autoApprove": {
-    "/^BACKUP_ENV=.+ node --test .+$/": true
+    "/^BACKUP_ENV=test node --test .+$/": true
   },
   "cSpell.words": ["Crypter"]
 }
