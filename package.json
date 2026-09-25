@@ -1,7 +1,7 @@
 {
   "name": "backup-to-cloud",
   "private": true,
-  "packageManager": "pnpm@11.7.0",
+  "packageManager": "pnpm@11.27.0",
   "version": "6.1.0",
   "description": "A simple backup tool which uploads encrypted files to S3",
   "author": "Valentin Agachi",
@@ -39,7 +39,7 @@
     "esbuild": "0.28.2",
     "eslint": "10.5.0",
     "eslint-config-prettier": "10.1.8",
-    "globals": "17.4.0",
+    "globals": "17.12.0",
     "husky": "9.1.7",
     "lint-staged": "17.5.1",
     "md5-file": "5.0.0",
