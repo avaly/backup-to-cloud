@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/avaly/backup-to-cloud/compare/v6.0.1...v6.1.0) (2026-09-25)
+
+
+### Features
+
+* Use native sqlite module ([#166](https://github.com/avaly/backup-to-cloud/issues/166)) ([3c2b0e9](https://github.com/avaly/backup-to-cloud/commit/3c2b0e913749792f10b0005645c1b97181cf32db))
+
+
+### Bug Fixes
+
+* Reorder find arguments ([#147](https://github.com/avaly/backup-to-cloud/issues/147)) ([54836ac](https://github.com/avaly/backup-to-cloud/commit/54836acfc7abd2a9aa557194bcd2f63833bf4f25))
+
 ## [6.0.1](https://github.com/avaly/backup-to-cloud/compare/v6.0.0...v6.0.1) (2026-05-27)
 
 
