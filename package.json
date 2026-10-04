@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "commander": "15.0.0",
-    "pretty-bytes": "7.1.3",
+    "pretty-bytes": "7.2.0",
     "slackr": "1.0.0"
   },
   "devDependencies": {
