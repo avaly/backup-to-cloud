@@ -28,7 +28,7 @@
     "backup-to-cloud": "bin/backup-to-cloud"
   },
   "dependencies": {
-    "commander": "15.0.0",
+    "commander": "15.1.0",
     "pretty-bytes": "7.2.0",
     "slackr": "1.0.0"
   },
